@@ -1,4 +1,4 @@
-import { View, Text, Button, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, Button, StyleSheet, ScrollView, StatusBar } from 'react-native';
 import { useRouter } from 'expo-router';
 import { lightTheme } from '../../constants/Colors';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -8,6 +8,7 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" hidden={true} />
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <Text style={styles.title}>Welcome to Japanese Learning App!</Text>
       </ScrollView>
