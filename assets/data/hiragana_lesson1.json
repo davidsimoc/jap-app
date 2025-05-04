@@ -1,0 +1,32 @@
+{
+    "title": "Hiragana - Lecția 1",
+    "description": "Învață primele 5 caractere hiragana.",
+    "characters": [
+      {
+        "romaji": "a",
+        "kana": "あ",
+        "example": "あめ (ame) - ploaie"
+      },
+      {
+        "romaji": "i",
+        "kana": "い",
+        "example": "いぬ (inu) - câine"
+      },
+      {
+        "romaji": "u",
+        "kana": "う",
+        "example": "うみ (umi) - mare"
+      },
+      {
+        "romaji": "e",
+        "kana": "え",
+        "example": "えき (eki) - gară"
+      },
+      {
+        "romaji": "o",
+        "kana": "お",
+        "example": "おちゃ (ocha) - ceai"
+      }
+    ]
+  }
+  
