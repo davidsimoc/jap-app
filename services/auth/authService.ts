@@ -24,8 +24,8 @@ export class AuthService implements AuthProvider {
     return this.provider.logIn(email, password);
   }
 
-  createUser(email: string, password: string) {
-    return this.provider.createUser(email, password);
+  createUser(email: string, password: string, username: string) {
+    return this.provider.createUser(email, password, username);
   }
 
   logOut() {

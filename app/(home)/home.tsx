@@ -9,7 +9,7 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" hidden={true} />
+      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <Text style={styles.title}>Welcome to Japanese Learning App!</Text>
       </ScrollView>

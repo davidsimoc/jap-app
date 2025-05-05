@@ -20,6 +20,8 @@ import {
   WeakPasswordAuthException,
   WrongPasswordAuthException,
 } from "./authExceptions";
+import { getFirestore, collection, doc, setDoc, serverTimestamp } from "firebase/firestore"; // Importă firestore
+import { use } from "react";
 
 export class FirebaseAuthProvider implements AuthProvider {
   private initialized = false;
@@ -37,11 +39,23 @@ export class FirebaseAuthProvider implements AuthProvider {
     return user ? AuthUser.fromFirebase(user) : null;
   }
 
-  async createUser(email: string, password: string): Promise<AuthUser> {
+  async createUser(email: string, password: string, username: string): Promise<AuthUser> {
     try {
       await createUserWithEmailAndPassword(getAuth(), email, password);
       const user = this.currentUser();
-      if (user) return user;
+      if (user && user.uid) 
+        {
+          const firestore = getFirestore(); // Initializează Firestore
+          const usersCollection = collection(firestore, 'users');
+          const userDocRef = doc(usersCollection, user.uid);
+          await setDoc(userDocRef, {
+            username: username,
+            email: email,
+            createdAt: serverTimestamp(), 
+          })
+          //return AuthUser.fromFirebase(user); // Returnează utilizatorul creat
+          return user;
+        }
       throw new UserNotLoggedInAuthException();
     } catch (e: any) {
       switch (e.code) {

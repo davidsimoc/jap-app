@@ -37,7 +37,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="hiragana"
         options={{
-          title: 'Hiragana',
+          title: 'Kana',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="book-outline" size={size} color={color} />
           ),

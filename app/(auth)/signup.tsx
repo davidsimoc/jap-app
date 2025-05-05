@@ -16,12 +16,13 @@ export default function SignupScreen() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [username, setUsername] = useState(''); // Adaugă starea pentru nume de utilizator
   const [error, setError] = useState('');
 
   const handleSignup = async () => {
     try {
       await auth.initialize();
-      await auth.createUser(email, password);
+      await auth.createUser(email, password, username);
       router.replace('/(home)/home');
     } catch (e) {
       if (e instanceof EmailAlreadyInUseAuthException) {
@@ -44,6 +45,7 @@ export default function SignupScreen() {
       <View style={{ flex: 1 }}>
         <View style={styles.container}>
           <Text style={styles.title}>Sign Up</Text>
+          <TextInput placeholder="Username" placeholderTextColor={"#999"} style={styles.input} value={username} onChangeText={setUsername} />
           <TextInput placeholder="Email" placeholderTextColor={"#999"} style={styles.input} value={email} onChangeText={setEmail} />
           <TextInput placeholder="Password" placeholderTextColor={"#999"} style={styles.input} value={password} onChangeText={setPassword} secureTextEntry />
           {error ? <Text style={styles.error}>{error}</Text> : null}

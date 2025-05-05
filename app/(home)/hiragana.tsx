@@ -6,6 +6,8 @@ import hiraganaData from '@/assets/data/hiragana.json';
 import dakutenHiraganaData from '@/assets/data/hiraganaDakuten.json';
 import yoonHiraganaData from '@/assets/data/hiraganaYōon.json';
 import katakanaData from '@/assets/data/katakana.json';
+import dukatenKatakanaData from '@/assets/data/katakanaDakuten.json';
+import yoonKatakanaData from '@/assets/data/katakanaYoon.json';
 
 const { width } = Dimensions.get('window');
 const CARD_SIZE = width / 5 - 10;
@@ -16,6 +18,8 @@ export default function HiraganaScreen() {
     const [dakutenData, setDakutenData] = useState<any[]>([]);
     const [yoonData, setYoonData] = useState<any[]>([]);
     const [katakanaFlatData, setKatakanaFlatData] = useState<any[]>([]);
+    const [katakanaDakutenFlatData, setKatakanaDakutenFlatData] = useState<any[]>([]);
+    const [katakanaYoonFlatData, setKatakanaYoonFlatData] = useState<any[]>([]);
 
 
     useEffect(() => {
@@ -25,6 +29,8 @@ export default function HiraganaScreen() {
             setYoonData(yoonHiraganaData.flatMap((section) => section.rows));
         } else {
             setKatakanaFlatData(katakanaData.flatMap((section) => section.rows));
+            setKatakanaDakutenFlatData(dukatenKatakanaData.flatMap((section) => section.rows));
+            setKatakanaYoonFlatData(yoonKatakanaData.flatMap((section) => section.rows));
         }
     }, [selectedTab]);
 
@@ -36,12 +42,12 @@ export default function HiraganaScreen() {
     // }, [selectedTab]);
 
 
-    const renderItem = ({ item }: { item: { romaji: string; kana: string } }) => (
-        <View style={styles.card}>
-            <Text style={styles.kana}>{item.kana}</Text>
-            <Text style={styles.romaji}>{item.romaji}</Text>
+    const renderItem = ({ item }: { item: { romaji: string; kana: string } }, listType: 'basic' | 'dakuten' | 'yoon' | 'katakana') => (
+        <View style={[styles.card, listType === 'yoon' && styles.yoonCard]}>
+          <Text style={styles.kana}>{item.kana}</Text>
+          <Text style={styles.romaji}>{item.romaji}</Text>
         </View>
-    );
+      );
 
     const renderSectionHeader = ({ section }: { section: any }) => (
         <Text style={styles.category}>{section.title}</Text>
@@ -73,11 +79,11 @@ export default function HiraganaScreen() {
             <View style={styles.content}>
                 {selectedTab === 'hiragana' && (
                     <ScrollView style={{ flex: 1 }}>
-                        <Text style={styles.category}>Basic</Text>
+                        <Text style={styles.category}>Hiragana</Text>
                         <Text style={styles.subtitle}>The main Japanese writing system</Text>
                         <FlatList
                             data={basicData}
-                            renderItem={renderItem}
+                            renderItem={(props) => renderItem(props, 'basic')}
                             keyExtractor={(item, index) => `basic-${index}`}
                             numColumns={5}
                             columnWrapperStyle={styles.row}
@@ -86,9 +92,10 @@ export default function HiraganaScreen() {
                         <View style={styles.separator} />
 
                         <Text style={styles.category}>Dakuten</Text>
+                        <Text style={styles.subtitle}>A symbol changes the sound</Text>
                         <FlatList
                             data={dakutenData}
-                            renderItem={renderItem}
+                            renderItem={(props) => renderItem(props, 'dakuten')}
                             keyExtractor={(item, index) => `dakuten-${index}`}
                             numColumns={5}
                             columnWrapperStyle={styles.row}
@@ -98,11 +105,12 @@ export default function HiraganaScreen() {
 
 
                         <Text style={styles.category}>Yōon (Combinations)</Text>
+                        <Text style={styles.subtitle}>A small character to make new syllable</Text>
                         <FlatList
                             data={yoonData}
-                            renderItem={renderItem}
+                            renderItem={(props) => renderItem(props, 'yoon')}
                             keyExtractor={(item, index) => `yoon-${index}`}
-                            numColumns={5}
+                            numColumns={3}
                             columnWrapperStyle={styles.row}
                             scrollEnabled={false}
                         />
@@ -110,13 +118,43 @@ export default function HiraganaScreen() {
                 )}
 
                 {selectedTab === 'katakana' && (
+                    <ScrollView style={{ flex: 1 }}>
+                    <Text style={styles.category}>Katakana</Text>
+                    <Text style={styles.subtitle}>Characters used for loanwords</Text>
                     <FlatList
                         data={katakanaFlatData}
-                        renderItem={renderItem}
-                        keyExtractor={(item, index) => `katakana-${index}`}
+                        renderItem={(props) => renderItem(props, 'basic')}
+                        keyExtractor={(item, index) => `basic-${index}`}
                         numColumns={5}
                         columnWrapperStyle={styles.row}
+                        scrollEnabled={false}
                     />
+                    <View style={styles.separator} />
+
+                    <Text style={styles.category}>Dakuten</Text>
+                    <Text style={styles.subtitle}>A symbol changes the sound</Text>
+                    <FlatList
+                        data={katakanaDakutenFlatData}
+                        renderItem={(props) => renderItem(props, 'dakuten')}
+                        keyExtractor={(item, index) => `dakuten-${index}`}
+                        numColumns={5}
+                        columnWrapperStyle={styles.row}
+                        scrollEnabled={false}
+                    />
+                    <View style={styles.separator} />
+
+
+                    <Text style={styles.category}>Yōon (Combinations)</Text>
+                    <Text style={styles.subtitle}>A small character to make new syllable</Text>
+                    <FlatList
+                        data={katakanaYoonFlatData}
+                        renderItem={(props) => renderItem(props, 'yoon')}
+                        keyExtractor={(item, index) => `yoon-${index}`}
+                        numColumns={3}
+                        columnWrapperStyle={styles.row}
+                        scrollEnabled={false}
+                    />
+                </ScrollView>
                 )}
             </View>
         </View>
@@ -204,5 +242,9 @@ const styles = StyleSheet.create({
     },
     row: {
         justifyContent: 'space-between',
+    },
+    yoonCard: {
+        justifyContent: 'space-around',
+        width: width/3 - 10, // Adjust width for 3 items
     },
 });

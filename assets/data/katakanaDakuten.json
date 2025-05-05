@@ -1,0 +1,107 @@
+[
+    {
+        "section": "Dakuten",
+        "rows": [
+            {
+                "romaji": "ga",
+                "kana": "ガ"
+            },
+            {
+                "romaji": "gi",
+                "kana": "ギ"
+            },
+            {
+                "romaji": "gu",
+                "kana": "グ"
+            },
+            {
+                "romaji": "ge",
+                "kana": "ゲ"
+            },
+            {
+                "romaji": "go",
+                "kana": "ゴ"
+            },
+            {
+                "romaji": "za",
+                "kana": "ザ"
+            },
+            {
+                "romaji": "ji",
+                "kana": "ジ"
+            },
+            {
+                "romaji": "zu",
+                "kana": "ズ"
+            },
+            {
+                "romaji": "ze",
+                "kana": "ゼ"
+            },
+            {
+                "romaji": "zo",
+                "kana": "ゾ"
+            },
+            {
+                "romaji": "da",
+                "kana": "ダ"
+            },
+            {
+                "romaji": "ji",
+                "kana": "ヂ"
+            },
+            {
+                "romaji": "zu",
+                "kana": "ヅ"
+            },
+            {
+                "romaji": "de",
+                "kana": "デ"
+            },
+            {
+                "romaji": "do",
+                "kana": "ド"
+            },
+            {
+                "romaji": "ba",
+                "kana": "バ"
+            },
+            {
+                "romaji": "bi",
+                "kana": "ビ"
+            },
+            {
+                "romaji": "bu",
+                "kana": "ブ"
+            },
+            {
+                "romaji": "be",
+                "kana": "ベ"
+            },
+            {
+                "romaji": "bo",
+                "kana": "ボ"
+            },
+            {
+                "romaji": "pa",
+                "kana": "パ"
+            },
+            {
+                "romaji": "pi",
+                "kana": "ピ"
+            },
+            {
+                "romaji": "pu",
+                "kana": "プ"
+            },
+            {
+                "romaji": "pe",
+                "kana": "ペ"
+            },
+            {
+                "romaji": "po",
+                "kana": "ポ"
+            }
+        ]
+    }
+]
