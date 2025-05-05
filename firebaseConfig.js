@@ -1,4 +1,5 @@
 import { initializeApp } from 'firebase/app';
+import { getFirestore } from 'firebase/firestore'; // Asigură-te că această linie există
 import { 
     getAuth, 
     initializeAuth, 
@@ -36,3 +37,4 @@ const auth = initializeAuth(app, {
 export {auth};
 export{app};
 export { firebaseConfig };
+export const db = getFirestore(app); // Exportă instanța Firestore fără adnotare de tip
