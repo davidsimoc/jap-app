@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, StatusBar } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, StatusBar, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { AuthService } from '../../services/auth/authService';
 import {
@@ -8,9 +8,9 @@ import {
   WeakPasswordAuthException,
   GenericAuthException,
 } from '../../services/auth/authExceptions';
-import { lightTheme } from '@/constants/Colors';
+import { darkTheme, lightTheme } from '@/constants/Colors';
 
-const auth = AuthService.firebase(); 
+const auth = AuthService.firebase();
 
 export default function SignupScreen() {
   const router = useRouter();
@@ -47,8 +47,13 @@ export default function SignupScreen() {
           <TextInput placeholder="Email" placeholderTextColor={"#999"} style={styles.input} value={email} onChangeText={setEmail} />
           <TextInput placeholder="Password" placeholderTextColor={"#999"} style={styles.input} value={password} onChangeText={setPassword} secureTextEntry />
           {error ? <Text style={styles.error}>{error}</Text> : null}
-          <Button title="Sign Up" onPress={handleSignup} />
-          <Button title="Already have an account? Login" onPress={() => router.push('/(auth)/login')} />
+          <TouchableOpacity style={styles.button} onPress={handleSignup}>
+            <Text style={styles.buttonText}>Sign Up</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.buttonSecondary} onPress={() => router.push('/(auth)/login')}>
+            <Text style={styles.buttonText}>Already have an account? Login</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </>
@@ -60,23 +65,47 @@ const styles = StyleSheet.create({
     flex: 1, // Occupy full screen height
     justifyContent: 'center',
     padding: 20,
+    backgroundColor: darkTheme.background, // Use light theme background
   },
   title: {
     fontSize: 32,
     marginBottom: 20,
     textAlign: 'center',
     fontWeight: 'bold',
+    color: darkTheme.text,
   },
   input: {
     height: 50,
-    borderColor: 'gray',
+    borderColor: darkTheme.border, // Use light theme border color
     borderWidth: 1,
     marginBottom: 20,
     padding: 10,
     borderRadius: 10,
+    color: darkTheme.text, // Text color for the input
+    backgroundColor: darkTheme.surface, // Background color for the input
   },
   error: {
     color: 'red',
     marginBottom: 10,
+  },
+  button: {
+    backgroundColor: darkTheme.primary,
+    paddingVertical: 15,
+    borderRadius: 10,
+    marginBottom: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonText: {
+    color: darkTheme.text, // Text color for the button
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  buttonSecondary: {
+    backgroundColor: darkTheme.secondary, // Lighter color for Sign Up button
+    paddingVertical: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

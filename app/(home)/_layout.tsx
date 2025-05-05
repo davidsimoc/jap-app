@@ -1,5 +1,7 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { StyleSheet } from 'react-native';
+import { darkTheme } from '@/constants/Colors';
 
 export default function TabsLayout() {
   return (
@@ -7,13 +9,13 @@ export default function TabsLayout() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: '#fff',      // culoare fundal tab bar
+          backgroundColor: darkTheme.navbar,      // culoare fundal tab bar
           borderTopWidth: 0,            // elimină linia de sus
           height: 75,                   // mărimea tab bar-ului
           paddingBottom: 20,             // padding jos
         },
-        tabBarActiveTintColor: '#2f95dc', // culoare activă
-        tabBarInactiveTintColor: '#aaa',  // culoare inactivă
+        tabBarActiveTintColor: darkTheme.accent, // culoare activă
+        tabBarInactiveTintColor: darkTheme.border,  // culoare inactivă
         tabBarLabelStyle: {
           fontSize: 12,
           paddingBottom: 5,
@@ -53,3 +55,7 @@ export default function TabsLayout() {
     </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+
+});

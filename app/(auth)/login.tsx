@@ -1,12 +1,13 @@
 import { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Image, Dimensions, StatusBar } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Image, Dimensions, StatusBar, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { AuthService } from '../../services/auth/authService';
 import {
   UserNotFoundAuthException,
   WrongPasswordAuthException,
 } from '../../services/auth/authExceptions';
-import { lightTheme } from '@/constants/Colors';
+import { lightTheme, darkTheme } from '@/constants/Colors';
+import { TotpSecret } from 'firebase/auth/web-extension';
 
 const auth = AuthService.firebase();
 const { width } = Dimensions.get('window');
@@ -69,16 +70,13 @@ export default function LoginScreen() {
 
           {error ? <Text style={styles.error}>{error}</Text> : null}
 
-          <View>
-            <Button title="Login" onPress={handleLogin} />
-          </View>
+          <TouchableOpacity style={styles.button} onPress={handleLogin}>
+            <Text style={styles.buttonText}>Login</Text>
+          </TouchableOpacity>
 
-          <View>
-            <Button
-              title="Don't have an account? Sign Up"
-              onPress={() => router.push('/(auth)/signup')}
-            />
-          </View>
+          <TouchableOpacity style={styles.buttonSecondary} onPress={() => router.push('/(auth)/signup')}>
+            <Text style={styles.buttonText}>Don't have an account? Sign Up</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </>
@@ -90,20 +88,24 @@ const styles = StyleSheet.create({
     flex: 1, // Occupy full screen height
     justifyContent: 'center',
     padding: 20,
+    backgroundColor: darkTheme.background, // Use light theme background
   },
   title: {
     fontSize: 32,
     marginBottom: 20,
     textAlign: 'center',
     fontWeight: 'bold',
+    color: darkTheme.text,
   },
   input: {
     height: 50,
-    borderColor: 'gray',
+    borderColor: darkTheme.border,
     borderWidth: 1,
     marginBottom: 20,
     padding: 10,
     borderRadius: 10,
+    color: darkTheme.text, // Text color for the input
+    backgroundColor: darkTheme.surface, // Background color for the input
   },
   error: {
     color: 'red',
@@ -116,10 +118,33 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     alignSelf: 'center',
     marginTop: -width * 1.45,
-    marginBottom: -50,
+    marginBottom: -60,
+    backgroundColor: darkTheme.background,
+    zIndex:1,
   },
   circleImage: {
     width: '100%',
     height: '100%',
+    objectFit: 'cover',
   },
+  button: {
+    backgroundColor: darkTheme.primary,
+    paddingVertical: 15,
+    borderRadius: 10,
+    marginBottom: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonText: {
+    color: darkTheme.text, // Text color for the button
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  buttonSecondary: {
+    backgroundColor: darkTheme.secondary, // Lighter color for Sign Up button
+    paddingVertical: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  }
 });

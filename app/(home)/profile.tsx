@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Button } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { auth } from '../../firebaseConfig';
 import { lightTheme } from '../../constants/Colors';
+import { darkTheme } from '@/styles/themes';
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -21,6 +22,6 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: lightTheme.background },
-  title: { fontSize: 24 },
+  container: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: darkTheme.background },
+  title: { fontSize: 24, color: darkTheme.text, marginBottom: 20 },
 });
