@@ -1,6 +1,6 @@
 export default {
     expo: {
-      name: "frontend",
+      name: "Nihongo Master",
       slug: "frontend",
       version: "1.0.0",
       orientation: "portrait",
@@ -9,7 +9,7 @@ export default {
       userInterfaceStyle: "automatic",
       ios: {
         supportsTablet: true,
-        userInterfaceStyle: "light",
+        userInterfaceStyle: "dark",
       },
       android: {
         adaptiveIcon: {
