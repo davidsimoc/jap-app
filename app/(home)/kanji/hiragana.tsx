@@ -208,12 +208,16 @@ const styles = StyleSheet.create({
         backgroundColor: darkTheme.background,
         borderBottomWidth: 1,
         borderBottomColor: darkTheme.border,
+        width: '100%',
     },
     tab: {
+        flex:1,
         marginHorizontal: 10,
         paddingVertical: 8,
         paddingHorizontal: 16,
         borderRadius: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
         backgroundColor: darkTheme.surface,
     },
     tabActive: {
@@ -275,8 +279,8 @@ const styles = StyleSheet.create({
         color: darkTheme.accent,
     },
     row: {
-        //justifyContent: 'space-between',
-        justifyContent: 'center',
+        justifyContent: 'space-between',
+        //justifyContent: 'center',
     },
     rowKanji: {
         justifyContent: 'center',

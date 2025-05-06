@@ -94,20 +94,20 @@ export default function KanjiDetailsPage() {
             </View>
           ))}
         </View>
+        {kanjiData.specialReadings && kanjiData.specialReadings.length > 0 && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Special Readings:</Text>
+            {kanjiData.specialReadings.map((item, index) => (
+              <View key={index} style={styles.wordItem}>
+                <Text style={styles.word}>{item.word} ({item.reading})</Text>
+                <Text style={styles.wordMeaning}>{item.meaning}</Text>
+              </View>
+            ))}
+          </View>
+        )}
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Special Reaings:</Text>
-          {kanjiData.specialReadings.map((item, index) => (
-            <View key={index} style={styles.wordItem}>
-              <Text style={styles.word}>{item.word} ({item.reading})</Text>
-              <Text style={styles.wordMeaning}>{item.meaning}</Text>
-            </View>
-          ))
-          }
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Exemple de Propoziții:</Text>
+          <Text style={styles.sectionTitle}>Examples:</Text>
           {kanjiData.examples.map((item, index) => (
             <View key={index} style={styles.exampleItem}>
               <Text style={styles.example}>{item.sentence}</Text>
