@@ -1,0 +1,119 @@
+{
+    "日": {
+      "onyomi": ["ニチ", "ジツ"],
+      "kunyomi": ["ひ", "-び", "-か"],
+      "meaning": "day, sun, Japan, counter for days",
+      "onyomiWords": [
+        { "word": "同日", "reading": "どうじつ", "meaning": "the same day" },
+        { "word": "前日", "reading": "ぜんじつ", "meaning": "previous day, day before" },
+        { "word": "毎日 ", "reading": "まいにち", "meaning": "every day" },
+        { "word": "日常 ", "reading": "にちじょう", "meaning": "ordinary, regular" }
+
+      ],
+      "kunyomiWords": [
+        { "word": "記念日", "reading": "きねんび", "meaning": "anniversary, memorial day" }
+      ],
+      "specialReadings": [
+        { "word": "今日", "reading": "きょう", "meaning": "today, this day" },
+        { "word": "明日", "reading": "あした", "meaning": "tomorrow" },
+        { "word": "昨日 ", "reading": "きのう", "meaning": "yesterday" }
+
+      ],
+      "examples": [
+        { "sentence": "1. 毎日、日本語を勉強します。", "reading": "まいにち、にほんごをべんきょうします。", "romanji": "mainichi nihongo o benkyou shimasu.", "meaning": "I study Japanese everyday." },
+        { "sentence": "2. ある日、私は彼に会った。", "reading": "あるひ、わたしはかれにあった。","romanji": "aru hi, watashi wa kare ni atta.", "meaning": "One day I met him." },
+        { "sentence": "3. 私は数日間休みます。", "reading": "わたしはすうじつかんやすみます。","romanji": "watashi wa suujitsukan yasumimasu.", "meaning": "I'm going to take off a few days." }
+
+    ]
+    },
+    "一": {
+      "onyomi": ["イチ"],
+      "kunyomi": ["ひと(つ)"],
+      "meaning": "one",
+      "onyomiWords": [
+        { "word": "一日", "reading": "いちにち", "meaning": "one day" },
+        { "word": "一番", "reading": "いちばん", "meaning": "#1; the best"}
+
+      ],
+      "kunyomiWords": [
+        { "word": "一人", "reading": "ひとり", "meaning": "one person" }
+      ],
+      "specialReadings": [
+        { "word": "記念日", "reading": "きねんび", "meaning": "anniversary, memorial day" }
+      ],
+      "examples": [
+        { "sentence": "1. 毎日、日本語を勉強します。", "reading": "まいにち、にほんごをべんきょうします。", "romanji": "mainichi nihongo o benkyou shimasu.", "meaning": "I study Japanese everyday." }
+      ]
+    },
+    "二": {
+      "onyomi": ["ニ", "ジ"],
+      "kunyomi": ["ふた-", "ふた.つ"],
+      "meaning": "two",
+      "onyomiWords": [
+        { "word": "二日", "reading": "ふつか", "meaning": "two days" },
+        { "word": "二つ", "reading": "ふたつ", "meaning": "two (things)" }
+      ],
+      "kunyomiWords": [
+        { "word": "二人", "reading": "ふたり", "meaning": "two people" }
+      ],
+      "specialReadings": [
+        { "word": "記念日", "reading": "きねんび", "meaning": "anniversary, memorial day" }
+      ],
+      "examples": [
+        { "sentence": "1. 毎日、日本語を勉強します。", "reading": "まいにち、にほんごをべんきょうします。", "romanji": "mainichi nihongo o benkyou shimasu.", "meaning": "I study Japanese everyday." }
+      ]
+    },
+    "三": {
+      "onyomi": ["サン"],
+      "kunyomi": ["みっ.つ"],
+      "meaning": "three",
+      "onyomiWords": [
+        { "word": "三日", "reading": "みっか", "meaning": "three days" }
+      ],
+      "kunyomiWords": [
+        { "word": "三つ", "reading": "みっつ", "meaning": "three (things)" }
+      ],
+      "specialReadings": [
+        { "word": "記念日", "reading": "きねんび", "meaning": "anniversary, memorial day" }
+      ],
+      "examples": [
+        { "sentence": "1. 毎日、日本語を勉強します。", "reading": "まいにち、にほんごをべんきょうします。", "romanji": "mainichi nihongo o benkyou shimasu.", "meaning": "I study Japanese everyday." }
+      ]
+    },
+    "人": {
+      "onyomi": ["ジン", "ニン"],
+      "kunyomi": ["ひと"],
+      "meaning": "person",
+      "onyomiWords": [
+        { "word": "日本人", "reading": "にほんじん", "meaning": "Japanese person" },
+        { "word": "一人", "reading": "いちにん", "meaning": "one person (formal)" }
+      ],
+      "kunyomiWords": [
+        { "word": "一人", "reading": "ひとり", "meaning": "one person (informal)" }
+      ],
+      "specialReadings": [
+        { "word": "記念日", "reading": "きねんび", "meaning": "anniversary, memorial day" }
+      ],
+      "examples": [
+        { "sentence": "1. 毎日、日本語を勉強します。", "reading": "まいにち、にほんごをべんきょうします。", "romanji": "mainichi nihongo o benkyou shimasu.", "meaning": "I study Japanese everyday." }
+      ]
+    },
+    "大": {
+      "onyomi": ["ダイ", "タイ"],
+      "kunyomi": ["おお-", "おお.きい"],
+      "meaning": "large, big",
+      "onyomiWords": [
+        { "word": "大学", "reading": "だいがく", "meaning": "university" },
+        { "word": "大切", "reading": "たいせつ", "meaning": "important" }
+      ],
+      "kunyomiWords": [
+        { "word": "大きい", "reading": "おおきい", "meaning": "big" }
+      ],
+      "specialReadings": [
+        { "word": "記念日", "reading": "きねんび", "meaning": "anniversary, memorial day" }
+      ],
+      "examples": [
+        { "sentence": "1. 毎日、日本語を勉強します。", "reading": "まいにち、にほんごをべんきょうします。", "romanji": "mainichi nihongo o benkyou shimasu.", "meaning": "I study Japanese everyday." }
+      ]
+    }
+  }

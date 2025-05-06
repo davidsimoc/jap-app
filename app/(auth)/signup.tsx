@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   buttonSecondary: {
-    backgroundColor: darkTheme.secondary, // Lighter color for Sign Up button
+    //backgroundColor: darkTheme.secondary, // Lighter color for Sign Up button
     paddingVertical: 15,
     borderRadius: 10,
     alignItems: 'center',

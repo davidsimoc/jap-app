@@ -1,11 +1,13 @@
 import { useRouter } from 'expo-router';
-import { View, Text, StyleSheet, Button } from 'react-native';
+import { View, Text, StyleSheet, Button, Image, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { auth, db } from '../../firebaseConfig'; // Presupunând că ai exportat 'db' (instanța Firestore) din firebaseConfig
 import { collection, doc, getDoc } from 'firebase/firestore';
 import { lightTheme } from '../../constants/Colors';
 import { darkTheme } from '@/styles/themes';
 import React, { useState, useEffect } from 'react'; // Importă useState și useEffect
+
+const { width, height } = Dimensions.get('window'); // Obține lățimea și înălțimea ecranului
 
 export default function ProfileScreen() {
   const [username, setUsername] = useState<string | null>(null);
@@ -43,6 +45,15 @@ export default function ProfileScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={{ flex: 1 }}>
+        <View style={styles.imageContainer}>
+          <Image
+            source={require('../../assets/images/login.jpg')}
+            //style={styles.circleImage}
+            resizeMode="cover"
+          />
+        </View>
+      </View>
       <Text style={styles.title}>Profile Page</Text>
       {username && <Text style={styles.info}>Username: {username}</Text>}
       {email && <Text style={styles.info}>Email: {email}</Text>}
@@ -52,7 +63,12 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: darkTheme.background },
+  container: { flex: 1, flexDirection: 'column', justifyContent: 'center', alignItems: 'center', backgroundColor: darkTheme.background },
   title: { fontSize: 24, color: darkTheme.text, marginBottom: 20 },
   info: { fontSize: 18, color: darkTheme.text, marginBottom: 10 },
+  imageContainer: {
+    width: width,
+    height: height * 0.2, // 30% din înălțimea ecranului
+    overflow: 'hidden',
+  },
 });
