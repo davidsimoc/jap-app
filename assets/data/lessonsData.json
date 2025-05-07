@@ -1,0 +1,26 @@
+[
+    {
+      "id": "hiragana-basic",
+      "title": "Hiragana Basics",
+      "description": "Learn the fundamental Hiragana characters.",
+      "route": "/lessons/hiragana-basic/page"
+    },
+    {
+      "id": "katakana-basics",
+      "title": "Katakana Basics",
+      "description": "Master the Katakana writing system.",
+      "route": "/lessons/katakana-basics"
+    },
+    {
+      "id": "kanji-n5-part1",
+      "title": "Kanji N5 - Part 1",
+      "description": "Introduction to essential N5 level Kanji.",
+      "route": "/lessons/kanji-n5/part1"
+    },
+    {
+      "id": "basic-grammar-1",
+      "title": "Basic Grammar - Level 1",
+      "description": "Fundamental Japanese grammar concepts.",
+      "route": "/lessons/grammar/basic1"
+    }
+  ]

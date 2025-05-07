@@ -8,6 +8,8 @@ import {
   //import { getReactNativePersistence } from 'firebase/auth/react-native'; 
   import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Platform} from 'react-native';
+import { getStorage } from 'firebase/storage'; // Import getStorage
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyA05BP_MhyW0OsC0oC9tlSRG3pWwdv6d5o",
@@ -38,3 +40,4 @@ export {auth};
 export{app};
 export { firebaseConfig };
 export const db = getFirestore(app); // Exportă instanța Firestore fără adnotare de tip
+export const storage = getStorage(app); // Exportă instanța Storage

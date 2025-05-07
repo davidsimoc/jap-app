@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
     borderRadius: width,
     overflow: 'hidden',
     alignSelf: 'center',
-    marginTop: -width * 1.45,
+    marginTop: -width * 1.35,
     marginBottom: -60,
     backgroundColor: darkTheme.background,
     zIndex:1,
@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
   circleImage: {
     width: '100%',
     height: '100%',
-    objectFit: 'cover',
+    objectFit: 'contain',
   },
   button: {
     backgroundColor: darkTheme.primary,
