@@ -314,7 +314,7 @@ const styles = StyleSheet.create({
     color: darkTheme.text,
   },
   logoutButton: {
-    backgroundColor: '#d32f2f', // O culoare roșie pentru logout
+    backgroundColor: darkTheme.primary, 
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 10,
@@ -322,7 +322,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logoutButtonText: {
-    color: 'white',
+    color: darkTheme.text,
     fontSize: 18,
     fontWeight: 'bold',
   },
@@ -355,7 +355,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   editButtonText: {
-    color: darkTheme.background,
+    color: darkTheme.text,
     fontWeight: 'bold',
   },
   saveButton: {
