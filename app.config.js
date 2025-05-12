@@ -15,6 +15,7 @@ export default {
         adaptiveIcon: {
           foregroundImage: "./assets/images/adaptive-icon.png",
           backgroundColor: "#ffffff",
+         // userInterfaceStyle: "dark",
         },
       },
       web: {

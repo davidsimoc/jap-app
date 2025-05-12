@@ -80,18 +80,19 @@
     ]
     },
     "人": {
-      "onyomi": ["コク"],
-      "kunyomi": ["くに"],
-      "meaning": "country",
+      "onyomi": ["ジン", "ニン"],
+      "kunyomi": ["ひと"],
+      "meaning": "person",
       "onyomiWords": [
-        { "word": "国王", "reading": "こくおう", "meaning": "King" },
-        { "word": "韓国", "reading": "かんこく", "meaning": "South Korea" },
-        { "word": "中国", "reading": "ちゅうごく", "meaning": "China" },
-        { "word": "米国", "reading": "べいこく", "meaning": "America, USA" },
-        { "word": "外国", "reading": "がいこく", "meaning": "foreign country" },
-        { "word": "国際", "reading": "こくさい", "meaning": "international" },
-        { "word": "外国人", "reading": "がいこくじん", "meaning": "foreigner, foreign citizen" }
-
+        { "word": "人気", "reading": "にんき", "meaning": "popularity, public favor, tone, nature" },
+        { "word": "同人", "reading": "どうじん", "meaning": "same person, said person, the person in question" },
+        { "word": "代人", "reading": "だいにん", "meaning": "substitute, deputy, proxy, representative, agent" },
+        { "word": "証人", "reading": "しょうにん", "meaning": "witness" },
+        { "word": "巨人", "reading": "きょじん", "meaning": "giant, great man" },
+        { "word": "人間", "reading": "にんげん", "meaning": "human being, man" },
+        { "word": "友人", "reading": "ゆうじん", "meaning": "friend" },
+        { "word": "成人", "reading": "せいじん", "meaning": "adult" },
+        { "word": "日本人", "reading": "にほんじん", "meaning": "Japanese people" }
       ],
       "kunyomiWords": [
         { "word": "国", "reading": "くに", "meaning": "country, state, region, national government" }

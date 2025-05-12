@@ -1,0 +1,26 @@
+[
+    {
+      "id": "hiragana-first-row",
+      "title": "Hiragana First Row",
+      "description": "Learn the first row of Hiragana characters.",
+      "route": "/lessons/hiragana-basic/firstRow"
+    },
+    {
+      "id": "hiragana-second-row",
+      "title": "Hiragana Second Row",
+      "description": "Continue with the second row of Hiragana.",
+      "route": "/lessons/hiragana-basic/secondRow"
+    },
+    {
+      "id": "hiragana-third-row",
+      "title": "Hiragana Third Row",
+      "description": "Explore the third row of Hiragana characters.",
+      "route": "/lessons/kanji-n5/part1"
+    },
+    {
+      "id": "hiragana-forth-row",
+      "title": "Hiragana Forth Row",
+      "description": "Learn the forth row of Hiragana characters.",
+      "route": "/lessons/grammar/basic1"
+    }
+  ]

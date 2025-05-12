@@ -1,6 +1,5 @@
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, StatusBar, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
-import { lightTheme } from '../../constants/Colors';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { darkTheme } from '@/constants/Colors';
 import lessonsData from '@/assets/data/lessonsData.json';

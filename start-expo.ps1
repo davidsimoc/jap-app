@@ -1,9 +1,9 @@
 # Setează variabilele de mediu pentru a forța IP-ul corect
-# $env:EXPO_DEV_SERVER_HOST="192.168.0.103"
-# $env:REACT_NATIVE_PACKAGER_HOSTNAME="192.168.0.103"
+ $env:EXPO_DEV_SERVER_HOST="192.168.0.104"
+ $env:REACT_NATIVE_PACKAGER_HOSTNAME="192.168.0.104"
 
-$env:EXPO_DEV_SERVER_HOST="172.20.10.4"
-$env:REACT_NATIVE_PACKAGER_HOSTNAME="172.20.10.4"
+#$env:EXPO_DEV_SERVER_HOST="172.20.10.4"
+#$env:REACT_NATIVE_PACKAGER_HOSTNAME="172.20.10.4"
 
 # Curăță cache-ul Expo
 npx expo start --lan --clear
