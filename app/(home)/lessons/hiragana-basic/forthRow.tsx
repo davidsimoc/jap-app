@@ -10,13 +10,13 @@ const lessonContent = [
         type: 'info',
         sections: [
             {
-                title: 'The Hiragana Chart - Third Row (さ-そ)',
+                title: 'The Hiragana Chart - Forth Row (た-と)',
                 characters: [
-                    { char: 'さ', pronunciation: 'sa', helper: 'Notice how this kana looks like two hands stiring a bowl of salsa.' },
-                    { char: 'し', pronunciation: 'shi', helper: 'This kana looks like a giant shelpherd\'s crook used to herd sheep.\n\nTake note that this is the first "exception" kana that doesn\'t follow the patterns that show up everywhere else. Instead of being si, it\'s shi.' },
-                    { char: 'す', pronunciation: 'su', helper: 'See the swing doing a loop-dee-loop and throwing that poor kid off of it?\n\nImagine him screeming "I\'M GONNA SUE SOMEBODY FOR THIIIiisss" as he flies off into the distance.' },
-                    { char: 'せ', pronunciation: 'se', helper: 'This kana looks like a mouth with a big vampire fang in it. Someone\'s trying to sell you a set of vampire teeth.' },
-                    { char: 'そ', pronunciation: 'so', helper: 'See how this kana looks like a mouth slurping soda?' },
+                    { char: 'た', pronunciation: 'ta', helper: 'Use your imagination and see this kana as a fork, taco, and like garnish for your taco.' },
+                    { char: 'ち', pronunciation: 'chi', helper: 'You know when somebody tells you to say "cheese" when taking a picture of you? This kana looks like a forced smile you have to make every time you\'re in a group photo.\n\nThis is the second "exception" hiragana. Instead of a "ti" sound, it\'s a "chi" sound.' },
+                    { char: 'つ', pronunciation: 'tsu', helper: 'Look at the swoosh of this hiragana. Doesn\'t it look like a big wave, or tsunami?\n\nThis is another "exception" hiragana. Instead of saying "tu", you say "tsu".' },
+                    { char: 'て', pronunciation: 'te', helper: 'Can you see a good ol\' telescope? It\'s a hand-held one! In Japanese, "hand" is て(te).' },
+                    { char: 'と', pronunciation: 'to', helper: 'This kana looks just like someone\'s toe with a little nail or splinter in it. Imagine how much this would hurt if it was your toe.' },
                 ],
             },
         ],
@@ -26,21 +26,21 @@ const lessonContent = [
         exercises: [
             {
                 exerciseType: 'recognition',
-                question: 'Which character is "su"?',
-                correctAnswer: 'す',
-                options: ['す', 'さ', 'し', 'せ'],
+                question: 'Which character is "ta"?',
+                correctAnswer: 'た',
+                options: ['て', 'と', 'ち', 'た'],
             },
             {
                 exerciseType: 'recognition',
-                question: 'Which character is "sa"?',
-                correctAnswer: 'さ',
-                options: ['そ', 'し', 'さ', 'す'],
+                question: 'Which character is "tsu"?',
+                correctAnswer: 'つ',
+                options: ['と', 'つ', 'た', 'ち'],
             },
             {
                 exerciseType: 'recognition',
-                question: 'Which character is "se"?',
-                correctAnswer: 'せ',
-                options: ['し', 'せ', 'さ', 'す'],
+                question: 'Which character is "te"?',
+                correctAnswer: 'て',
+                options: ['つ', 'ち', 'て', 'と'],
             },
         ],
     },
@@ -48,7 +48,7 @@ const lessonContent = [
 ];
 
 
-export default function HiraganaThirdRowPage() {
+export default function HiraganaForthRowPage() {
     const [currentStep, setCurrentStep] = useState(0);
     const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0); // Urmărește exercițiul curent din grup
     const [lessonCompleted, setLessonCompleted] = useState(false);
@@ -192,7 +192,7 @@ export default function HiraganaThirdRowPage() {
                                 style={styles.doneButton}
                                 onPress={() => {
                                     setLessonCompleted(true);
-                                    markLessonAsCompleted('hiragana-third-row');
+                                    markLessonAsCompleted('hiragana-forth-row');
                                     router.replace('/(home)/home'); // Navigate after marking as complete
                                 }}
                             >

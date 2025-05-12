@@ -15,12 +15,12 @@
       "id": "hiragana-third-row",
       "title": "Hiragana Third Row",
       "description": "Explore the third row of Hiragana characters.",
-      "route": "/lessons/kanji-n5/part1"
+      "route": "/lessons/hiragana-basic/thirdRow"
     },
     {
       "id": "hiragana-forth-row",
       "title": "Hiragana Forth Row",
       "description": "Learn the forth row of Hiragana characters.",
-      "route": "/lessons/grammar/basic1"
+      "route": "/lessons/hiragana-basic/forthRow"
     }
   ]

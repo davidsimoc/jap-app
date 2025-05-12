@@ -10,13 +10,13 @@ const lessonContent = [
         type: 'info',
         sections: [
             {
-                title: 'The Hiragana Chart - Third Row (さ-そ)',
+                title: 'The Hiragana Chart - Second Row (カ-コ)',
                 characters: [
-                    { char: 'さ', pronunciation: 'sa', helper: 'Notice how this kana looks like two hands stiring a bowl of salsa.' },
-                    { char: 'し', pronunciation: 'shi', helper: 'This kana looks like a giant shelpherd\'s crook used to herd sheep.\n\nTake note that this is the first "exception" kana that doesn\'t follow the patterns that show up everywhere else. Instead of being si, it\'s shi.' },
-                    { char: 'す', pronunciation: 'su', helper: 'See the swing doing a loop-dee-loop and throwing that poor kid off of it?\n\nImagine him screeming "I\'M GONNA SUE SOMEBODY FOR THIIIiisss" as he flies off into the distance.' },
-                    { char: 'せ', pronunciation: 'se', helper: 'This kana looks like a mouth with a big vampire fang in it. Someone\'s trying to sell you a set of vampire teeth.' },
-                    { char: 'そ', pronunciation: 'so', helper: 'See how this kana looks like a mouth slurping soda?' },
+                    { char: 'カ', pronunciation: 'ka', helper: 'It looks just like hiragana か, though it\'s missing that little extra line. Close enough to make it easy to remember, though' },
+                    { char: 'キ', pronunciation: 'ki', helper: 'It looks like the hiragana き (the top part at least) and also looks like part of a weird key.' },
+                    { char: 'ク', pronunciation: 'ku', helper: 'This looks like a long cook\'s hat. What are they hiding under there?!' },
+                    { char: 'ケ', pronunciation: 'ke', helper: 'It looks like the letter K!' },
+                    { char: 'コ', pronunciation: 'ko', helper: 'See the two 90 degree corners? The two corners are what help you to remember this is "ko".' },
                 ],
             },
         ],
@@ -26,21 +26,21 @@ const lessonContent = [
         exercises: [
             {
                 exerciseType: 'recognition',
-                question: 'Which character is "su"?',
-                correctAnswer: 'す',
-                options: ['す', 'さ', 'し', 'せ'],
+                question: 'Which character is "ke"?',
+                correctAnswer: 'ケ',
+                options: ['ク', 'キ', 'ケ', 'コ'],
             },
             {
                 exerciseType: 'recognition',
-                question: 'Which character is "sa"?',
-                correctAnswer: 'さ',
-                options: ['そ', 'し', 'さ', 'す'],
+                question: 'Which character is "ko"?',
+                correctAnswer: 'コ',
+                options: ['コ', 'ケ', 'カ', 'キ'],
             },
             {
                 exerciseType: 'recognition',
-                question: 'Which character is "se"?',
-                correctAnswer: 'せ',
-                options: ['し', 'せ', 'さ', 'す'],
+                question: 'Which character is "ku"?',
+                correctAnswer: 'ク',
+                options: ['ケ', 'コ', 'キ', 'ク'],
             },
         ],
     },
@@ -48,7 +48,7 @@ const lessonContent = [
 ];
 
 
-export default function HiraganaThirdRowPage() {
+export default function KatakanaSecondRowPage() {
     const [currentStep, setCurrentStep] = useState(0);
     const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0); // Urmărește exercițiul curent din grup
     const [lessonCompleted, setLessonCompleted] = useState(false);
@@ -144,8 +144,8 @@ export default function HiraganaThirdRowPage() {
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.mainContainer}>
-                <TouchableOpacity style={styles.backButton} onPress={() => router.replace('/(home)/lessons/hiragana-basic/page')}>
-                    <Text style={styles.backButtonText}>Back to Hiragana Basics</Text>
+                <TouchableOpacity style={styles.backButton} onPress={() => router.replace('/(home)/lessons/katakana-basic/page')}>
+                    <Text style={styles.backButtonText}>Back to Katakana Basics</Text>
                 </TouchableOpacity>
                 <ScrollView style={styles.scrollContainer}>
 
@@ -192,7 +192,7 @@ export default function HiraganaThirdRowPage() {
                                 style={styles.doneButton}
                                 onPress={() => {
                                     setLessonCompleted(true);
-                                    markLessonAsCompleted('hiragana-third-row');
+                                    markLessonAsCompleted('katakana-second-row');
                                     router.replace('/(home)/home'); // Navigate after marking as complete
                                 }}
                             >

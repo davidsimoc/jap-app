@@ -10,13 +10,20 @@ const lessonContent = [
         type: 'info',
         sections: [
             {
-                title: 'The Hiragana Chart - Third Row (さ-そ)',
+                title: 'Katakana Basics: Introduction',
+                content: [
+                    'Katakana are a type of Japanese character. Just like hiragana, each katakana character is used to represent a sound.In fact, they represent the exact same sounds as hiragana.\n\nSo how are they different, you ask?\nThe difference is in when you use them.',
+                    '\nKatakana are used for various purposes, but they\'re mostly used to transcribe foreign words (often English). Sometimes, katakana are used for stylistic purposes as well.'
+                ],
+            },
+            {
+                title: 'The Katakana Chart - First Row (ア-オ)',
                 characters: [
-                    { char: 'さ', pronunciation: 'sa', helper: 'Notice how this kana looks like two hands stiring a bowl of salsa.' },
-                    { char: 'し', pronunciation: 'shi', helper: 'This kana looks like a giant shelpherd\'s crook used to herd sheep.\n\nTake note that this is the first "exception" kana that doesn\'t follow the patterns that show up everywhere else. Instead of being si, it\'s shi.' },
-                    { char: 'す', pronunciation: 'su', helper: 'See the swing doing a loop-dee-loop and throwing that poor kid off of it?\n\nImagine him screeming "I\'M GONNA SUE SOMEBODY FOR THIIIiisss" as he flies off into the distance.' },
-                    { char: 'せ', pronunciation: 'se', helper: 'This kana looks like a mouth with a big vampire fang in it. Someone\'s trying to sell you a set of vampire teeth.' },
-                    { char: 'そ', pronunciation: 'so', helper: 'See how this kana looks like a mouth slurping soda?' },
+                    { char: 'ア', pronunciation: 'a', helper: 'ア has a deformed capital letter A in it. You have to turn your head to the side and connect some lines, but it\'s there.' },
+                    { char: 'イ', pronunciation: 'i', helper: 'イ looks like an eagle standing on the ground, or on a branch, or wherever. See its legs and its back, curved down like an eagle\'s?' },
+                    { char: 'ウ', pronunciation: 'u', helper: 'This katakana character looks a lot like its hiragana counterpart: う.\n\nIt should be similar enough to remember what it is.' },
+                    { char: 'エ', pronunciation: 'e', helper: 'Imagine this is a girder an engineer would use to build a building. This character is in the shape of the end of a girder, and it\'s made up of them too.\n\nOr you can think of it like an elevator with its doors closed.' },
+                    { char: 'オ', pronunciation: 'o', helper: 'This kana looks like an opera singer. His mouth is shaped like an o and he\'s singing "Ohhhh!".' },
                 ],
             },
         ],
@@ -26,21 +33,21 @@ const lessonContent = [
         exercises: [
             {
                 exerciseType: 'recognition',
-                question: 'Which character is "su"?',
-                correctAnswer: 'す',
-                options: ['す', 'さ', 'し', 'せ'],
+                question: 'Which character is "a"?',
+                correctAnswer: 'ア',
+                options: ['オ', 'ア', 'エ', 'イ'],
             },
             {
                 exerciseType: 'recognition',
-                question: 'Which character is "sa"?',
-                correctAnswer: 'さ',
-                options: ['そ', 'し', 'さ', 'す'],
+                question: 'Which character is "o"?',
+                correctAnswer: 'オ',
+                options: ['ウ', 'エ', 'オ', 'ア'],
             },
             {
                 exerciseType: 'recognition',
-                question: 'Which character is "se"?',
-                correctAnswer: 'せ',
-                options: ['し', 'せ', 'さ', 'す'],
+                question: 'Which character is "e"?',
+                correctAnswer: 'エ',
+                options: ['エ', 'イ', 'オ', 'ウ'],
             },
         ],
     },
@@ -48,7 +55,7 @@ const lessonContent = [
 ];
 
 
-export default function HiraganaThirdRowPage() {
+export default function KatakanaFirstRowPage() {
     const [currentStep, setCurrentStep] = useState(0);
     const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0); // Urmărește exercițiul curent din grup
     const [lessonCompleted, setLessonCompleted] = useState(false);
@@ -64,6 +71,7 @@ export default function HiraganaThirdRowPage() {
             setCurrentStep(0); // Reset state when the screen is focused
             setCurrentExerciseIndex(0); // Resetează indexul exercițiului la începutul lecției
             setUserAnswers([]);
+
             const exerciseGroup = lessonContent.find(item => item.type === 'exerciseGroup');
             if (exerciseGroup && exerciseGroup.exercises) {
                 setQuestions(exerciseGroup.exercises);
@@ -144,8 +152,8 @@ export default function HiraganaThirdRowPage() {
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.mainContainer}>
-                <TouchableOpacity style={styles.backButton} onPress={() => router.replace('/(home)/lessons/hiragana-basic/page')}>
-                    <Text style={styles.backButtonText}>Back to Hiragana Basics</Text>
+                <TouchableOpacity style={styles.backButton} onPress={() => router.replace('/(home)/lessons/katakana-basic/page')}>
+                    <Text style={styles.backButtonText}>Back to Katakana Basics</Text>
                 </TouchableOpacity>
                 <ScrollView style={styles.scrollContainer}>
 
@@ -154,6 +162,11 @@ export default function HiraganaThirdRowPage() {
                             {currentContent.sections.map((section, index) => (
                                 <View key={index} style={styles.infoSection}>
                                     {section.title && <Text style={styles.sectionTitle}>{section.title}</Text>}
+                                    {section.content && Array.isArray(section.content) && (
+                                        section.content.map((paragraph, paraIndex) => (
+                                            <Text key={paraIndex} style={styles.paragraph}>{paragraph}</Text>
+                                        ))
+                                    )}
                                     {section.characters && Array.isArray(section.characters) && (
                                         section.characters.map((item) => (
                                             <View key={item.char} style={styles.characterContainer}>
@@ -192,7 +205,7 @@ export default function HiraganaThirdRowPage() {
                                 style={styles.doneButton}
                                 onPress={() => {
                                     setLessonCompleted(true);
-                                    markLessonAsCompleted('hiragana-third-row');
+                                    markLessonAsCompleted('katakana-first-row');
                                     router.replace('/(home)/home'); // Navigate after marking as complete
                                 }}
                             >
@@ -359,7 +372,7 @@ const styles = StyleSheet.create({
         color: darkTheme.text,
         marginBottom: 20,
     },
-    doneButton: {
+     doneButton: {
         width:'100%',
         backgroundColor: darkTheme.secondary,
         paddingVertical: 15,

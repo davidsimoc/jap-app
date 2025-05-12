@@ -1,0 +1,26 @@
+[
+    {
+      "id": "katakana-first-row",
+      "title": "Katakana First Row",
+      "description": "Learn the first row of Katakana characters.",
+      "route": "/lessons/katakana-basic/firstRow"
+    },
+    {
+      "id": "katakana-second-row",
+      "title": "Katakana Second Row",
+      "description": "Continue with the second row of Katakana.",
+      "route": "/lessons/katakana-basic/secondRow"
+    },
+    {
+      "id": "katakana-third-row",
+      "title": "Katakana Third Row",
+      "description": "Explore the third row of Katakana characters.",
+      "route": "/lessons/katakana-basic/thirdRow"
+    },
+    {
+      "id": "katakana-forth-row",
+      "title": "Katakana Forth Row",
+      "description": "Learn the forth row of Katakana characters.",
+      "route": "/lessons/katakana-basic/forthRow"
+    }
+  ]

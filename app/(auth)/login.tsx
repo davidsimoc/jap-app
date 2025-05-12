@@ -40,7 +40,7 @@ export default function LoginScreen() {
       <View style={{ flex: 1 }}>
         <View style={styles.topCircle}>
           <Image
-            source={require('../../assets/images/login.jpg')}
+            source={require('../../assets/images/login2.jpg')}
             style={styles.circleImage}
             resizeMode="cover"
           />
@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
   circleImage: {
     width: '100%',
     height: '100%',
-    objectFit: 'contain',
+    objectFit: 'cover',
   },
   button: {
     backgroundColor: darkTheme.primary,

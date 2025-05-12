@@ -10,13 +10,13 @@ const lessonContent = [
         type: 'info',
         sections: [
             {
-                title: 'The Hiragana Chart - Third Row (さ-そ)',
+                title: 'The Katakana Chart - Third Row (サ-ソ)',
                 characters: [
-                    { char: 'さ', pronunciation: 'sa', helper: 'Notice how this kana looks like two hands stiring a bowl of salsa.' },
-                    { char: 'し', pronunciation: 'shi', helper: 'This kana looks like a giant shelpherd\'s crook used to herd sheep.\n\nTake note that this is the first "exception" kana that doesn\'t follow the patterns that show up everywhere else. Instead of being si, it\'s shi.' },
-                    { char: 'す', pronunciation: 'su', helper: 'See the swing doing a loop-dee-loop and throwing that poor kid off of it?\n\nImagine him screeming "I\'M GONNA SUE SOMEBODY FOR THIIIiisss" as he flies off into the distance.' },
-                    { char: 'せ', pronunciation: 'se', helper: 'This kana looks like a mouth with a big vampire fang in it. Someone\'s trying to sell you a set of vampire teeth.' },
-                    { char: 'そ', pronunciation: 'so', helper: 'See how this kana looks like a mouth slurping soda?' },
+                    { char: 'サ', pronunciation: 'sa', helper: 'Look at these two fish that are hanging on a skewer. The small one is a sardine and the bigger one is a salmon.\n\nYou can also remember this is "sa" because fish are called さかな(sakana) in Japanese.' },
+                    { char: 'シ', pronunciation: 'shi', helper: 'This kana looks like a smiley face, but something is wrong with it. Both eyes are sideways and stacked on top of each other like some deep sea fish. She has a very weird face.' },
+                    { char: 'ス', pronunciation: 'su', helper: 'What\'s up there? It\'s Superman walking in the sky!\n\nWait - upon closer inspection, it\'s just his disembodied supersuit.' },
+                    { char: 'セ', pronunciation: 'se', helper: 'It looks really similar to the hiragana せ, so you should be able to use that to remember this kana.' },
+                    { char: 'ソ', pronunciation: 'so', helper: 'It is one needle and a long thread, which you use to sew. Remember, needles are always vertical like this needle, because you need to stab it through something, straight down. This will help you to differentiate this one and the very similar ン, the katakana for "n".' },
                 ],
             },
         ],
@@ -27,20 +27,20 @@ const lessonContent = [
             {
                 exerciseType: 'recognition',
                 question: 'Which character is "su"?',
-                correctAnswer: 'す',
-                options: ['す', 'さ', 'し', 'せ'],
+                correctAnswer: 'ス',
+                options: ['シ', 'ス', 'サ', 'セ'],
+            },
+            {
+                exerciseType: 'recognition',
+                question: 'Which character is "so"?',
+                correctAnswer: 'ソ',
+                options: ['サ', 'シ', 'ソ', 'ス'],
             },
             {
                 exerciseType: 'recognition',
                 question: 'Which character is "sa"?',
-                correctAnswer: 'さ',
-                options: ['そ', 'し', 'さ', 'す'],
-            },
-            {
-                exerciseType: 'recognition',
-                question: 'Which character is "se"?',
-                correctAnswer: 'せ',
-                options: ['し', 'せ', 'さ', 'す'],
+                correctAnswer: 'サ',
+                options: ['ス', 'サ', 'セ', 'ソ'],
             },
         ],
     },
@@ -48,7 +48,7 @@ const lessonContent = [
 ];
 
 
-export default function HiraganaThirdRowPage() {
+export default function KatakanaThirdRowPage() {
     const [currentStep, setCurrentStep] = useState(0);
     const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0); // Urmărește exercițiul curent din grup
     const [lessonCompleted, setLessonCompleted] = useState(false);
@@ -144,8 +144,8 @@ export default function HiraganaThirdRowPage() {
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.mainContainer}>
-                <TouchableOpacity style={styles.backButton} onPress={() => router.replace('/(home)/lessons/hiragana-basic/page')}>
-                    <Text style={styles.backButtonText}>Back to Hiragana Basics</Text>
+                <TouchableOpacity style={styles.backButton} onPress={() => router.replace('/(home)/lessons/katakana-basic/page')}>
+                    <Text style={styles.backButtonText}>Back to Katakana Basics</Text>
                 </TouchableOpacity>
                 <ScrollView style={styles.scrollContainer}>
 
@@ -192,7 +192,7 @@ export default function HiraganaThirdRowPage() {
                                 style={styles.doneButton}
                                 onPress={() => {
                                     setLessonCompleted(true);
-                                    markLessonAsCompleted('hiragana-third-row');
+                                    markLessonAsCompleted('katakana-third-row');
                                     router.replace('/(home)/home'); // Navigate after marking as complete
                                 }}
                             >

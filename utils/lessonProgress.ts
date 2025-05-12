@@ -23,3 +23,8 @@ export const getCompletedLessons = async (): Promise<string[]> => {
     return [];
   }
 };
+
+
+export const resetCompletedLessons = async () => {
+  await AsyncStorage.removeItem('completedLessons');
+};

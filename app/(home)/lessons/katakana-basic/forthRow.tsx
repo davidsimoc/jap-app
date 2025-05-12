@@ -10,13 +10,13 @@ const lessonContent = [
         type: 'info',
         sections: [
             {
-                title: 'The Hiragana Chart - Third Row (さ-そ)',
+                title: 'The Katakana Chart - Forth Row (タ-ト)',
                 characters: [
-                    { char: 'さ', pronunciation: 'sa', helper: 'Notice how this kana looks like two hands stiring a bowl of salsa.' },
-                    { char: 'し', pronunciation: 'shi', helper: 'This kana looks like a giant shelpherd\'s crook used to herd sheep.\n\nTake note that this is the first "exception" kana that doesn\'t follow the patterns that show up everywhere else. Instead of being si, it\'s shi.' },
-                    { char: 'す', pronunciation: 'su', helper: 'See the swing doing a loop-dee-loop and throwing that poor kid off of it?\n\nImagine him screeming "I\'M GONNA SUE SOMEBODY FOR THIIIiisss" as he flies off into the distance.' },
-                    { char: 'せ', pronunciation: 'se', helper: 'This kana looks like a mouth with a big vampire fang in it. Someone\'s trying to sell you a set of vampire teeth.' },
-                    { char: 'そ', pronunciation: 'so', helper: 'See how this kana looks like a mouth slurping soda?' },
+                    { char: 'タ', pronunciation: 'ta', helper: 'タ looks like a kite. Kites are called たこ(tako) in Japanese. This is actually a taco kite, too. It looks like a giant taco glying high in the sky. Tacos are all rage tese days!' },
+                    { char: 'チ', pronunciation: 'chi', helper: 'Doesn\'t this look like a cheerleader doing a cheer? Hope they don\'t fall over.' },
+                    { char: 'ツ', pronunciation: 'tsu', helper: 'While ソ(so) had one needle and thread, ツ has two needles and thread.\n\nRemember, needles are vertical, this will help you to differentiate this one from シ(shi), which has more horizontal lines.' },
+                    { char: 'テ', pronunciation: 'te', helper: 'This kana looks like a telephone pole.' },
+                    { char: 'ト', pronunciation: 'to', helper: 'It looks just like a totem pole.' },
                 ],
             },
         ],
@@ -26,21 +26,21 @@ const lessonContent = [
         exercises: [
             {
                 exerciseType: 'recognition',
-                question: 'Which character is "su"?',
-                correctAnswer: 'す',
-                options: ['す', 'さ', 'し', 'せ'],
+                question: 'Which character is "chi"?',
+                correctAnswer: 'チ',
+                options: ['ト', 'ツ', 'タ', 'チ'],
             },
             {
                 exerciseType: 'recognition',
-                question: 'Which character is "sa"?',
-                correctAnswer: 'さ',
-                options: ['そ', 'し', 'さ', 'す'],
+                question: 'Which character is "tsu"?',
+                correctAnswer: 'ツ',
+                options: ['チ', 'タ', 'ツ', 'テ'],
             },
             {
                 exerciseType: 'recognition',
-                question: 'Which character is "se"?',
-                correctAnswer: 'せ',
-                options: ['し', 'せ', 'さ', 'す'],
+                question: 'Which character is "te"?',
+                correctAnswer: 'テ',
+                options: ['タ', 'テ', 'チ', 'ツ'],
             },
         ],
     },
@@ -48,7 +48,7 @@ const lessonContent = [
 ];
 
 
-export default function HiraganaThirdRowPage() {
+export default function KatakanaForthRowPage() {
     const [currentStep, setCurrentStep] = useState(0);
     const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0); // Urmărește exercițiul curent din grup
     const [lessonCompleted, setLessonCompleted] = useState(false);
@@ -61,8 +61,8 @@ export default function HiraganaThirdRowPage() {
 
     useFocusEffect(
         useCallback(() => {
-            setCurrentStep(0); // Reset state when the screen is focused
-            setCurrentExerciseIndex(0); // Resetează indexul exercițiului la începutul lecției
+            setCurrentStep(0); 
+            setCurrentExerciseIndex(0);
             setUserAnswers([]);
             const exerciseGroup = lessonContent.find(item => item.type === 'exerciseGroup');
             if (exerciseGroup && exerciseGroup.exercises) {
@@ -144,8 +144,8 @@ export default function HiraganaThirdRowPage() {
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.mainContainer}>
-                <TouchableOpacity style={styles.backButton} onPress={() => router.replace('/(home)/lessons/hiragana-basic/page')}>
-                    <Text style={styles.backButtonText}>Back to Hiragana Basics</Text>
+                <TouchableOpacity style={styles.backButton} onPress={() => router.replace('/(home)/lessons/katakana-basic/page')}>
+                    <Text style={styles.backButtonText}>Back to Katakana Basics</Text>
                 </TouchableOpacity>
                 <ScrollView style={styles.scrollContainer}>
 
@@ -192,7 +192,7 @@ export default function HiraganaThirdRowPage() {
                                 style={styles.doneButton}
                                 onPress={() => {
                                     setLessonCompleted(true);
-                                    markLessonAsCompleted('hiragana-third-row');
+                                    markLessonAsCompleted('katakana-forth-row');
                                     router.replace('/(home)/home'); // Navigate after marking as complete
                                 }}
                             >

@@ -1,13 +1,17 @@
 import { useRouter } from 'expo-router';
-import { View, Text, StyleSheet, Button, Image, Dimensions, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Button, Image, Dimensions, TouchableOpacity, TextInput, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, Platform, } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { auth, db, storage } from '../../firebaseConfig'; // Presupunând că ai exportat 'db' (instanța Firestore) din firebaseConfig
 import { collection, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
-import { lightTheme } from '../../constants/Colors';
-import { darkTheme } from '@/styles/themes';
+import { darkTheme } from '@/constants/Colors';
 import React, { useState, useEffect } from 'react'; // Importă useState și useEffect
 import * as ImagePicker from 'expo-image-picker'; // For selecting images
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { resetCompletedLessons } from '@/utils/lessonProgress';
+import { useFocusEffect } from '@react-navigation/native';
+import { useCallback } from 'react';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 
 const { width, height } = Dimensions.get('window'); // Obține lățimea și înălțimea ecranului
 
@@ -17,6 +21,21 @@ export default function ProfileScreen() {
   const [profilePictureUrl, setProfilePictureUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const router = useRouter();
+  const [completedLessons, setCompletedLessons] = useState<string[]>([]);
+  const [aboutMeText, setAboutMeText] = useState<string>('Îți place să înveți japoneză rapid și eficient? 🇯🇵'); // Starea pentru textul "Despre tine"
+  const [isEditingAboutMe, setIsEditingAboutMe] = useState<boolean>(false); // Stare pentru a controla modul de editare
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchCompletedLessons = async () => {
+        const data = await AsyncStorage.getItem('completedLessons');
+        const lessons = data ? JSON.parse(data) : [];
+        setCompletedLessons(lessons); // aici setezi lista, nu length-ul
+      };
+
+      fetchCompletedLessons();
+    }, [])
+  );
 
   const pickImage = async () => {
     let result = await ImagePicker.launchCameraAsync({
@@ -113,45 +132,139 @@ export default function ProfileScreen() {
     router.replace('/(auth)/login');
   };
 
-  return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.imageContainer}>
-        <Image
-          source={require('../../assets/images/login.jpg')}
-          resizeMode="cover"
-          style={{ width: '100%', height: '100%', }}
-        />
-      </View>
+  const handleSaveAboutMe = async () => {
+    // Aici poți salva aboutMeText unde ai nevoie (e.g., AsyncStorage, Firestore)
+    console.log('Saving about me text:', aboutMeText);
+    // Exemplu de salvare în AsyncStorage:
+    try {
+      await AsyncStorage.setItem('aboutMe', aboutMeText);
+      setIsEditingAboutMe(false); // Ieși din modul de editare după salvare
+    } catch (error) {
+      console.error('Eroare la salvarea textului "Despre mine":', error);
+    }
+    // Dacă vrei să salvezi în Firestore (presupunând că ai o colecție 'users' cu documente pentru fiecare utilizator):
+    if (auth.currentUser) {
+      const userDocRef = doc(db, 'users', auth.currentUser.uid);
+      try {
+        await updateDoc(userDocRef, {
+          aboutMe: aboutMeText,
+        });
+        console.log("Textul 'Despre mine' a fost actualizat în Firestore.");
+        setIsEditingAboutMe(false);
+      } catch (error) {
+        console.error("Eroare la actualizarea textului 'Despre mine' în Firestore:", error);
+      }
+    }
+  };
 
-      <View style={styles.content}>
-        {/* <TouchableOpacity onPress={pickImage}>
-          {profilePictureUrl ? (
-            <Image
-              source={{ uri: profilePictureUrl }}
-              style={styles.profileImage}
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (auth.currentUser) {
+        const uid = auth.currentUser.uid;
+        const userDocRef = doc(collection(db, 'users'), uid);
+        const userDoc = await getDoc(userDocRef);
+
+        if (userDoc.exists()) {
+          const data = userDoc.data();
+          setUsername(data?.username);
+          setEmail(data?.email);
+          setProfilePictureUrl(data?.profilePicture || null);
+          setAboutMeText(data?.aboutMe || 'Îți place să înveți japoneză rapid și eficient? 🇯🇵'); // Încarcă textul "Despre mine" din Firestore sau valoarea implicită
+        } else {
+          console.log("Nu s-au găsit datele de profil.");
+        }
+      } else {
+        router.replace('/(auth)/login');
+      }
+    };
+
+    const loadAboutMe = async () => {
+      try {
+        const savedAboutMe = await AsyncStorage.getItem('aboutMe');
+        if (savedAboutMe) {
+          setAboutMeText(savedAboutMe);
+        }
+      } catch (error) {
+        console.error('Eroare la încărcarea textului "Despre mine" din AsyncStorage:', error);
+      }
+    };
+
+    fetchProfile();
+    // Dacă folosești AsyncStorage pentru a persista local textul:
+    // loadAboutMe();
+  }, [router]);
+
+  return (
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <SafeAreaView style={styles.container}>
+        <View style={styles.imageContainer}>
+          <Image
+            source={require('../../assets/images/profileImg.avif')}
+            resizeMode="cover"
+            style={{ width: '100%', height: '100%', paddingBottom: 20 }}
+          />
+        </View>
+
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Your profile</Text>
+          <View style={styles.infoRow}>
+            <Ionicons name="person" size={20} color="#ccc" style={styles.icon} />
+            <Text style={styles.infoText}>{username}</Text>
+          </View>
+
+          <View style={styles.infoRow}>
+            <Ionicons name="mail" size={20} color="#ccc" style={styles.icon} />
+            <Text style={styles.infoText}>{email}</Text>
+          </View>
+
+          <View style={styles.infoRow}>
+            <Ionicons name="book" size={20} color="#ccc" style={styles.icon} />
+            <Text style={styles.infoText}>Lecții completate: {completedLessons.length}</Text>
+          </View>
+        </View>
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>About you</Text>
+          {isEditingAboutMe ? (
+            <TextInput
+              style={styles.aboutMeInput}
+              multiline
+              value={aboutMeText}
+              onChangeText={setAboutMeText}
             />
           ) : (
-            <Image
-              source={require('../../assets/images/login.jpg')} // Default placeholder
-              style={styles.profileImage}
-            />
+            <Text style={styles.info}>{aboutMeText}</Text>
           )}
-        </TouchableOpacity> */}
-        <Text style={styles.title}>Profile Page</Text>
-        {username && <Text style={styles.info}>Username: {username}</Text>}
-        {email && <Text style={styles.info}>Email: {email}</Text>}
-      </View>
+          <View style={styles.editSaveButtons}>
+            <TouchableOpacity style={styles.editButton} onPress={() => setIsEditingAboutMe(!isEditingAboutMe)}>
+              <Text style={styles.editButtonText}>{isEditingAboutMe ? 'Cancel' : 'Edit'}</Text>
+            </TouchableOpacity>
+            {isEditingAboutMe && (
+              <TouchableOpacity style={styles.saveButton} onPress={handleSaveAboutMe}>
+                <Text style={styles.saveButtonText}>Save</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        </View>
 
-      <View style={styles.logoutButtonContainer}>
-        <Button title="Logout" onPress={handleLogout} />
-      </View>
-    </SafeAreaView>
+
+        <View style={styles.logoutButtonContainer}>
+          <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+            <MaterialIcons name="logout" size={24} color="white" style={{ marginRight: 8 }} />
+            <Text style={styles.logoutButtonText}>Logout</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, flexDirection: 'column', backgroundColor: darkTheme.background },
-  title: { fontSize: 24, color: darkTheme.text, marginBottom: 20 },
+  container: {
+    flex: 1,
+    flexDirection: 'column',
+    backgroundColor: darkTheme.background,
+    alignItems: 'center',
+  }, title: { fontSize: 24, color: darkTheme.text, marginBottom: 20 },
   info: { fontSize: 18, color: darkTheme.text, marginBottom: 10 },
   imageContainer: {
     width: width,
@@ -164,11 +277,95 @@ const styles = StyleSheet.create({
     alignItems: 'center', // Centrează conținutul pe orizontală
     padding: 20,
   },
-  logoutButtonContainer: {
-    paddingBottom: 0,
-  },
   profileImage: {
     width: '100%',
     height: '100%',
+  },
+  card: {
+    backgroundColor: '#1f1f1f',
+    borderRadius: 12,
+    padding: 20,
+    marginVertical: 10,
+    width: '90%',
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+  },
+  cardTitle: {
+    fontSize: 24,
+    color: darkTheme.text,
+    marginBottom: 10,
+    fontWeight: '600',
+  },
+  buttonsContainer: {
+    gap: 10,
+    marginTop: 20,
+  },
+  infoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  icon: {
+    marginRight: 8,
+  },
+  infoText: {
+    fontSize: 18,
+    color: darkTheme.text,
+  },
+  logoutButton: {
+    backgroundColor: '#d32f2f', // O culoare roșie pentru logout
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  logoutButtonText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  logoutButtonContainer: {
+    position: 'absolute',
+    bottom: 20,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+  },
+  aboutMeInput: {
+    backgroundColor: darkTheme.surface,
+    color: darkTheme.text,
+    borderRadius: 8,
+    padding: 10,
+    marginBottom: 10,
+    minHeight: 80, // Oferă o înălțime minimă pentru a putea scrie mai mult text
+    textAlignVertical: 'top', // Aliniază textul la început pentru multiline
+  },
+  editSaveButtons: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginTop: 10,
+  },
+  editButton: {
+    backgroundColor: darkTheme.primary,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    marginRight: 8,
+  },
+  editButtonText: {
+    color: darkTheme.background,
+    fontWeight: 'bold',
+  },
+  saveButton: {
+    backgroundColor: 'green',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+  },
+  saveButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
   },
 });

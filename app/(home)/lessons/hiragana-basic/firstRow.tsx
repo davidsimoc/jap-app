@@ -375,6 +375,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     doneButton: {
+        width:'100%',
         backgroundColor: darkTheme.secondary,
         paddingVertical: 15,
         borderRadius: 8,
