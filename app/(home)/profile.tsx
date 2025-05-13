@@ -219,7 +219,7 @@ export default function ProfileScreen() {
 
           <View style={styles.infoRow}>
             <Ionicons name="book" size={20} color="#ccc" style={styles.icon} />
-            <Text style={styles.infoText}>Lecții completate: {completedLessons.length}</Text>
+            <Text style={styles.infoText}>Completed lessons: {completedLessons.length}</Text>
           </View>
         </View>
         <View style={styles.card}>
@@ -352,7 +352,8 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 12,
     borderRadius: 8,
-    marginRight: 8,
+    marginRight: 6,
+    marginBottom: 6
   },
   editButtonText: {
     color: darkTheme.text,
@@ -363,6 +364,8 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 12,
     borderRadius: 8,
+    marginRight:4,
+    marginBottom: 6
   },
   saveButtonText: {
     color: 'white',

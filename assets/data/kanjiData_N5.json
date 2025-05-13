@@ -719,667 +719,522 @@
   },
   "中": {
     "onyomi": [
-      "コク"
+      "チュウ"
     ],
     "kunyomi": [
-      "くに"
+      "なか",
+      "うち",
+      "あた(る)"
     ],
-    "meaning": "country",
+    "meaning": "in, inside, middle, mean, center",
     "onyomiWords": [
       {
-        "word": "国王",
-        "reading": "こくおう",
-        "meaning": "King"
+        "word": "中心",
+        "reading": "ちゅうしん",
+        "meaning": "center, heart"
       },
       {
-        "word": "韓国",
-        "reading": "かんこく",
-        "meaning": "South Korea"
+        "word": "中学",
+        "reading": "ちゅうがっこう",
+        "meaning": "middle school"
       },
       {
-        "word": "中国",
-        "reading": "ちゅうごく",
-        "meaning": "China"
+        "word": "水中",
+        "reading": "すいちゅう",
+        "meaning": "underwater"
       },
       {
-        "word": "米国",
-        "reading": "べいこく",
-        "meaning": "America, USA"
-      },
-      {
-        "word": "外国",
-        "reading": "がいこく",
-        "meaning": "foreign country"
-      },
-      {
-        "word": "国際",
-        "reading": "こくさい",
-        "meaning": "international"
-      },
-      {
-        "word": "外国人",
-        "reading": "がいこくじん",
-        "meaning": "foreigner, foreign citizen"
+        "word": "中毒",
+        "reading": "ちゅうどく",
+        "meaning": "poisoning"
       }
     ],
     "kunyomiWords": [
       {
-        "word": "国",
-        "reading": "くに",
-        "meaning": "country, state, region, national government"
+        "word": "真中",
+        "reading": "まんなか",
+        "meaning": "middle"
+      },
+       {
+        "word": "夜中",
+        "reading": "よなか",
+        "meaning": "midnight"
       }
     ],
     "specialReadings": [],
     "examples": [
       {
-        "sentence": "1. あなたはどこの国から来ましたか？",
-        "reading": "あなたはどこのくにからきましたか？",
-        "romanji": "anata wa doko no kuni kara kimashita ka?",
-        "meaning": "What country did you come from?"
+        "sentence": "1. 中国に行ったことがありますか？",
+        "reading": "ちゅうごくにいったことがありますか？",
+        "romanji": "chuugoku ni itta koto ga arimasu ka?",
+        "meaning": "Have you ever been to China before?"
       },
       {
-        "sentence": "2. 彼は外国に長年住んでいた。",
-        "reading": "かれはがいこくにながねんすんでいた。",
-        "romanji": "kare wa gaikoku ni naganen sundeita.",
-        "meaning": "He lived abroad for many years."
+        "sentence": "2. 今は家の中にいますよ。",
+        "reading": "いまはいえのなかにいますよ。",
+        "romanji": "ima wa ie no naka ni imasu yo.",
+        "meaning": "I'm inside the house right now."
       },
       {
-        "sentence": "3. 私は米国から来ました。",
-        "reading": "わたしはべいこくからきました。",
-        "romanji": "watashi wa beikoku kara kimashita.",
-        "meaning": "I came here from the USA."
+        "sentence": "3. 写真の中に何が見えますか？",
+        "reading": "しゃしんのなかになにがみえますか？",
+        "romanji": "shashin no naka ni nani ga miemasu ka?",
+        "meaning": "What do you see in the picture?"
       }
     ]
   },
   "長": {
     "onyomi": [
-      "コク"
+      "チョウ"
     ],
     "kunyomi": [
-      "くに"
+      "なが(い)",
+      "おさ"
     ],
-    "meaning": "country",
+    "meaning": "long, leader, superior, senior",
     "onyomiWords": [
       {
-        "word": "国王",
-        "reading": "こくおう",
-        "meaning": "King"
+        "word": "長官",
+        "reading": "ちょうかん",
+        "meaning": "secretary (government), director, chief"
       },
       {
-        "word": "韓国",
-        "reading": "かんこく",
-        "meaning": "South Korea"
+        "word": "医長",
+        "reading": "いちょう",
+        "meaning": "medical director, chief physician"
       },
       {
-        "word": "中国",
-        "reading": "ちゅうごく",
-        "meaning": "China"
-      },
-      {
-        "word": "米国",
-        "reading": "べいこく",
-        "meaning": "America, USA"
-      },
-      {
-        "word": "外国",
-        "reading": "がいこく",
-        "meaning": "foreign country"
-      },
-      {
-        "word": "国際",
-        "reading": "こくさい",
-        "meaning": "international"
-      },
-      {
-        "word": "外国人",
-        "reading": "がいこくじん",
-        "meaning": "foreigner, foreign citizen"
+        "word": "成長",
+        "reading": "せいちょう",
+        "meaning": "growth, grow to adulthood"
       }
     ],
     "kunyomiWords": [
       {
-        "word": "国",
-        "reading": "くに",
-        "meaning": "country, state, region, national government"
+        "word": "長居",
+        "reading": "ながい",
+        "meaning": "long visit, overstaying"
       }
     ],
     "specialReadings": [],
     "examples": [
       {
-        "sentence": "1. あなたはどこの国から来ましたか？",
-        "reading": "あなたはどこのくにからきましたか？",
-        "romanji": "anata wa doko no kuni kara kimashita ka?",
-        "meaning": "What country did you come from?"
+        "sentence": "1. 長い一日だった。",
+        "reading": "ながいいちにちだった。",
+        "romanji": "nagai ichinichi datta.",
+        "meaning": "Today was a long day."
       },
       {
-        "sentence": "2. 彼は外国に長年住んでいた。",
-        "reading": "かれはがいこくにながねんすんでいた。",
-        "romanji": "kare wa gaikoku ni naganen sundeita.",
-        "meaning": "He lived abroad for many years."
+        "sentence": "2. 私たちは長い時間話しました。",
+        "reading": "わたしたちはながいじかんはなしました。",
+        "romanji": "watashitachi nagai jikan hanashimashita.",
+        "meaning": "We talked for a long time."
       },
       {
-        "sentence": "3. 私は米国から来ました。",
-        "reading": "わたしはべいこくからきました。",
-        "romanji": "watashi wa beikoku kara kimashita.",
-        "meaning": "I came here from the USA."
+        "sentence": "3. 私の部長はとてもやさしい人です。",
+        "reading": "わたしのぶちょうはとてもやさしいひとです。",
+        "romanji": "watashi no buchou wa totemo yasashii hito desu.",
+        "meaning": "My manager is a very kind person."
       }
     ]
   },
   "出": {
     "onyomi": [
-      "コク"
+      "シュツ","スイ"
     ],
     "kunyomi": [
-      "くに"
+      "で(る)","だ(す)","い(でる)"
     ],
-    "meaning": "country",
+    "meaning": "exit, leave, go out",
     "onyomiWords": [
       {
-        "word": "国王",
-        "reading": "こくおう",
-        "meaning": "King"
+        "word": "出血",
+        "reading": "しゅっけつ",
+        "meaning": "bleeding"
       },
       {
-        "word": "韓国",
-        "reading": "かんこく",
-        "meaning": "South Korea"
+        "word": "出張",
+        "reading": "しゅっちょう",
+        "meaning": "business trip"
       },
       {
-        "word": "中国",
-        "reading": "ちゅうごく",
-        "meaning": "China"
-      },
-      {
-        "word": "米国",
-        "reading": "べいこく",
-        "meaning": "America, USA"
-      },
-      {
-        "word": "外国",
-        "reading": "がいこく",
-        "meaning": "foreign country"
-      },
-      {
-        "word": "国際",
-        "reading": "こくさい",
-        "meaning": "international"
-      },
-      {
-        "word": "外国人",
-        "reading": "がいこくじん",
-        "meaning": "foreigner, foreign citizen"
+        "word": "出生 ",
+        "reading": "しゅっせい",
+        "meaning": "birth"
       }
     ],
     "kunyomiWords": [
       {
-        "word": "国",
-        "reading": "くに",
-        "meaning": "country, state, region, national government"
+        "word": "出店",
+        "reading": "でみせ",
+        "meaning": "food stand"
+      },
+       {
+        "word": "引出し",
+        "reading": "ひきだし",
+        "meaning": "drawer"
+      },
+      {
+        "word": "出でる",
+        "reading": "いでる",
+        "meaning": "to go, to come"
       }
     ],
     "specialReadings": [],
     "examples": [
       {
-        "sentence": "1. あなたはどこの国から来ましたか？",
-        "reading": "あなたはどこのくにからきましたか？",
-        "romanji": "anata wa doko no kuni kara kimashita ka?",
-        "meaning": "What country did you come from?"
+        "sentence": "1. かれが出張に行く。",
+        "reading": "かれがしゅっちょうにいく。",
+        "romanji": "kare ga shuchcou ni iku.",
+        "meaning": "He's going on a business trip."
       },
       {
-        "sentence": "2. 彼は外国に長年住んでいた。",
-        "reading": "かれはがいこくにながねんすんでいた。",
-        "romanji": "kare wa gaikoku ni naganen sundeita.",
-        "meaning": "He lived abroad for many years."
+        "sentence": "2. 出口はどちらですか。",
+        "reading": "でぐちはどちらですか。。",
+        "romanji": "deguchi wa dochira desu ka.",
+        "meaning": "Where is the exit?"
       },
       {
-        "sentence": "3. 私は米国から来ました。",
-        "reading": "わたしはべいこくからきました。",
-        "romanji": "watashi wa beikoku kara kimashita.",
-        "meaning": "I came here from the USA."
+        "sentence": "3. 会議に出席します。",
+        "reading": "かいぎにしゅっせきします。",
+        "romanji": "kaigi ni shusseki shimasu.",
+        "meaning": "I will attend the meeting."
       }
     ]
   },
   "三": {
     "onyomi": [
-      "コク"
+      "サン"
     ],
     "kunyomi": [
-      "くに"
+      "み(つ)"
     ],
-    "meaning": "country",
+    "meaning": "three, 3",
     "onyomiWords": [
       {
-        "word": "国王",
-        "reading": "こくおう",
-        "meaning": "King"
+        "word": "再三",
+        "reading": "さいさん",
+        "meaning": "again and again; repeatedly"
       },
       {
-        "word": "韓国",
-        "reading": "かんこく",
-        "meaning": "South Korea"
+        "word": "三時",
+        "reading": "さんじ",
+        "meaning": "3 o'clock"
       },
       {
-        "word": "中国",
-        "reading": "ちゅうごく",
-        "meaning": "China"
-      },
-      {
-        "word": "米国",
-        "reading": "べいこく",
-        "meaning": "America, USA"
-      },
-      {
-        "word": "外国",
-        "reading": "がいこく",
-        "meaning": "foreign country"
-      },
-      {
-        "word": "国際",
-        "reading": "こくさい",
-        "meaning": "international"
-      },
-      {
-        "word": "外国人",
-        "reading": "がいこくじん",
-        "meaning": "foreigner, foreign citizen"
+        "word": "三月",
+        "reading": "さんがつ",
+        "meaning": "March"
       }
     ],
     "kunyomiWords": [
       {
-        "word": "国",
-        "reading": "くに",
-        "meaning": "country, state, region, national government"
+        "word": "三つ折り",
+        "reading": "みつおり",
+        "meaning": "threefold, folded in three"
       }
     ],
-    "specialReadings": [],
+    "specialReadings": [
+      {
+        "word": "三味線",
+        "reading": "しゃみせん",
+        "meaning": "Shamisen"
+      }
+    ],
     "examples": [
       {
-        "sentence": "1. あなたはどこの国から来ましたか？",
-        "reading": "あなたはどこのくにからきましたか？",
-        "romanji": "anata wa doko no kuni kara kimashita ka?",
-        "meaning": "What country did you come from?"
+        "sentence": "1. 二、三分お待ちください。",
+        "reading": "に、さんぷんおまちください。",
+        "romanji": "ni, san pun o machi kudasai.",
+        "meaning": "Please wait for a few minutes."
       },
       {
-        "sentence": "2. 彼は外国に長年住んでいた。",
-        "reading": "かれはがいこくにながねんすんでいた。",
-        "romanji": "kare wa gaikoku ni naganen sundeita.",
-        "meaning": "He lived abroad for many years."
+        "sentence": "2. 今年は三十歳になります。",
+        "reading": "ことしはさんじゅうさいになります。",
+        "romanji": "kotoshi wa sanjuu sai ni narimasu.",
+        "meaning": "I turn 30 years old this year."
       },
       {
-        "sentence": "3. 私は米国から来ました。",
-        "reading": "わたしはべいこくからきました。",
-        "romanji": "watashi wa beikoku kara kimashita.",
-        "meaning": "I came here from the USA."
+        "sentence": "3. 水を三つをください。",
+        "reading": "みずをみつください。",
+        "romanji": "mizu o mitsu kudasai.",
+        "meaning": "3 waters please."
       }
     ]
   },
   "時": {
     "onyomi": [
-      "コク"
+      "ジ"
     ],
     "kunyomi": [
-      "くに"
+      "とき","-どき"
     ],
-    "meaning": "country",
+    "meaning": "time, hour",
     "onyomiWords": [
       {
-        "word": "国王",
-        "reading": "こくおう",
-        "meaning": "King"
+        "word": "時間",
+        "reading": "じかん",
+        "meaning": "time, hours"
       },
       {
-        "word": "韓国",
-        "reading": "かんこく",
-        "meaning": "South Korea"
+        "word": "時差",
+        "reading": "じさ",
+        "meaning": "time difference"
       },
       {
-        "word": "中国",
-        "reading": "ちゅうごく",
-        "meaning": "China"
-      },
-      {
-        "word": "米国",
-        "reading": "べいこく",
-        "meaning": "America, USA"
-      },
-      {
-        "word": "外国",
-        "reading": "がいこく",
-        "meaning": "foreign country"
-      },
-      {
-        "word": "国際",
-        "reading": "こくさい",
-        "meaning": "international"
-      },
-      {
-        "word": "外国人",
-        "reading": "がいこくじん",
-        "meaning": "foreigner, foreign citizen"
+        "word": "時間割 ",
+        "reading": "じかんわり",
+        "meaning": "timetable"
       }
     ],
     "kunyomiWords": [
       {
-        "word": "国",
-        "reading": "くに",
-        "meaning": "country, state, region, national government"
+        "word": "時折",
+        "reading": "ときおり",
+        "meaning": "sometimes"
       }
     ],
     "specialReadings": [],
     "examples": [
       {
-        "sentence": "1. あなたはどこの国から来ましたか？",
-        "reading": "あなたはどこのくにからきましたか？",
-        "romanji": "anata wa doko no kuni kara kimashita ka?",
-        "meaning": "What country did you come from?"
+        "sentence": "1. 今何時ですか？",
+        "reading": "いまなんじですか？",
+        "romanji": "ima nanji desu ka?",
+        "meaning": "What time is it now?"
       },
       {
-        "sentence": "2. 彼は外国に長年住んでいた。",
-        "reading": "かれはがいこくにながねんすんでいた。",
-        "romanji": "kare wa gaikoku ni naganen sundeita.",
-        "meaning": "He lived abroad for many years."
+        "sentence": "2. そこでは冬には時々雪が降る。",
+        "reading": "そこではふゆにはときどきゆきがふる。",
+        "romanji": "soko de wa fuyu ni wa tokidoki yuki ga furu.",
+        "meaning": "Sometimes it snows there in winter."
       },
       {
-        "sentence": "3. 私は米国から来ました。",
-        "reading": "わたしはべいこくからきました。",
-        "romanji": "watashi wa beikoku kara kimashita.",
-        "meaning": "I came here from the USA."
+        "sentence": "3. 私は毎日３時間勉強します。",
+        "reading": "わたしはまいにち３じかんべんきょうします。",
+        "romanji": "watashi wa mainichi 3 jikan benkyou shimasu.",
+        "meaning": "I study for 3 hours every day."
       }
     ]
   },
   "行": {
     "onyomi": [
-      "コク"
+      "コウ","ギョウ","アン"
     ],
     "kunyomi": [
-      "くに"
+      "い(く)","ゆ(く)","おこな(う)"
     ],
-    "meaning": "country",
+    "meaning": "going, journey, carry out, line, row",
     "onyomiWords": [
       {
-        "word": "国王",
-        "reading": "こくおう",
-        "meaning": "King"
+        "word": "銀行",
+        "reading": "ぎんこう",
+        "meaning": "bank"
       },
       {
-        "word": "韓国",
-        "reading": "かんこく",
-        "meaning": "South Korea"
+        "word": "行列",
+        "reading": "ぎょうれつ",
+        "meaning": "line, queue"
       },
       {
-        "word": "中国",
-        "reading": "ちゅうごく",
-        "meaning": "China"
-      },
-      {
-        "word": "米国",
-        "reading": "べいこく",
-        "meaning": "America, USA"
-      },
-      {
-        "word": "外国",
-        "reading": "がいこく",
-        "meaning": "foreign country"
-      },
-      {
-        "word": "国際",
-        "reading": "こくさい",
-        "meaning": "international"
-      },
-      {
-        "word": "外国人",
-        "reading": "がいこくじん",
-        "meaning": "foreigner, foreign citizen"
+        "word": "犯行",
+        "reading": "はんこう",
+        "meaning": "crime, criminal act"
       }
     ],
     "kunyomiWords": [
       {
-        "word": "国",
-        "reading": "くに",
-        "meaning": "country, state, region, national government"
+        "word": "行く先",
+        "reading": "ゆくさき",
+        "meaning": "destination, whereabouts, future, prospects"
       }
     ],
-    "specialReadings": [],
+    "specialReadings": [
+      {
+        "word": "流行",
+        "reading": "はやり",
+        "meaning": "fashion"
+      }
+    ],
     "examples": [
       {
-        "sentence": "1. あなたはどこの国から来ましたか？",
-        "reading": "あなたはどこのくにからきましたか？",
-        "romanji": "anata wa doko no kuni kara kimashita ka?",
-        "meaning": "What country did you come from?"
+        "sentence": "1. 来週の水曜日にそちらへ行く。",
+        "reading": "らいしゅうのすいようびにそちらへいく。",
+        "romanji": "raishuu no suiyoubi ni sochira he iku.",
+        "meaning": "I'll go over there next Wednesday."
       },
       {
-        "sentence": "2. 彼は外国に長年住んでいた。",
-        "reading": "かれはがいこくにながねんすんでいた。",
-        "romanji": "kare wa gaikoku ni naganen sundeita.",
-        "meaning": "He lived abroad for many years."
+        "sentence": "2. 毎年旅行したい。",
+        "reading": "まいとしりょこうしたい。",
+        "romanji": "maitoshi ryokou shitai.",
+        "meaning": "I want to travel every year."
       },
       {
-        "sentence": "3. 私は米国から来ました。",
-        "reading": "わたしはべいこくからきました。",
-        "romanji": "watashi wa beikoku kara kimashita.",
-        "meaning": "I came here from the USA."
+        "sentence": "3. どの銀行を利用していますか？",
+        "reading": "どのぎんこうをりようしていますか？",
+        "romanji": "dono ginkou o riyou shiteimasu ka?",
+        "meaning": "Which bank do you use?"
       }
     ]
   },
   "見": {
     "onyomi": [
-      "コク"
+      "ケン"
     ],
     "kunyomi": [
-      "くに"
+      "み(る)","み(せる)"
     ],
-    "meaning": "country",
+    "meaning": "see, hopes, chances, idea, opinion, look at, visible",
     "onyomiWords": [
       {
-        "word": "国王",
-        "reading": "こくおう",
-        "meaning": "King"
+        "word": "拝見",
+        "reading": "はいけん",
+        "meaning": "seeing, look at"
       },
       {
-        "word": "韓国",
-        "reading": "かんこく",
-        "meaning": "South Korea"
+        "word": "見物",
+        "reading": "けんぶつ",
+        "meaning": "sightseeing"
       },
       {
-        "word": "中国",
-        "reading": "ちゅうごく",
-        "meaning": "China"
-      },
-      {
-        "word": "米国",
-        "reading": "べいこく",
-        "meaning": "America, USA"
-      },
-      {
-        "word": "外国",
-        "reading": "がいこく",
-        "meaning": "foreign country"
-      },
-      {
-        "word": "国際",
-        "reading": "こくさい",
-        "meaning": "international"
-      },
-      {
-        "word": "外国人",
-        "reading": "がいこくじん",
-        "meaning": "foreigner, foreign citizen"
+        "word": "会見",
+        "reading": "かいけん",
+        "meaning": "interview, audience"
       }
     ],
     "kunyomiWords": [
       {
-        "word": "国",
-        "reading": "くに",
-        "meaning": "country, state, region, national government"
+        "word": "見方",
+        "reading": "みかた",
+        "meaning": "point of view"
       }
     ],
     "specialReadings": [],
     "examples": [
       {
-        "sentence": "1. あなたはどこの国から来ましたか？",
-        "reading": "あなたはどこのくにからきましたか？",
-        "romanji": "anata wa doko no kuni kara kimashita ka?",
-        "meaning": "What country did you come from?"
+        "sentence": "1. この映画を見たことありますか？",
+        "reading": "このえいがをみたことありますか？",
+        "romanji": "kono eiga o mita koto arimasu ka?",
+        "meaning": "Have you seen this movie before?"
       },
       {
-        "sentence": "2. 彼は外国に長年住んでいた。",
-        "reading": "かれはがいこくにながねんすんでいた。",
-        "romanji": "kare wa gaikoku ni naganen sundeita.",
-        "meaning": "He lived abroad for many years."
+        "sentence": "2. 家から学校が見える。",
+        "reading": "いえからがっこうがみえる。",
+        "romanji": "ie kara gakkou ga mieru.",
+        "meaning": "I can see my school from my house."
       },
       {
-        "sentence": "3. 私は米国から来ました。",
-        "reading": "わたしはべいこくからきました。",
-        "romanji": "watashi wa beikoku kara kimashita.",
-        "meaning": "I came here from the USA."
+        "sentence": "3. 来週の花見は楽しみです。",
+        "reading": "らいしゅうのはなみはたのしみです。",
+        "romanji": "raishuu no hanami wa tanoshimi desu.",
+        "meaning": "I'm really looking forward to the flower viewing next week."
       }
     ]
   },
   "月": {
     "onyomi": [
-      "コク"
+      "ゲツ","ガツ"
     ],
     "kunyomi": [
-      "くに"
+      "つき"
     ],
-    "meaning": "country",
+    "meaning": "month, moon",
     "onyomiWords": [
       {
-        "word": "国王",
-        "reading": "こくおう",
-        "meaning": "King"
+        "word": "月末",
+        "reading": "げつまつ",
+        "meaning": "end of the month"
       },
       {
-        "word": "韓国",
-        "reading": "かんこく",
-        "meaning": "South Korea"
+        "word": "満月",
+        "reading": "まんげつ",
+        "meaning": "full moon"
       },
       {
-        "word": "中国",
-        "reading": "ちゅうごく",
-        "meaning": "China"
-      },
-      {
-        "word": "米国",
-        "reading": "べいこく",
-        "meaning": "America, USA"
-      },
-      {
-        "word": "外国",
-        "reading": "がいこく",
-        "meaning": "foreign country"
-      },
-      {
-        "word": "国際",
-        "reading": "こくさい",
-        "meaning": "international"
-      },
-      {
-        "word": "外国人",
-        "reading": "がいこくじん",
-        "meaning": "foreigner, foreign citizen"
+        "word": "旧正月",
+        "reading": "きゅうしょうがつ",
+        "meaning": "lunar New Year (esp. the Chinese New Year)"
       }
     ],
     "kunyomiWords": [
       {
-        "word": "国",
-        "reading": "くに",
-        "meaning": "country, state, region, national government"
+        "word": "毎月",
+        "reading": "まいつき",
+        "meaning": "every month"
       }
     ],
     "specialReadings": [],
     "examples": [
       {
-        "sentence": "1. あなたはどこの国から来ましたか？",
-        "reading": "あなたはどこのくにからきましたか？",
-        "romanji": "anata wa doko no kuni kara kimashita ka?",
-        "meaning": "What country did you come from?"
+        "sentence": "1. 今月は日本に行きます。",
+        "reading": "こんげつはにほんにいきます。",
+        "romanji": "kongetsu wa nihon ni ikimasu.",
+        "meaning": "I'm going to Japan this month."
       },
       {
-        "sentence": "2. 彼は外国に長年住んでいた。",
-        "reading": "かれはがいこくにながねんすんでいた。",
-        "romanji": "kare wa gaikoku ni naganen sundeita.",
-        "meaning": "He lived abroad for many years."
+        "sentence": "2. 私は9月に生まれました。",
+        "reading": "わたしはくがつにうまれました。",
+        "romanji": "watashi wa kugatsu ni umaremashita.",
+        "meaning": "I was born in September."
       },
       {
-        "sentence": "3. 私は米国から来ました。",
-        "reading": "わたしはべいこくからきました。",
-        "romanji": "watashi wa beikoku kara kimashita.",
-        "meaning": "I came here from the USA."
+        "sentence": "3. 私はハイキングに毎月行ってます。",
+        "reading": "わたしはハイキングにまいつきいっています。",
+        "romanji": "watashi wa haikingu ni maitsuki itteimasu.",
+        "meaning": "I go hiking every month."
       }
     ]
   },
   "分": {
     "onyomi": [
-      "コク"
+      "ブン","フン","ブ"
     ],
     "kunyomi": [
-      "くに"
+      "わ(ける)"
     ],
-    "meaning": "country",
+    "meaning": "part, minute of time, understand",
     "onyomiWords": [
       {
-        "word": "国王",
-        "reading": "こくおう",
-        "meaning": "King"
+        "word": "毎分",
+        "reading": "まいふん",
+        "meaning": "every minute, per minute"
       },
       {
-        "word": "韓国",
-        "reading": "かんこく",
-        "meaning": "South Korea"
+        "word": "多分",
+        "reading": "たぶん",
+        "meaning": "perhaps; probably"
       },
       {
-        "word": "中国",
-        "reading": "ちゅうごく",
-        "meaning": "China"
-      },
-      {
-        "word": "米国",
-        "reading": "べいこく",
-        "meaning": "America, USA"
-      },
-      {
-        "word": "外国",
-        "reading": "がいこく",
-        "meaning": "foreign country"
-      },
-      {
-        "word": "国際",
-        "reading": "こくさい",
-        "meaning": "international"
-      },
-      {
-        "word": "外国人",
-        "reading": "がいこくじん",
-        "meaning": "foreigner, foreign citizen"
+        "word": "水分",
+        "reading": "すいぶん",
+        "meaning": "water; liquid; fluid; moisture"
       }
     ],
     "kunyomiWords": [
       {
-        "word": "国",
-        "reading": "くに",
-        "meaning": "country, state, region, national government"
+        "word": "引き分け",
+        "reading": "ひきわけ",
+        "meaning": "draw (in competition); tie game"
       }
     ],
     "specialReadings": [],
     "examples": [
       {
-        "sentence": "1. あなたはどこの国から来ましたか？",
-        "reading": "あなたはどこのくにからきましたか？",
-        "romanji": "anata wa doko no kuni kara kimashita ka?",
-        "meaning": "What country did you come from?"
+        "sentence": "1. 日本語分かりません。",
+        "reading": "にほんごわかりません。",
+        "romanji": "nihongo wakarimasen.",
+        "meaning": "I don't understand Japanese."
       },
       {
-        "sentence": "2. 彼は外国に長年住んでいた。",
-        "reading": "かれはがいこくにながねんすんでいた。",
-        "romanji": "kare wa gaikoku ni naganen sundeita.",
-        "meaning": "He lived abroad for many years."
+        "sentence": "2. 今日は気分はどうですか？",
+        "reading": "きょうはきぶんはどうですか？",
+        "romanji": "kyou wa kibun wa dou desu ka?",
+        "meaning": "How are you feeling today?"
       },
       {
-        "sentence": "3. 私は米国から来ました。",
-        "reading": "わたしはべいこくからきました。",
-        "romanji": "watashi wa beikoku kara kimashita.",
-        "meaning": "I came here from the USA."
+        "sentence": "3. この本はほとんど半分読んだ。",
+        "reading": "このほんはほとんどはんぶんよんだ。",
+        "romanji": "kono hon wa hotondo hanbun yonda.",
+        "meaning": "I've read about half of this book."
       }
     ]
   },
@@ -1754,450 +1609,6 @@
     ]
   },
   "上": {
-    "onyomi": [
-      "コク"
-    ],
-    "kunyomi": [
-      "くに"
-    ],
-    "meaning": "country",
-    "onyomiWords": [
-      {
-        "word": "国王",
-        "reading": "こくおう",
-        "meaning": "King"
-      },
-      {
-        "word": "韓国",
-        "reading": "かんこく",
-        "meaning": "South Korea"
-      },
-      {
-        "word": "中国",
-        "reading": "ちゅうごく",
-        "meaning": "China"
-      },
-      {
-        "word": "米国",
-        "reading": "べいこく",
-        "meaning": "America, USA"
-      },
-      {
-        "word": "外国",
-        "reading": "がいこく",
-        "meaning": "foreign country"
-      },
-      {
-        "word": "国際",
-        "reading": "こくさい",
-        "meaning": "international"
-      },
-      {
-        "word": "外国人",
-        "reading": "がいこくじん",
-        "meaning": "foreigner, foreign citizen"
-      }
-    ],
-    "kunyomiWords": [
-      {
-        "word": "国",
-        "reading": "くに",
-        "meaning": "country, state, region, national government"
-      }
-    ],
-    "specialReadings": [],
-    "examples": [
-      {
-        "sentence": "1. あなたはどこの国から来ましたか？",
-        "reading": "あなたはどこのくにからきましたか？",
-        "romanji": "anata wa doko no kuni kara kimashita ka?",
-        "meaning": "What country did you come from?"
-      },
-      {
-        "sentence": "2. 彼は外国に長年住んでいた。",
-        "reading": "かれはがいこくにながねんすんでいた。",
-        "romanji": "kare wa gaikoku ni naganen sundeita.",
-        "meaning": "He lived abroad for many years."
-      },
-      {
-        "sentence": "3. 私は米国から来ました。",
-        "reading": "わたしはべいこくからきました。",
-        "romanji": "watashi wa beikoku kara kimashita.",
-        "meaning": "I came here from the USA."
-      }
-    ]
-  },
-  "東": {
-    "onyomi": [
-      "コク"
-    ],
-    "kunyomi": [
-      "くに"
-    ],
-    "meaning": "country",
-    "onyomiWords": [
-      {
-        "word": "国王",
-        "reading": "こくおう",
-        "meaning": "King"
-      },
-      {
-        "word": "韓国",
-        "reading": "かんこく",
-        "meaning": "South Korea"
-      },
-      {
-        "word": "中国",
-        "reading": "ちゅうごく",
-        "meaning": "China"
-      },
-      {
-        "word": "米国",
-        "reading": "べいこく",
-        "meaning": "America, USA"
-      },
-      {
-        "word": "外国",
-        "reading": "がいこく",
-        "meaning": "foreign country"
-      },
-      {
-        "word": "国際",
-        "reading": "こくさい",
-        "meaning": "international"
-      },
-      {
-        "word": "外国人",
-        "reading": "がいこくじん",
-        "meaning": "foreigner, foreign citizen"
-      }
-    ],
-    "kunyomiWords": [
-      {
-        "word": "国",
-        "reading": "くに",
-        "meaning": "country, state, region, national government"
-      }
-    ],
-    "specialReadings": [],
-    "examples": [
-      {
-        "sentence": "1. あなたはどこの国から来ましたか？",
-        "reading": "あなたはどこのくにからきましたか？",
-        "romanji": "anata wa doko no kuni kara kimashita ka?",
-        "meaning": "What country did you come from?"
-      },
-      {
-        "sentence": "2. 彼は外国に長年住んでいた。",
-        "reading": "かれはがいこくにながねんすんでいた。",
-        "romanji": "kare wa gaikoku ni naganen sundeita.",
-        "meaning": "He lived abroad for many years."
-      },
-      {
-        "sentence": "3. 私は米国から来ました。",
-        "reading": "わたしはべいこくからきました。",
-        "romanji": "watashi wa beikoku kara kimashita.",
-        "meaning": "I came here from the USA."
-      }
-    ]
-  },
-  "四": {
-    "onyomi": [
-      "コク"
-    ],
-    "kunyomi": [
-      "くに"
-    ],
-    "meaning": "country",
-    "onyomiWords": [
-      {
-        "word": "国王",
-        "reading": "こくおう",
-        "meaning": "King"
-      },
-      {
-        "word": "韓国",
-        "reading": "かんこく",
-        "meaning": "South Korea"
-      },
-      {
-        "word": "中国",
-        "reading": "ちゅうごく",
-        "meaning": "China"
-      },
-      {
-        "word": "米国",
-        "reading": "べいこく",
-        "meaning": "America, USA"
-      },
-      {
-        "word": "外国",
-        "reading": "がいこく",
-        "meaning": "foreign country"
-      },
-      {
-        "word": "国際",
-        "reading": "こくさい",
-        "meaning": "international"
-      },
-      {
-        "word": "外国人",
-        "reading": "がいこくじん",
-        "meaning": "foreigner, foreign citizen"
-      }
-    ],
-    "kunyomiWords": [
-      {
-        "word": "国",
-        "reading": "くに",
-        "meaning": "country, state, region, national government"
-      }
-    ],
-    "specialReadings": [],
-    "examples": [
-      {
-        "sentence": "1. あなたはどこの国から来ましたか？",
-        "reading": "あなたはどこのくにからきましたか？",
-        "romanji": "anata wa doko no kuni kara kimashita ka?",
-        "meaning": "What country did you come from?"
-      },
-      {
-        "sentence": "2. 彼は外国に長年住んでいた。",
-        "reading": "かれはがいこくにながねんすんでいた。",
-        "romanji": "kare wa gaikoku ni naganen sundeita.",
-        "meaning": "He lived abroad for many years."
-      },
-      {
-        "sentence": "3. 私は米国から来ました。",
-        "reading": "わたしはべいこくからきました。",
-        "romanji": "watashi wa beikoku kara kimashita.",
-        "meaning": "I came here from the USA."
-      }
-    ]
-  },
-  "今": {
-    "onyomi": [
-      "コク"
-    ],
-    "kunyomi": [
-      "くに"
-    ],
-    "meaning": "country",
-    "onyomiWords": [
-      {
-        "word": "国王",
-        "reading": "こくおう",
-        "meaning": "King"
-      },
-      {
-        "word": "韓国",
-        "reading": "かんこく",
-        "meaning": "South Korea"
-      },
-      {
-        "word": "中国",
-        "reading": "ちゅうごく",
-        "meaning": "China"
-      },
-      {
-        "word": "米国",
-        "reading": "べいこく",
-        "meaning": "America, USA"
-      },
-      {
-        "word": "外国",
-        "reading": "がいこく",
-        "meaning": "foreign country"
-      },
-      {
-        "word": "国際",
-        "reading": "こくさい",
-        "meaning": "international"
-      },
-      {
-        "word": "外国人",
-        "reading": "がいこくじん",
-        "meaning": "foreigner, foreign citizen"
-      }
-    ],
-    "kunyomiWords": [
-      {
-        "word": "国",
-        "reading": "くに",
-        "meaning": "country, state, region, national government"
-      }
-    ],
-    "specialReadings": [],
-    "examples": [
-      {
-        "sentence": "1. あなたはどこの国から来ましたか？",
-        "reading": "あなたはどこのくにからきましたか？",
-        "romanji": "anata wa doko no kuni kara kimashita ka?",
-        "meaning": "What country did you come from?"
-      },
-      {
-        "sentence": "2. 彼は外国に長年住んでいた。",
-        "reading": "かれはがいこくにながねんすんでいた。",
-        "romanji": "kare wa gaikoku ni naganen sundeita.",
-        "meaning": "He lived abroad for many years."
-      },
-      {
-        "sentence": "3. 私は米国から来ました。",
-        "reading": "わたしはべいこくからきました。",
-        "romanji": "watashi wa beikoku kara kimashita.",
-        "meaning": "I came here from the USA."
-      }
-    ]
-  },
-  "金": {
-    "onyomi": [
-      "コク"
-    ],
-    "kunyomi": [
-      "くに"
-    ],
-    "meaning": "country",
-    "onyomiWords": [
-      {
-        "word": "国王",
-        "reading": "こくおう",
-        "meaning": "King"
-      },
-      {
-        "word": "韓国",
-        "reading": "かんこく",
-        "meaning": "South Korea"
-      },
-      {
-        "word": "中国",
-        "reading": "ちゅうごく",
-        "meaning": "China"
-      },
-      {
-        "word": "米国",
-        "reading": "べいこく",
-        "meaning": "America, USA"
-      },
-      {
-        "word": "外国",
-        "reading": "がいこく",
-        "meaning": "foreign country"
-      },
-      {
-        "word": "国際",
-        "reading": "こくさい",
-        "meaning": "international"
-      },
-      {
-        "word": "外国人",
-        "reading": "がいこくじん",
-        "meaning": "foreigner, foreign citizen"
-      }
-    ],
-    "kunyomiWords": [
-      {
-        "word": "国",
-        "reading": "くに",
-        "meaning": "country, state, region, national government"
-      }
-    ],
-    "specialReadings": [],
-    "examples": [
-      {
-        "sentence": "1. あなたはどこの国から来ましたか？",
-        "reading": "あなたはどこのくにからきましたか？",
-        "romanji": "anata wa doko no kuni kara kimashita ka?",
-        "meaning": "What country did you come from?"
-      },
-      {
-        "sentence": "2. 彼は外国に長年住んでいた。",
-        "reading": "かれはがいこくにながねんすんでいた。",
-        "romanji": "kare wa gaikoku ni naganen sundeita.",
-        "meaning": "He lived abroad for many years."
-      },
-      {
-        "sentence": "3. 私は米国から来ました。",
-        "reading": "わたしはべいこくからきました。",
-        "romanji": "watashi wa beikoku kara kimashita.",
-        "meaning": "I came here from the USA."
-      }
-    ]
-  },
-  "九": {
-    "onyomi": [
-      "コク"
-    ],
-    "kunyomi": [
-      "くに"
-    ],
-    "meaning": "country",
-    "onyomiWords": [
-      {
-        "word": "国王",
-        "reading": "こくおう",
-        "meaning": "King"
-      },
-      {
-        "word": "韓国",
-        "reading": "かんこく",
-        "meaning": "South Korea"
-      },
-      {
-        "word": "中国",
-        "reading": "ちゅうごく",
-        "meaning": "China"
-      },
-      {
-        "word": "米国",
-        "reading": "べいこく",
-        "meaning": "America, USA"
-      },
-      {
-        "word": "外国",
-        "reading": "がいこく",
-        "meaning": "foreign country"
-      },
-      {
-        "word": "国際",
-        "reading": "こくさい",
-        "meaning": "international"
-      },
-      {
-        "word": "外国人",
-        "reading": "がいこくじん",
-        "meaning": "foreigner, foreign citizen"
-      }
-    ],
-    "kunyomiWords": [
-      {
-        "word": "国",
-        "reading": "くに",
-        "meaning": "country, state, region, national government"
-      }
-    ],
-    "specialReadings": [],
-    "examples": [
-      {
-        "sentence": "1. あなたはどこの国から来ましたか？",
-        "reading": "あなたはどこのくにからきましたか？",
-        "romanji": "anata wa doko no kuni kara kimashita ka?",
-        "meaning": "What country did you come from?"
-      },
-      {
-        "sentence": "2. 彼は外国に長年住んでいた。",
-        "reading": "かれはがいこくにながねんすんでいた。",
-        "romanji": "kare wa gaikoku ni naganen sundeita.",
-        "meaning": "He lived abroad for many years."
-      },
-      {
-        "sentence": "3. 私は米国から来ました。",
-        "reading": "わたしはべいこくからきました。",
-        "romanji": "watashi wa beikoku kara kimashita.",
-        "meaning": "I came here from the USA."
-      }
-    ]
-  },
-  "入": {
     "onyomi": [
       "コク"
     ],
