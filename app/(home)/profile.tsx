@@ -1,19 +1,17 @@
+import React, { useState, useEffect, useCallback, useContext } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, Keyboard, SafeAreaView, Image, TextInput, Dimensions } from 'react-native';
 import { useRouter } from 'expo-router';
-import { View, Text, StyleSheet, Button, Image, Dimensions, TouchableOpacity, TextInput, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, Platform, } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { auth, db, storage } from '../../firebaseConfig'; // Presupunând că ai exportat 'db' (instanța Firestore) din firebaseConfig
+import { auth, db, storage } from '../../firebaseConfig';
 import { collection, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
-import { darkTheme } from '@/constants/Colors';
-import React, { useState, useEffect } from 'react'; // Importă useState și useEffect
-import * as ImagePicker from 'expo-image-picker'; // For selecting images
+import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { resetCompletedLessons } from '@/utils/lessonProgress';
 import { useFocusEffect } from '@react-navigation/native';
-import { useCallback } from 'react';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { useTheme } from '@/components/ThemeContext'; // Calea corectă!
+import { lightTheme, darkTheme } from '@/constants/Colors'; // Asigură-te că ai importat corect temele
 
-const { width, height } = Dimensions.get('window'); // Obține lățimea și înălțimea ecranului
+const { width, height } = Dimensions.get('window');
 
 export default function ProfileScreen() {
   const [username, setUsername] = useState<string | null>(null);
@@ -22,110 +20,45 @@ export default function ProfileScreen() {
   const [uploading, setUploading] = useState(false);
   const router = useRouter();
   const [completedLessons, setCompletedLessons] = useState<string[]>([]);
-  const [aboutMeText, setAboutMeText] = useState<string>('Îți place să înveți japoneză rapid și eficient? 🇯🇵'); // Starea pentru textul "Despre tine"
-  const [isEditingAboutMe, setIsEditingAboutMe] = useState<boolean>(false); // Stare pentru a controla modul de editare
+  const [aboutMeText, setAboutMeText] = useState<string>('Îți place să înveți japoneză rapid și eficient? 🇯🇵');
+  const [isEditingAboutMe, setIsEditingAboutMe] = useState<boolean>(false);
+  const { theme, toggleTheme } = useTheme(); // Acum funcționează corect!
+  const currentTheme = theme === 'light' ? lightTheme : darkTheme;
 
   useFocusEffect(
     useCallback(() => {
       const fetchCompletedLessons = async () => {
         const data = await AsyncStorage.getItem('completedLessons');
         const lessons = data ? JSON.parse(data) : [];
-        setCompletedLessons(lessons); // aici setezi lista, nu length-ul
+        setCompletedLessons(lessons);
       };
-
       fetchCompletedLessons();
     }, [])
   );
 
-  const pickImage = async () => {
-    let result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 4],
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      const selecteImageUri = result.assets[0].uri;
-      await uploadImage(selecteImageUri); // Apelează funcția de încărcare a imaginii
-    }
-  }
-
-  const uploadImage = async (uri: string) => {
-    setUploading(true);
-    const { uid } = auth.currentUser!;
-    const storageRef = ref(storage, `profilePictures/${uid}`);
-    const response = await fetch(uri);
-    const blob = await response.blob();
-
-    try {
-      const uploadTask = uploadBytesResumable(storageRef, blob);
-
-      uploadTask.on('state_changed',
-        (snapshot) => {
-          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          console.log('Upload is ' + progress + '% done');
-          // Optionally update a progress bar state
-        },
-        (error) => {
-          console.error("Error uploading image:", error);
-          setUploading(false);
-          // Handle upload error
-        },
-        async () => {
-          // Upload completed successfully, now get the download URL
-          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-          setProfilePictureUrl(downloadURL);
-          await updateProfilePictureUrl(downloadURL);
-          setUploading(false);
-        }
-      );
-    } catch (error) {
-      console.error("Error fetching or uploading image:", error);
-      setUploading(false);
-    }
-  };
-
-  const updateProfilePictureUrl = async (url: string) => {
-    if (auth.currentUser) {
-      const userDocRef = doc(db, 'users', auth.currentUser.uid);
-      try {
-        await updateDoc(userDocRef, {
-          profilePicture: url,
-        });
-        console.log("Profile picture URL updated in Firestore.");
-        // Optionally show a success message
-      } catch (error) {
-        console.error("Error updating profile picture URL:", error);
-        // Handle Firestore update error
-      }
-    }
-  };
-
   useEffect(() => {
     const fetchProfile = async () => {
       if (auth.currentUser) {
-        const uid = auth.currentUser.uid; // Obține uid-ul aici
-        const userDocRef = doc(collection(db, 'users'), uid); // Creează referința documentului
-        const userDoc = await getDoc(userDocRef); // Obține documentul
-        // const userDoc = await db.collection('users').doc(uid).get(); // Folosește instanța 'db'
+        const uid = auth.currentUser.uid;
+        const userDocRef = doc(collection(db, 'users'), uid);
+        const userDoc = await getDoc(userDocRef);
 
         if (userDoc.exists()) {
           const data = userDoc.data();
           setUsername(data?.username);
           setEmail(data?.email);
-          setProfilePictureUrl(data?.profilePicture || null); // Load existing profile picture
+          setProfilePictureUrl(data?.profilePicture || null);
+          setAboutMeText(data?.aboutMe || 'Îți place să înveți japoneză rapid și eficient? 🇯🇵');
         } else {
           console.log("Nu s-au găsit datele de profil.");
         }
       } else {
-        router.replace('/(auth)/login'); // Redirecționează dacă nu e autentificat
+        router.replace('/(auth)/login');
       }
     };
 
     fetchProfile();
   }, [router]);
-
 
   const handleLogout = async () => {
     await auth.signOut();
@@ -133,16 +66,13 @@ export default function ProfileScreen() {
   };
 
   const handleSaveAboutMe = async () => {
-    // Aici poți salva aboutMeText unde ai nevoie (e.g., AsyncStorage, Firestore)
-    console.log('Saving about me text:', aboutMeText);
-    // Exemplu de salvare în AsyncStorage:
     try {
       await AsyncStorage.setItem('aboutMe', aboutMeText);
-      setIsEditingAboutMe(false); // Ieși din modul de editare după salvare
+      setIsEditingAboutMe(false);
     } catch (error) {
       console.error('Eroare la salvarea textului "Despre mine":', error);
     }
-    // Dacă vrei să salvezi în Firestore (presupunând că ai o colecție 'users' cu documente pentru fiecare utilizator):
+
     if (auth.currentUser) {
       const userDocRef = doc(db, 'users', auth.currentUser.uid);
       try {
@@ -169,7 +99,7 @@ export default function ProfileScreen() {
           setUsername(data?.username);
           setEmail(data?.email);
           setProfilePictureUrl(data?.profilePicture || null);
-          setAboutMeText(data?.aboutMe || 'Îți place să înveți japoneză rapid și eficient? 🇯🇵'); // Încarcă textul "Despre mine" din Firestore sau valoarea implicită
+          setAboutMeText(data?.aboutMe || 'Îți place să înveți japoneză rapid și eficient? 🇯🇵');
         } else {
           console.log("Nu s-au găsit datele de profil.");
         }
@@ -178,25 +108,12 @@ export default function ProfileScreen() {
       }
     };
 
-    const loadAboutMe = async () => {
-      try {
-        const savedAboutMe = await AsyncStorage.getItem('aboutMe');
-        if (savedAboutMe) {
-          setAboutMeText(savedAboutMe);
-        }
-      } catch (error) {
-        console.error('Eroare la încărcarea textului "Despre mine" din AsyncStorage:', error);
-      }
-    };
-
     fetchProfile();
-    // Dacă folosești AsyncStorage pentru a persista local textul:
-    // loadAboutMe();
   }, [router]);
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={{ ...styles.container, backgroundColor: currentTheme.background }}>
         <View style={styles.imageContainer}>
           <Image
             source={require('../../assets/images/profileImg.avif')}
@@ -205,52 +122,57 @@ export default function ProfileScreen() {
           />
         </View>
 
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Your profile</Text>
+        <View style={{ ...styles.card, backgroundColor: currentTheme.surface }}>
+          <Text style={{ ...styles.cardTitle, color: currentTheme.text }}>Your profile</Text>
           <View style={styles.infoRow}>
-            <Ionicons name="person" size={20} color="#ccc" style={styles.icon} />
-            <Text style={styles.infoText}>{username}</Text>
+            <Ionicons name="person" size={20} color={currentTheme.secondaryText} style={styles.icon} />
+            <Text style={{ ...styles.infoText, color: currentTheme.text }}>{username}</Text>
           </View>
 
           <View style={styles.infoRow}>
-            <Ionicons name="mail" size={20} color="#ccc" style={styles.icon} />
-            <Text style={styles.infoText}>{email}</Text>
+            <Ionicons name="mail" size={20} color={currentTheme.secondaryText} style={styles.icon} />
+            <Text style={{ ...styles.infoText, color: currentTheme.text }}>{email}</Text>
           </View>
 
           <View style={styles.infoRow}>
-            <Ionicons name="book" size={20} color="#ccc" style={styles.icon} />
-            <Text style={styles.infoText}>Completed lessons: {completedLessons.length}</Text>
+            <Ionicons name="book" size={20} color={currentTheme.secondaryText} style={styles.icon} />
+            <Text style={{ ...styles.infoText, color: currentTheme.text }}>Completed lessons: {completedLessons.length}</Text>
           </View>
         </View>
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>About you</Text>
+        <View style={{ ...styles.card, backgroundColor: currentTheme.surface }}>
+          <Text style={{ ...styles.cardTitle, color: currentTheme.text }}>About you</Text>
           {isEditingAboutMe ? (
             <TextInput
-              style={styles.aboutMeInput}
+              style={{ ...styles.aboutMeInput, backgroundColor: currentTheme.surface, color: currentTheme.text }}
               multiline
               value={aboutMeText}
               onChangeText={setAboutMeText}
             />
           ) : (
-            <Text style={styles.info}>{aboutMeText}</Text>
+            <Text style={{ ...styles.info, color: currentTheme.text }}>{aboutMeText}</Text>
           )}
           <View style={styles.editSaveButtons}>
-            <TouchableOpacity style={styles.editButton} onPress={() => setIsEditingAboutMe(!isEditingAboutMe)}>
-              <Text style={styles.editButtonText}>{isEditingAboutMe ? 'Cancel' : 'Edit'}</Text>
+            <TouchableOpacity style={{ ...styles.editButton, backgroundColor: currentTheme.primary }} onPress={() => setIsEditingAboutMe(!isEditingAboutMe)}>
+              <Text style={{ ...styles.editButtonText, color: currentTheme.background }}>{isEditingAboutMe ? 'Cancel' : 'Edit'}</Text>
             </TouchableOpacity>
             {isEditingAboutMe && (
-              <TouchableOpacity style={styles.saveButton} onPress={handleSaveAboutMe}>
-                <Text style={styles.saveButtonText}>Save</Text>
+              <TouchableOpacity style={{ ...styles.saveButton, backgroundColor: 'green' }} onPress={handleSaveAboutMe}>
+                <Text style={{ ...styles.saveButtonText, color: currentTheme.background }}>Save</Text>
               </TouchableOpacity>
             )}
           </View>
         </View>
 
-
+        <View>
+          <TouchableOpacity style={{ ...styles.logoutButton, backgroundColor: currentTheme.primary, marginTop: 5 }} onPress={toggleTheme}>
+            <MaterialIcons name="brightness-4" size={24} color={currentTheme.background} style={{ marginRight: 8 }} />
+            <Text style={{ ...styles.logoutButtonText, color: currentTheme.background }}>Toggle Theme</Text>
+          </TouchableOpacity>
+        </View>
         <View style={styles.logoutButtonContainer}>
-          <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-            <MaterialIcons name="logout" size={24} color="white" style={{ marginRight: 8 }} />
-            <Text style={styles.logoutButtonText}>Logout</Text>
+          <TouchableOpacity style={{ ...styles.logoutButton, backgroundColor: currentTheme.primary }} onPress={handleLogout}>
+            <MaterialIcons name="logout" size={24} color={currentTheme.background} style={{ marginRight: 8 }} />
+            <Text style={{ ...styles.logoutButtonText, color: currentTheme.background }}>Logout</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -262,27 +184,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'column',
-    backgroundColor: darkTheme.background,
     alignItems: 'center',
-  }, title: { fontSize: 24, color: darkTheme.text, marginBottom: 20 },
-  info: { fontSize: 18, color: darkTheme.text, marginBottom: 10 },
+  },
+  title: { fontSize: 24, marginBottom: 20 },
+  info: { fontSize: 18, marginBottom: 10 },
   imageContainer: {
     width: width,
-    height: height * 0.2, // 30% din înălțimea ecranului
+    height: height * 0.2,
     overflow: 'hidden',
   },
-  content: {
-    flex: 1, // Ocupă spațiul rămas între imagine și butonul de logout
-    justifyContent: 'center', // Centrează conținutul pe verticală
-    alignItems: 'center', // Centrează conținutul pe orizontală
-    padding: 20,
-  },
-  profileImage: {
-    width: '100%',
-    height: '100%',
-  },
   card: {
-    backgroundColor: '#1f1f1f',
     borderRadius: 12,
     padding: 20,
     marginVertical: 10,
@@ -293,13 +204,8 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     fontSize: 24,
-    color: darkTheme.text,
     marginBottom: 10,
     fontWeight: '600',
-  },
-  buttonsContainer: {
-    gap: 10,
-    marginTop: 20,
   },
   infoRow: {
     flexDirection: 'row',
@@ -311,10 +217,8 @@ const styles = StyleSheet.create({
   },
   infoText: {
     fontSize: 18,
-    color: darkTheme.text,
   },
   logoutButton: {
-    backgroundColor: darkTheme.primary, 
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 10,
@@ -322,7 +226,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logoutButtonText: {
-    color: darkTheme.text,
     fontSize: 18,
     fontWeight: 'bold',
   },
@@ -334,13 +237,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   aboutMeInput: {
-    backgroundColor: darkTheme.surface,
-    color: darkTheme.text,
     borderRadius: 8,
     padding: 10,
     marginBottom: 10,
-    minHeight: 80, // Oferă o înălțime minimă pentru a putea scrie mai mult text
-    textAlignVertical: 'top', // Aliniază textul la început pentru multiline
+    minHeight: 80,
+    textAlignVertical: 'top',
   },
   editSaveButtons: {
     flexDirection: 'row',
@@ -348,7 +249,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   editButton: {
-    backgroundColor: darkTheme.primary,
     paddingVertical: 8,
     paddingHorizontal: 12,
     borderRadius: 8,
@@ -356,7 +256,6 @@ const styles = StyleSheet.create({
     marginBottom: 6
   },
   editButtonText: {
-    color: darkTheme.text,
     fontWeight: 'bold',
   },
   saveButton: {
@@ -364,7 +263,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 12,
     borderRadius: 8,
-    marginRight:4,
+    marginRight: 4,
     marginBottom: 6
   },
   saveButtonText: {

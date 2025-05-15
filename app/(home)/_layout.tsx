@@ -1,24 +1,26 @@
 import { Tabs, Stack, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { StyleSheet, TouchableOpacity, Text } from 'react-native';
-import { darkTheme } from '@/constants/Colors';
 import { useNavigation } from '@react-navigation/native';
+import { useTheme } from '@/components/ThemeContext'; // Calea corectă!
+import { lightTheme, darkTheme } from '@/constants/Colors'; // Asigură-te că ai importat corect temele
 
 export default function HomeLayout() {
     const navigation = useNavigation();
-
+    const { theme, toggleTheme } = useTheme(); // Acum funcționează corect!
+    const currentTheme = theme === 'light' ? lightTheme : darkTheme;
     return (
         <Tabs
             screenOptions={{
                 headerShown: false,
                 tabBarStyle: {
-                    backgroundColor: darkTheme.navbar,
+                    backgroundColor: currentTheme.navbar,
                     borderTopWidth: 0,
                     height: 75,
                     paddingBottom: 20,
                 },
-                tabBarActiveTintColor: darkTheme.accent,
-                tabBarInactiveTintColor: darkTheme.border,
+                tabBarActiveTintColor: currentTheme.accent,
+                tabBarInactiveTintColor: currentTheme.text,
                 tabBarLabelStyle: {
                     fontSize: 12,
                     paddingBottom: 5,
@@ -85,7 +87,7 @@ export default function HomeLayout() {
                     headerShown: false, // Afișează header-ul pe pagina [kanji]
                 }}
             />
-             <Tabs.Screen
+            <Tabs.Screen
                 name="lessons/hiragana-basic/firstRow" // Ruta pentru ecranul Hiragana Basic (app/(home)/lessons/hiragana-basic/page.tsx)
                 options={{
                     href: null, // Important: Setează href la null pentru a nu fi un tab direct accesibil
@@ -94,8 +96,8 @@ export default function HomeLayout() {
                     tabBarStyle: { display: 'none' }, // Ascunde stilul tab-ului
                     headerShown: false, // Afișează header-ul pe pagina [kanji]
                 }}
-            /> 
-             <Tabs.Screen
+            />
+            <Tabs.Screen
                 name="lessons/hiragana-basic/secondRow" // Ruta pentru ecranul Hiragana Basic (app/(home)/lessons/hiragana-basic/page.tsx)
                 options={{
                     href: null, // Important: Setează href la null pentru a nu fi un tab direct accesibil
@@ -104,7 +106,7 @@ export default function HomeLayout() {
                     tabBarStyle: { display: 'none' }, // Ascunde stilul tab-ului
                     headerShown: false, // Afișează header-ul pe pagina [kanji]
                 }}
-            /> 
+            />
             <Tabs.Screen
                 name="lessons/hiragana-basic/thirdRow" // Ruta pentru ecranul Hiragana Basic (app/(home)/lessons/hiragana-basic/page.tsx)
                 options={{
@@ -114,8 +116,8 @@ export default function HomeLayout() {
                     tabBarStyle: { display: 'none' }, // Ascunde stilul tab-ului
                     headerShown: false, // Afișează header-ul pe pagina [kanji]
                 }}
-            /> 
-             <Tabs.Screen
+            />
+            <Tabs.Screen
                 name="lessons/hiragana-basic/forthRow" // Ruta pentru ecranul Hiragana Basic (app/(home)/lessons/hiragana-basic/page.tsx)
                 options={{
                     href: null, // Important: Setează href la null pentru a nu fi un tab direct accesibil
@@ -124,8 +126,8 @@ export default function HomeLayout() {
                     tabBarStyle: { display: 'none' }, // Ascunde stilul tab-ului
                     headerShown: false, // Afișează header-ul pe pagina [kanji]
                 }}
-            /> 
-              <Tabs.Screen
+            />
+            <Tabs.Screen
                 name="lessons/katakana-basic/page" // Ruta pentru ecranul Hiragana Basic (app/(home)/lessons/hiragana-basic/page.tsx)
                 options={{
                     href: null, // Important: Setează href la null pentru a nu fi un tab direct accesibil
@@ -134,8 +136,8 @@ export default function HomeLayout() {
                     tabBarStyle: { display: 'none' }, // Ascunde stilul tab-ului
                     headerShown: false, // Afișează header-ul pe pagina [kanji]
                 }}
-            /> 
-             <Tabs.Screen
+            />
+            <Tabs.Screen
                 name="lessons/katakana-basic/firstRow" // Ruta pentru ecranul Hiragana Basic (app/(home)/lessons/hiragana-basic/page.tsx)
                 options={{
                     href: null, // Important: Setează href la null pentru a nu fi un tab direct accesibil
@@ -144,8 +146,8 @@ export default function HomeLayout() {
                     tabBarStyle: { display: 'none' }, // Ascunde stilul tab-ului
                     headerShown: false, // Afișează header-ul pe pagina [kanji]
                 }}
-            /> 
-             <Tabs.Screen
+            />
+            <Tabs.Screen
                 name="lessons/katakana-basic/secondRow" // Ruta pentru ecranul Hiragana Basic (app/(home)/lessons/hiragana-basic/page.tsx)
                 options={{
                     href: null, // Important: Setează href la null pentru a nu fi un tab direct accesibil
@@ -154,8 +156,8 @@ export default function HomeLayout() {
                     tabBarStyle: { display: 'none' }, // Ascunde stilul tab-ului
                     headerShown: false, // Afișează header-ul pe pagina [kanji]
                 }}
-            /> 
-             <Tabs.Screen
+            />
+            <Tabs.Screen
                 name="lessons/katakana-basic/thirdRow" // Ruta pentru ecranul Hiragana Basic (app/(home)/lessons/hiragana-basic/page.tsx)
                 options={{
                     href: null, // Important: Setează href la null pentru a nu fi un tab direct accesibil
@@ -164,9 +166,9 @@ export default function HomeLayout() {
                     tabBarStyle: { display: 'none' }, // Ascunde stilul tab-ului
                     headerShown: false, // Afișează header-ul pe pagina [kanji]
                 }}
-            /> 
+            />
 
-             <Tabs.Screen
+            <Tabs.Screen
                 name="lessons/katakana-basic/forthRow" // Ruta pentru ecranul Hiragana Basic (app/(home)/lessons/hiragana-basic/page.tsx)
                 options={{
                     href: null, // Important: Setează href la null pentru a nu fi un tab direct accesibil
@@ -175,8 +177,8 @@ export default function HomeLayout() {
                     tabBarStyle: { display: 'none' }, // Ascunde stilul tab-ului
                     headerShown: false, // Afișează header-ul pe pagina [kanji]
                 }}
-            /> 
-             <Tabs.Screen
+            />
+            <Tabs.Screen
                 name="lessons/katakana-basic/components/RecognitionExercise" // Ruta pentru ecranul Hiragana Basic (app/(home)/lessons/hiragana-basic/page.tsx)
                 options={{
                     href: null, // Important: Setează href la null pentru a nu fi un tab direct accesibil
@@ -185,7 +187,7 @@ export default function HomeLayout() {
                     tabBarStyle: { display: 'none' }, // Ascunde stilul tab-ului
                     headerShown: false, // Afișează header-ul pe pagina [kanji]
                 }}
-            /> 
+            />
         </Tabs>
     );
 }

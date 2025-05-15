@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity } from 'react-native';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
-import { darkTheme } from '@/constants/Colors'; // Asigură-te că ai tema definită
 import kanjiDataN5 from '@/assets/data/kanjiData_N5.json'; // Importă datele kanji
+import { useTheme } from '@/components/ThemeContext'; // Calea corectă!
+import { lightTheme, darkTheme } from '@/constants/Colors'; // Asigură-te că ai importat corect temele
 
 interface KanjiInfo {
 
@@ -20,7 +21,9 @@ export default function KanjiDetailsPage() {
   const [kanjiData, setKanjiData] = useState<KanjiInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
+  const { theme, toggleTheme } = useTheme(); // Acum funcționează corect!
+  const currentTheme = theme === 'light' ? lightTheme : darkTheme;
+  
   useEffect(() => {
     const fetchKanjiDetails = async () => {
       setLoading(true);

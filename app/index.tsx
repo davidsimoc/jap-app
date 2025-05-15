@@ -1,31 +1,34 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useRouter } from 'expo-router';
 import { AuthService } from '../services/auth/authService';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { UserNotLoggedInAuthException } from '../services/auth/authExceptions';
 
-const auth = AuthService.firebase(); // Folosește serviciul de autentificare
+const auth = AuthService.firebase();
 
-export default function Index() {
+export default function App() {
   const router = useRouter();
 
-  useEffect(() => {
-    const checkAuthStatus = async () => {
-      await auth.initialize(); // inițializăm Firebase
+  function AuthHandler() {
+    useEffect(() => {
+      const checkAuthStatus = async () => {
+        await auth.initialize();
 
-      const unsubscribe = onAuthStateChanged(getAuth(), (user) => {
-        if (user) {
-          router.replace('/(home)/home');
-        } else {
-          router.replace('/(auth)/login');
-        }
-      });
+        const unsubscribe = onAuthStateChanged(getAuth(), (user) => {
+          if (user) {
+            router.replace('/(home)/home');
+          } else {
+            router.replace('/(auth)/login');
+          }
+        });
 
-      return unsubscribe; // cleanup
-    };
+        return unsubscribe;
+      };
 
-    checkAuthStatus();
-  }, []);
+      checkAuthStatus();
+    }, []);
 
-  return null;
+    return null;
+  }
+
+  return <AuthHandler />;
 }

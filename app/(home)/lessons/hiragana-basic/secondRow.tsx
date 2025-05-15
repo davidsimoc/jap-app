@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView } from 'react-native';
-import { darkTheme } from '@/constants/Colors';
 import RecognitionExercise from './components/RecognitionExercise'; // Assuming you'll adapt this
 import { router, useFocusEffect, useNavigation } from 'expo-router';
 import { markLessonAsCompleted } from '@/utils/lessonProgress';
-
+import { useTheme } from '@/components/ThemeContext'; // Calea corectă!
+import { lightTheme, darkTheme } from '@/constants/Colors'; // Asigură-te că ai importat corect temele
 const lessonContent = [
     {
         type: 'info',
@@ -57,7 +57,8 @@ export default function HiraganaSecondRowPage() {
     const [userAnswers, setUserAnswers] = useState<string[]>([]);
     const [isLessonCompleted, setIsLessonCompleted] = useState(false);
     const [questions, setQuestions] = useState<typeof lessonContent[1]['exercises']>([]);
-
+    const { theme, toggleTheme } = useTheme(); // Acum funcționează corect!
+    const currentTheme = theme === 'light' ? lightTheme : darkTheme;
 
     useFocusEffect(
         useCallback(() => {
@@ -360,7 +361,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     doneButton: {
-        width:'100%',
+        width: '100%',
         backgroundColor: darkTheme.secondary,
         paddingVertical: 15,
         borderRadius: 8,

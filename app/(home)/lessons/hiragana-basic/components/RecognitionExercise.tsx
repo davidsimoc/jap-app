@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { darkTheme } from '@/constants/Colors'; // Ensure you have the theme defined
-
+import { useTheme } from '@/components/ThemeContext'; // Calea corectă!
+import { lightTheme, darkTheme } from '@/constants/Colors'; // Asigură-te că ai importat corect temele
 interface Props {
     question: string;
     correctAnswer: string;
@@ -12,7 +12,8 @@ interface Props {
 const RecognitionExercise: React.FC<Props> = ({ question, correctAnswer, options, onNext }) => {
     const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
     const [feedback, setFeedback] = useState<string | null>(null);
-
+    const { theme, toggleTheme } = useTheme(); // Acum funcționează corect!
+    const currentTheme = theme === 'light' ? lightTheme : darkTheme;
     const handleAnswer = (answer: string) => {
         setSelectedAnswer(answer);
         if (answer === correctAnswer) {

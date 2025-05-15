@@ -1,16 +1,18 @@
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, StatusBar, ScrollView } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { darkTheme } from '@/constants/Colors';
 import hiraganaLessonsData from '@/assets/data/hiraganaLessonData.json';
 import { Ionicons } from '@expo/vector-icons'; // sau alt icon
 import { useCallback, useEffect, useState } from 'react';
-import { getCompletedLessons } from '@/utils/lessonProgress'; // Asigură-te că ai această funcție implementată
+import { getCompletedLessons } from '@/utils/lessonProgress';
+import { useTheme } from '@/components/ThemeContext'; // Calea corectă!
+import { lightTheme, darkTheme } from '@/constants/Colors'; // Asigură-te că ai importat corect temele
 
 export default function HomeScreen() {
   const router = useRouter();
   const [completedLessons, setCompletedLessons] = useState<string[]>([]);
-
+  const { theme, toggleTheme } = useTheme(); // Acum funcționează corect!
+  const currentTheme = theme === 'light' ? lightTheme : darkTheme;
   useFocusEffect(
     useCallback(() => {
       const loadProgress = async () => {

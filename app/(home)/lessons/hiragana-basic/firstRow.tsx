@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView } from 'react-native';
-import { darkTheme } from '@/constants/Colors';
 import RecognitionExercise from './components/RecognitionExercise'; // Assuming you'll adapt this
 import { router, useFocusEffect, useNavigation } from 'expo-router';
 import { markLessonAsCompleted } from '@/utils/lessonProgress';
+import { useTheme } from '@/components/ThemeContext'; // Calea corectă!
+import { lightTheme, darkTheme } from '@/constants/Colors'; // Asigură-te că ai importat corect temele
 
 const lessonContent = [
     {
@@ -66,7 +67,8 @@ export default function HiraganaFirstRowPage() {
     const [userAnswers, setUserAnswers] = useState<string[]>([]);
     const [isLessonCompleted, setIsLessonCompleted] = useState(false);
     const [questions, setQuestions] = useState<typeof lessonContent[1]['exercises']>([]);
-
+    const { theme, toggleTheme } = useTheme(); // Acum funcționează corect!
+    const currentTheme = theme === 'light' ? lightTheme : darkTheme;
 
     useFocusEffect(
         useCallback(() => {
@@ -140,7 +142,7 @@ export default function HiraganaFirstRowPage() {
                     setUserAnswers(userAnswers.slice(0, -1));
                 } else {
                     setCurrentExerciseIndex(0);
-                     // Reset user answers when going back to a new section
+                    // Reset user answers when going back to a new section
                     setUserAnswers([]);
                 }
             }
@@ -152,32 +154,32 @@ export default function HiraganaFirstRowPage() {
         ? currentContent.exercises[currentExerciseIndex]
         : null;
     return (
-        <SafeAreaView style={styles.safeArea}>
-            <View style={styles.mainContainer}>
+        <SafeAreaView style={{...styles.safeArea, backgroundColor: currentTheme.background}}>
+            <View style={{...styles.mainContainer, backgroundColor: currentTheme.background}}>
                 <TouchableOpacity style={styles.backButton} onPress={() => router.replace('/(home)/lessons/hiragana-basic/page')}>
                     <Text style={styles.backButtonText}>Back to Hiragana Basics</Text>
                 </TouchableOpacity>
-                <ScrollView style={styles.scrollContainer}>
+                <ScrollView style={{...styles.scrollContainer, backgroundColor: currentTheme.background}} showsVerticalScrollIndicator={false}>
 
                     {currentContent && currentContent.type === 'info' && currentContent.sections && Array.isArray(currentContent.sections) && (
                         <View>
                             {currentContent.sections.map((section, index) => (
-                                <View key={index} style={styles.infoSection}>
-                                    {section.title && <Text style={styles.sectionTitle}>{section.title}</Text>}
+                                <View key={index} style={{...styles.infoSection, }}>
+                                    {section.title && <Text style={{...styles.sectionTitle,  color: currentTheme.accent,}}>{section.title}</Text>}
                                     {section.content && Array.isArray(section.content) && (
                                         section.content.map((paragraph, paraIndex) => (
-                                            <Text key={paraIndex} style={styles.paragraph}>{paragraph}</Text>
+                                            <Text key={paraIndex} style={{...styles.paragraph, color: currentTheme.text}}>{paragraph}</Text>
                                         ))
                                     )}
                                     {section.characters && Array.isArray(section.characters) && (
                                         section.characters.map((item) => (
                                             <View key={item.char} style={styles.characterContainer}>
-                                                <View style={styles.charPronunciationContainer}>
-                                                    <Text style={styles.character}>{item.char}</Text>
-                                                    <Text style={styles.pronunciation}>Pronunciation: {item.pronunciation}</Text>
+                                                <View style={{...styles.charPronunciationContainer}}>
+                                                    <Text style={{...styles.character, color:currentTheme.secondary}}>{item.char}</Text>
+                                                    <Text style={{...styles.pronunciation, color:currentTheme.secondaryText}}>Pronunciation: {item.pronunciation}</Text>
                                                 </View>
                                                 {item.helper && (
-                                                    <Text style={styles.helper}>
+                                                    <Text style={{...styles.helper, color: currentTheme.text}}>
                                                         How to remember:
                                                         <Text>{"\n"}</Text>
                                                         {item.helper}
@@ -244,7 +246,7 @@ export default function HiraganaFirstRowPage() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: darkTheme.background,
+        // backgroundColor: darkTheme.background,
         padding: 20,
     },
     mainContainer: {
@@ -281,16 +283,16 @@ const styles = StyleSheet.create({
     },
     character: {
         fontSize: 32,
-        color: darkTheme.secondary,
+        // color: darkTheme.secondary,
         marginRight: 16,
     },
     pronunciation: {
         fontSize: 18,
-        color: darkTheme.secondaryText,
+        // color: darkTheme.secondaryText,
     },
     helper: {
         fontSize: 16,
-        color: darkTheme.text,
+        // color: darkTheme.text,
         marginTop: 4,
     },
     bottomNavigation: {
@@ -323,7 +325,7 @@ const styles = StyleSheet.create({
     },
     safeArea: {
         flex: 1,
-        backgroundColor: darkTheme.background,
+        // backgroundColor: darkTheme.background,
     },
     scrollContainer: {
         flex: 1,
@@ -349,7 +351,7 @@ const styles = StyleSheet.create({
     },
     paragraph: {
         fontSize: 16,
-        color: darkTheme.text,
+        // color: darkTheme.text,
         marginBottom: 4,
     },
     nextButton: {
@@ -375,7 +377,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     doneButton: {
-        width:'100%',
+        width: '100%',
         backgroundColor: darkTheme.secondary,
         paddingVertical: 15,
         borderRadius: 8,
