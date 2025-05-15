@@ -1,21 +1,21 @@
-/**
- * Learn more about light and dark modes:
- * https://docs.expo.dev/guides/color-schemes/
- */
+// import { useTheme } from '../components/ThemeContext';
+import { useTheme } from '@react-navigation/native';
+import { lightTheme, darkTheme, ThemeType } from '../styles/themes';
 
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
 
 export function useThemeColor(
-  props: { light?: string; dark?: string },
-  colorName: keyof typeof Colors.light & keyof typeof Colors.dark
-) {
-  const theme = useColorScheme() ?? 'light';
-  const colorFromProps = props[theme];
+  props: { light?: keyof ThemeType; dark?: keyof ThemeType },
+  colorName: keyof ThemeType
+): string {
+  const theme = useTheme();
+  const themeMode = theme.dark ? 'dark' : 'light';
+  const currentTheme = themeMode === 'dark' ? darkTheme : lightTheme;
 
-  if (colorFromProps) {
-    return colorFromProps;
+  if (props[themeMode] && currentTheme[props[themeMode]]) {
+    return currentTheme[props[themeMode]];
+  } else if (currentTheme[colorName]) {
+    return currentTheme[colorName];
   } else {
-    return Colors[theme][colorName];
+    return themeMode === 'dark' ? darkTheme.text : lightTheme.text;
   }
 }
