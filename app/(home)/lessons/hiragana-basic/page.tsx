@@ -46,13 +46,13 @@ export default function HomeScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={{...styles.container, backgroundColor: currentTheme.background }}>
       <View>
         {/* Other components on your home screen */}
         <TouchableOpacity style={styles.backButton} onPress={() => router.replace('/(home)/home')}>
           <Text style={styles.backButtonText}>Back to lessons</Text>
         </TouchableOpacity>
-        <Text style={styles.sectionTitle}>Hiragana Lessons</Text>
+        <Text style={{...styles.sectionTitle, color:currentTheme.text}}>Hiragana Lessons</Text>
         <FlatList
           data={hiraganaLessonsData}
           renderItem={renderLessonItem}
@@ -69,7 +69,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: darkTheme.background,
+    // backgroundColor: darkTheme.background,
     padding: 20,
   },
   lessonTitleContainer: {
@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 30,
     fontWeight: 'bold',
-    color: darkTheme.text,
+    // color: darkTheme.text,
     marginBottom: 10,
   },
   lessonsContainer: {

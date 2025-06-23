@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { darkTheme } from '@/constants/Colors'; // Ensure you have the theme defined
-
+import { useTheme } from '@/components/ThemeContext'; // Calea corectă!
+import { lightTheme, darkTheme } from '@/constants/Colors'; // Asigură-te că ai importat corect temele
 interface Props {
     question: string;
     correctAnswer: string;
@@ -12,7 +12,8 @@ interface Props {
 const RecognitionExercise: React.FC<Props> = ({ question, correctAnswer, options, onNext }) => {
     const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
     const [feedback, setFeedback] = useState<string | null>(null);
-
+    const { theme, toggleTheme } = useTheme(); // Acum funcționează corect!
+    const currentTheme = theme === 'light' ? lightTheme : darkTheme;
     const handleAnswer = (answer: string) => {
         setSelectedAnswer(answer);
         if (answer === correctAnswer) {
@@ -25,8 +26,8 @@ const RecognitionExercise: React.FC<Props> = ({ question, correctAnswer, options
     };
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.questionText}>Recognize this character:</Text>
+        <View style={{...styles.container, backgroundColor: currentTheme.surface }}>
+            <Text style={{...styles.questionText, color: currentTheme.text}}>Recognize this character:</Text>
             <Text style={styles.characterToRecognize}>{question}</Text>
 
             <View style={styles.choicesContainer}>
@@ -40,12 +41,12 @@ const RecognitionExercise: React.FC<Props> = ({ question, correctAnswer, options
                         onPress={() => !feedback && handleAnswer(choice)}
                         disabled={feedback !== null}
                     >
-                        <Text style={styles.choiceText}>{choice}</Text>
+                        <Text style={{...styles.choiceText, color: currentTheme.background}}>{choice}</Text>
                     </TouchableOpacity>
                 ))}
             </View>
 
-            {feedback && <Text style={styles.feedbackText}>{feedback}</Text>}
+            {feedback && <Text style={{...styles.feedbackText, color: currentTheme.text}}>{feedback}</Text>}
         </View>
     );
 };
@@ -56,7 +57,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         padding: 16,
-        backgroundColor: darkTheme.surface,
+      //  backgroundColor: darkTheme.surface,
         borderRadius: 8,
     },
     questionText: {
@@ -87,7 +88,7 @@ const styles = StyleSheet.create({
     },
     choiceText: {
         fontSize: 24,
-        color: darkTheme.background,
+      //  color: darkTheme.background,
     },
     feedbackText: {
         marginTop: 16,

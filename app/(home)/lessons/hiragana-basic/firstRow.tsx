@@ -75,7 +75,6 @@ export default function HiraganaFirstRowPage() {
             setCurrentStep(0); // Reset state when the screen is focused
             setCurrentExerciseIndex(0); // Resetează indexul exercițiului la începutul lecției
             setUserAnswers([]);
-
             const exerciseGroup = lessonContent.find(item => item.type === 'exerciseGroup');
             if (exerciseGroup && exerciseGroup.exercises) {
                 setQuestions(exerciseGroup.exercises);
@@ -83,7 +82,7 @@ export default function HiraganaFirstRowPage() {
                 setQuestions([]);
             }
             return () => {
-                // Optional: Cleanup function if needed (e.g., pause audio)
+
             };
         }, [])
     );
@@ -204,7 +203,7 @@ export default function HiraganaFirstRowPage() {
                     )}
                     {isLessonCompleted && (
                         <View style={styles.completionContainer}>
-                            <Text style={styles.completionText}>Lesson Complete!</Text>
+                            <Text style={{...styles.completionText, color: currentTheme.text}}>Lesson Complete!</Text>
                             <TouchableOpacity
                                 style={styles.doneButton}
                                 onPress={() => {
@@ -373,7 +372,7 @@ const styles = StyleSheet.create({
     completionText: {
         fontSize: 22,
         fontWeight: 'bold',
-        color: darkTheme.text,
+        // color: darkTheme.text,
         marginBottom: 20,
     },
     doneButton: {

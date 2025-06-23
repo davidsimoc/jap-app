@@ -26,8 +26,8 @@ const RecognitionExercise: React.FC<Props> = ({ question, correctAnswer, options
     };
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.questionText}>Recognize this character:</Text>
+        <View style={{...styles.container, backgroundColor: currentTheme.surface }}>
+            <Text style={{...styles.questionText, color: currentTheme.text}}>Recognize this character:</Text>
             <Text style={styles.characterToRecognize}>{question}</Text>
 
             <View style={styles.choicesContainer}>
@@ -41,12 +41,12 @@ const RecognitionExercise: React.FC<Props> = ({ question, correctAnswer, options
                         onPress={() => !feedback && handleAnswer(choice)}
                         disabled={feedback !== null}
                     >
-                        <Text style={styles.choiceText}>{choice}</Text>
+                        <Text style={{...styles.choiceText, color: currentTheme.background}}>{choice}</Text>
                     </TouchableOpacity>
                 ))}
             </View>
 
-            {feedback && <Text style={styles.feedbackText}>{feedback}</Text>}
+            {feedback && <Text style={{...styles.feedbackText, color: currentTheme.text}}>{feedback}</Text>}
         </View>
     );
 };
@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         padding: 16,
-        backgroundColor: darkTheme.surface,
+      //  backgroundColor: darkTheme.surface,
         borderRadius: 8,
     },
     questionText: {
@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
     },
     choiceText: {
         fontSize: 24,
-        color: darkTheme.background,
+      //  color: darkTheme.background,
     },
     feedbackText: {
         marginTop: 16,

@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView } from 'react-native';
-import { darkTheme } from '@/constants/Colors';
 import RecognitionExercise from './components/RecognitionExercise'; // Assuming you'll adapt this
 import { router, useFocusEffect, useNavigation } from 'expo-router';
 import { markLessonAsCompleted } from '@/utils/lessonProgress';
+import { useTheme } from '@/components/ThemeContext'; // Calea corectă!
+import { lightTheme, darkTheme } from '@/constants/Colors'; // Asigură-te că ai importat corect temele
 
 const lessonContent = [
     {
@@ -64,7 +65,8 @@ export default function KatakanaFirstRowPage() {
     const [userAnswers, setUserAnswers] = useState<string[]>([]);
     const [isLessonCompleted, setIsLessonCompleted] = useState(false);
     const [questions, setQuestions] = useState<typeof lessonContent[1]['exercises']>([]);
-
+    const { theme, toggleTheme } = useTheme(); // Acum funcționează corect!
+    const currentTheme = theme === 'light' ? lightTheme : darkTheme;
 
     useFocusEffect(
         useCallback(() => {
@@ -149,33 +151,33 @@ export default function KatakanaFirstRowPage() {
     const currentExercise = currentContent?.type === 'exerciseGroup' && currentContent.exercises
         ? currentContent.exercises[currentExerciseIndex]
         : null;
-    return (
-        <SafeAreaView style={styles.safeArea}>
-            <View style={styles.mainContainer}>
+   return (
+        <SafeAreaView style={{...styles.safeArea, backgroundColor: currentTheme.background}}>
+            <View style={{...styles.mainContainer, backgroundColor: currentTheme.background}}>
                 <TouchableOpacity style={styles.backButton} onPress={() => router.replace('/(home)/lessons/katakana-basic/page')}>
                     <Text style={styles.backButtonText}>Back to Katakana Basics</Text>
                 </TouchableOpacity>
-                <ScrollView style={styles.scrollContainer}>
+                <ScrollView style={{...styles.scrollContainer, backgroundColor: currentTheme.background}} showsVerticalScrollIndicator={false}>
 
                     {currentContent && currentContent.type === 'info' && currentContent.sections && Array.isArray(currentContent.sections) && (
                         <View>
                             {currentContent.sections.map((section, index) => (
-                                <View key={index} style={styles.infoSection}>
-                                    {section.title && <Text style={styles.sectionTitle}>{section.title}</Text>}
+                                <View key={index} style={{...styles.infoSection, }}>
+                                    {section.title && <Text style={{...styles.sectionTitle,  color: currentTheme.accent,}}>{section.title}</Text>}
                                     {section.content && Array.isArray(section.content) && (
                                         section.content.map((paragraph, paraIndex) => (
-                                            <Text key={paraIndex} style={styles.paragraph}>{paragraph}</Text>
+                                            <Text key={paraIndex} style={{...styles.paragraph, color: currentTheme.text}}>{paragraph}</Text>
                                         ))
                                     )}
                                     {section.characters && Array.isArray(section.characters) && (
                                         section.characters.map((item) => (
                                             <View key={item.char} style={styles.characterContainer}>
-                                                <View style={styles.charPronunciationContainer}>
-                                                    <Text style={styles.character}>{item.char}</Text>
-                                                    <Text style={styles.pronunciation}>Pronunciation: {item.pronunciation}</Text>
+                                                <View style={{...styles.charPronunciationContainer}}>
+                                                    <Text style={{...styles.character, color:currentTheme.secondary}}>{item.char}</Text>
+                                                    <Text style={{...styles.pronunciation, color:currentTheme.secondaryText}}>Pronunciation: {item.pronunciation}</Text>
                                                 </View>
                                                 {item.helper && (
-                                                    <Text style={styles.helper}>
+                                                    <Text style={{...styles.helper, color: currentTheme.text}}>
                                                         How to remember:
                                                         <Text>{"\n"}</Text>
                                                         {item.helper}
@@ -200,7 +202,7 @@ export default function KatakanaFirstRowPage() {
                     )}
                     {isLessonCompleted && (
                         <View style={styles.completionContainer}>
-                            <Text style={styles.completionText}>Lesson Complete!</Text>
+                            <Text style={{...styles.completionText, color: currentTheme.text}}>Lesson Complete!</Text>
                             <TouchableOpacity
                                 style={styles.doneButton}
                                 onPress={() => {
@@ -372,8 +374,8 @@ const styles = StyleSheet.create({
         color: darkTheme.text,
         marginBottom: 20,
     },
-     doneButton: {
-        width:'100%',
+    doneButton: {
+        width: '100%',
         backgroundColor: darkTheme.secondary,
         paddingVertical: 15,
         borderRadius: 8,

@@ -1,16 +1,18 @@
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, StatusBar, ScrollView } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { darkTheme } from '@/constants/Colors';
 import katakanaLessonsData from '@/assets/data/katakanaLessonData.json';
 import { Ionicons } from '@expo/vector-icons'; // sau alt icon
 import { useCallback, useEffect, useState } from 'react';
 import { getCompletedLessons } from '@/utils/lessonProgress'; // Asigură-te că ai această funcție implementată
+import { useTheme } from '@/components/ThemeContext'; // Calea corectă!
+import { lightTheme, darkTheme } from '@/constants/Colors'; // Asigură-te că ai importat corect temele
 
 export default function KatakanaLessonsScreen() {
   const router = useRouter();
   const [completedLessons, setCompletedLessons] = useState<string[]>([]);
-
+  const { theme, toggleTheme } = useTheme(); // Acum funcționează corect!
+  const currentTheme = theme === 'light' ? lightTheme : darkTheme;
   useFocusEffect(
     useCallback(() => {
       const loadProgress = async () => {
@@ -28,7 +30,7 @@ export default function KatakanaLessonsScreen() {
 
   const renderLessonItem = ({ item }: { item: (typeof katakanaLessonsData)[number] }) => (
     <TouchableOpacity
-      style={styles.lessonCard}
+      style={{...styles.lessonCard, backgroundColor: currentTheme.secondary}}
       onPress={() => handleLessonPress(item.route)}
     >
       <View style={styles.lessonTitleContainer}>
@@ -44,13 +46,13 @@ export default function KatakanaLessonsScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={{...styles.container, backgroundColor: currentTheme.background }}>
       <View>
         {/* Other components on your home screen */}
         <TouchableOpacity style={styles.backButton} onPress={() => router.replace('/(home)/home')}>
           <Text style={styles.backButtonText}>Back to lessons</Text>
         </TouchableOpacity>
-        <Text style={styles.sectionTitle}>Katakana Lessons</Text>
+        <Text style={{...styles.sectionTitle, color: currentTheme.text}}>Katakana Lessons</Text>
         <FlatList
           data={katakanaLessonsData}
           renderItem={renderLessonItem}
@@ -67,7 +69,7 @@ export default function KatakanaLessonsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: darkTheme.background,
+   // backgroundColor: darkTheme.background,
     padding: 20,
   },
   lessonTitleContainer: {
@@ -96,7 +98,7 @@ const styles = StyleSheet.create({
 
   },
   lessonCard: {
-    backgroundColor: darkTheme.secondary,
+   // backgroundColor: darkTheme.secondary,
     borderRadius: 8,
     padding: 16,
     marginBottom: 16,

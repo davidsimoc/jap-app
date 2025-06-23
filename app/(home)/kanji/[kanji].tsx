@@ -23,7 +23,7 @@ export default function KanjiDetailsPage() {
   const [error, setError] = useState<string | null>(null);
   const { theme, toggleTheme } = useTheme(); // Acum funcționează corect!
   const currentTheme = theme === 'light' ? lightTheme : darkTheme;
-  
+
   useEffect(() => {
     const fetchKanjiDetails = async () => {
       setLoading(true);
@@ -59,31 +59,31 @@ export default function KanjiDetailsPage() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: darkTheme.background }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: currentTheme.background }}>
       <TouchableOpacity style={{ marginLeft: 15, marginBottom: 20, marginTop: 5 }} onPress={() => router.replace('/(home)/kanji/hiragana')}>
-        <Text style={{ fontSize: 18, color: darkTheme.accent }}>Înapoi la Kana</Text>
+        <Text style={{ fontSize: 18, color: currentTheme.accent }}>Înapoi la Kana</Text>
       </TouchableOpacity>
-      <ScrollView style={styles.contentContainer}>
+      <ScrollView style={{...styles.contentContainer, backgroundColor: currentTheme.background}}>
         <Text style={styles.kanji}>{selectedKanji}</Text>
         <View style={styles.infoRow}>
-          <Text style={styles.label}>Onyomi:</Text>
-          <Text style={styles.value}>{kanjiData.onyomi.join(', ')}</Text>
+          <Text style={{...styles.label, color: currentTheme.text}}>Onyomi:</Text>
+          <Text style={{...styles.value, color:currentTheme.text }}>{kanjiData.onyomi.join(', ')}</Text>
         </View>
         <View style={styles.infoRow}>
-          <Text style={styles.label}>Kunyomi:</Text>
-          <Text style={styles.value}>{kanjiData.kunyomi.join(', ')}</Text>
+          <Text style={{...styles.label, color: currentTheme.text}}>Kunyomi:</Text>
+          <Text style={{...styles.value, color:currentTheme.text }}>{kanjiData.kunyomi.join(', ')}</Text>
         </View>
         <View style={styles.infoRow}>
-          <Text style={styles.label}>Meaning:</Text>
-          <Text style={styles.value}>{kanjiData.meaning}</Text>
+          <Text style={{...styles.label, color: currentTheme.text}}>Meaning:</Text>
+          <Text style={{...styles.value, color:currentTheme.text }}>{kanjiData.meaning}</Text>
         </View>
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Onyomi Readings:</Text>
           {kanjiData.onyomiWords.map((item, index) => (
             <View key={index} style={styles.wordItem}>
-              <Text style={styles.word}>{item.word} ({item.reading})</Text>
-              <Text style={styles.wordMeaning}>{item.meaning}</Text>
+              <Text style={{...styles.word, color: currentTheme.text}}>{item.word} ({item.reading})</Text>
+              <Text style={{...styles.wordMeaning, color: currentTheme.secondaryText}}>{item.meaning}</Text>
             </View>
           ))}
         </View>
@@ -92,8 +92,8 @@ export default function KanjiDetailsPage() {
           <Text style={styles.sectionTitle}>Kunyomi Readings:</Text>
           {kanjiData.kunyomiWords.map((item, index) => (
             <View key={index} style={styles.wordItem}>
-              <Text style={styles.word}>{item.word} ({item.reading})</Text>
-              <Text style={styles.wordMeaning}>{item.meaning}</Text>
+              <Text style={{...styles.word, color: currentTheme.text}}>{item.word} ({item.reading})</Text>
+              <Text style={{...styles.wordMeaning, color: currentTheme.secondaryText}}>{item.meaning}</Text>
             </View>
           ))}
         </View>
@@ -102,8 +102,8 @@ export default function KanjiDetailsPage() {
             <Text style={styles.sectionTitle}>Special Readings:</Text>
             {kanjiData.specialReadings.map((item, index) => (
               <View key={index} style={styles.wordItem}>
-                <Text style={styles.word}>{item.word} ({item.reading})</Text>
-                <Text style={styles.wordMeaning}>{item.meaning}</Text>
+                <Text style={{...styles.word, color: currentTheme.text}}>{item.word} ({item.reading})</Text>
+                <Text style={{...styles.wordMeaning, color: currentTheme.secondaryText}}>{item.meaning}</Text>
               </View>
             ))}
           </View>
@@ -113,10 +113,10 @@ export default function KanjiDetailsPage() {
           <Text style={styles.sectionTitle}>Examples:</Text>
           {kanjiData.examples.map((item, index) => (
             <View key={index} style={styles.exampleItem}>
-              <Text style={styles.example}>{item.sentence}</Text>
-              <Text style={styles.exampleReading}>{item.reading}</Text>
-              <Text style={styles.exampleReading}>{item.romanji}</Text>
-              <Text style={styles.exampleMeaning}>{item.meaning}</Text>
+              <Text style={{...styles.example, color: currentTheme.text}}>{item.sentence}</Text>
+              <Text style={{...styles.exampleReading, color: currentTheme.secondaryText}}>{item.reading}</Text>
+              <Text style={{...styles.exampleReading, color: currentTheme.secondaryText}}>{item.romanji}</Text>
+              <Text style={{...styles.exampleMeaning, color: currentTheme.accent}}>{item.meaning}</Text>
             </View>
           ))}
         </View>
@@ -167,13 +167,13 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: darkTheme.text,
+  //  color: darkTheme.text,
     marginRight: 10,
     width: 100,
   },
   value: {
     fontSize: 18,
-    color: darkTheme.text,
+   // color: darkTheme.text,
     flex: 1,
   },
   section: {
@@ -190,28 +190,28 @@ const styles = StyleSheet.create({
   },
   word: {
     fontSize: 20,
-    color: darkTheme.text,
+    //color: darkTheme.text,
   },
   wordMeaning: {
     fontSize: 16,
-    color: darkTheme.secondaryText,
+    // color: darkTheme.secondaryText,
   },
   exampleItem: {
     marginBottom: 12,
   },
   example: {
     fontSize: 20,
-    color: darkTheme.text,
+   // color: darkTheme.text,
     marginBottom: 4,
   },
   exampleReading: {
     fontSize: 16,
-    color: darkTheme.secondaryText,
+    //color: darkTheme.secondaryText,
     marginBottom: 2,
   },
   exampleMeaning: {
     fontSize: 16,
-    color: darkTheme.accent,
+   // color: darkTheme.accent,
   },
   backButton: {
     marginLeft: 1,
