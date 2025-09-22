@@ -24,7 +24,7 @@ export default function KatakanaLessonsScreen() {
       return () => { };
     }, [])
   );
-  const handleLessonPress = (route: string) => {
+  const handleLessonPress = (route: any) => {
     router.push(route);
   };
 

@@ -78,16 +78,6 @@ export default function HomeLayout() {
                 }}
             />
             <Tabs.Screen
-                name="lessons/hiragana-basic/components/RecognitionExercise" // Ruta pentru ecranul Hiragana Basic (app/(home)/lessons/hiragana-basic/page.tsx)
-                options={{
-                    href: null, // Important: Setează href la null pentru a nu fi un tab direct accesibil
-                    title: undefined, // Nu afișa titlul în tab bar
-                    tabBarIcon: () => null, // Nu afișa iconița în tab bar
-                    tabBarStyle: { display: 'none' }, // Ascunde stilul tab-ului
-                    headerShown: false, // Afișează header-ul pe pagina [kanji]
-                }}
-            />
-            <Tabs.Screen
                 name="lessons/hiragana-basic/firstRow" // Ruta pentru ecranul Hiragana Basic (app/(home)/lessons/hiragana-basic/page.tsx)
                 options={{
                     href: null, // Important: Setează href la null pentru a nu fi un tab direct accesibil
@@ -178,8 +168,18 @@ export default function HomeLayout() {
                     headerShown: false, // Afișează header-ul pe pagina [kanji]
                 }}
             />
-            <Tabs.Screen
-                name="lessons/katakana-basic/components/RecognitionExercise" // Ruta pentru ecranul Hiragana Basic (app/(home)/lessons/hiragana-basic/page.tsx)
+           <Tabs.Screen
+                name="lessons/LessonPage" // Ruta pentru ecranul Hiragana Basic (app/(home)/lessons/hiragana-basic/page.tsx)
+                options={{
+                    href: null, // Important: Setează href la null pentru a nu fi un tab direct accesibil
+                    title: undefined, // Nu afișa titlul în tab bar
+                    tabBarIcon: () => null, // Nu afișa iconița în tab bar
+                    tabBarStyle: { display: 'none' }, // Ascunde stilul tab-ului
+                    headerShown: false, // Afișează header-ul pe pagina [kanji]
+                }}
+            />
+             <Tabs.Screen
+                name="lessons/components/RecognitionExercise" // Ruta pentru ecranul Hiragana Basic (app/(home)/lessons/hiragana-basic/page.tsx)
                 options={{
                     href: null, // Important: Setează href la null pentru a nu fi un tab direct accesibil
                     title: undefined, // Nu afișa titlul în tab bar
