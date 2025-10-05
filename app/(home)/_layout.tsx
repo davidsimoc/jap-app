@@ -40,7 +40,7 @@ export default function HomeLayout() {
                 }}
             />
             <Tabs.Screen
-                name="kanji/hiragana" // Ruta pentru ecranul Hiragana (app/(home)/hiragana.tsx)
+                name="kanji/kana" // Ruta pentru ecranul Hiragana (app/(home)/hiragana.tsx)
                 options={{
                     title: 'Kana',
                     tabBarIcon: ({ color, size }) => (

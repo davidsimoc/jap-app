@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions, FlatList, SectionList, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions, FlatList, SectionList, ScrollView, ActivityIndicator } from 'react-native';
 import { useEffect, useState } from 'react';
 import hiraganaData from '@/assets/data/hiragana.json';
 import dakutenHiraganaData from '@/assets/data/hiraganaDakuten.json';
@@ -6,7 +6,7 @@ import yoonHiraganaData from '@/assets/data/hiraganaYōon.json';
 import katakanaData from '@/assets/data/katakana.json';
 import dukatenKatakanaData from '@/assets/data/katakanaDakuten.json';
 import yoonKatakanaData from '@/assets/data/katakanaYoon.json';
-import kanjiDataN5 from '@/assets/data/kanjiData_N5.json'; // Importă datele kanji
+import kanjiDataN5 from '@/assets/data/kanjiData_N5.json'; // Backup pentru fallback
 import { router } from 'expo-router';
 import { useTheme } from '@/components/ThemeContext'; // Calea corectă!
 import { lightTheme, darkTheme } from '@/constants/Colors'; // Asigură-te că ai importat corect temele
@@ -24,6 +24,36 @@ interface KanjiInfo { // Aici definim tipul datelor din kanjiDataN5
     examples: { sentence: string; reading: string; meaning: string }[];
 }
 
+// Lista statică de kanji N5 ca fallback
+const N5_KANJI_FALLBACK = [
+    '日', '一', '国', '人', '年', '大', '十', '二', '本', '中', '長', '出', '三', '時', 
+    '行', '見', '月', '分', '後', '前', '生', '五', '間', '上', '東', '四', '今', '金', 
+    '九', '入', '学', '高', '安', '子', '外', '八', '六', '下', '来', '気', '小', '七', 
+    '山', '話', '女', '北', '午', '百', '書', '先', '名', '川', '千', '水', '半', '男', 
+    '西', '電', '校', '語', '土', '木', '聞', '食', '車', '何', '南', '万', '毎', '白', 
+    '天', '母', '火', '右', '読', '友', '左', '休', '父', '雨', '買', '足', '飲', '駅'
+];
+
+// Funcția pentru a obține kanji N5 din API
+const fetchN5Kanji = async (): Promise<string[]> => {
+    try {
+        // Încercăm să obținem lista de kanji N5 din KanjiAPI
+        // Nota: KanjiAPI nu are endpoint direct pentru N5, deci folosim lista statică
+        // În viitor poți încerca alte API-uri sau să construiești propria listă
+        
+        // Pentru demonstrație, simulez un API call
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Simulez delay
+        
+        // Returnez lista statică (în viitor poți înlocui cu API real)
+        return N5_KANJI_FALLBACK;
+        
+    } catch (error) {
+        console.error('Eroare la încărcarea kanji N5:', error);
+        // Fallback la JSON local
+        return Object.keys(kanjiDataN5 as Record<string, KanjiInfo>);
+    }
+};
+
 export default function HiraganaScreen() {
     const [selectedTab, setSelectedTab] = useState<'hiragana' | 'katakana' | 'kanji'>('hiragana');
     const [basicData, setBasicData] = useState<any[]>([]);
@@ -32,7 +62,11 @@ export default function HiraganaScreen() {
     const [katakanaFlatData, setKatakanaFlatData] = useState<any[]>([]);
     const [katakanaDakutenFlatData, setKatakanaDakutenFlatData] = useState<any[]>([]);
     const [katakanaYoonFlatData, setKatakanaYoonFlatData] = useState<any[]>([]);
-    const kanjiListN5: string[] = Object.keys(kanjiDataN5 as Record<string, KanjiInfo>);
+    
+    // State pentru kanji cu API
+    const [kanjiListN5, setKanjiListN5] = useState<string[]>([]);
+    const [kanjiLoading, setKanjiLoading] = useState<boolean>(false);
+    
     const { theme, toggleTheme } = useTheme(); // Acum funcționează corect!
     const currentTheme = theme === 'light' ? lightTheme : darkTheme;
 
@@ -45,8 +79,28 @@ export default function HiraganaScreen() {
             setKatakanaFlatData(katakanaData.flatMap((section) => section.rows));
             setKatakanaDakutenFlatData(dukatenKatakanaData.flatMap((section) => section.rows));
             setKatakanaYoonFlatData(yoonKatakanaData.flatMap((section) => section.rows));
+        } else if (selectedTab === 'kanji') {
+            // Încarcă kanji doar dacă nu sunt deja încărcate
+            if (kanjiListN5.length === 0 && !kanjiLoading) {
+                loadKanjiN5();
+            }
         }
     }, [selectedTab]);
+
+    // Funcția pentru a încărca kanji N5
+    const loadKanjiN5 = async () => {
+        setKanjiLoading(true);
+        try {
+            const kanjiList = await fetchN5Kanji();
+            setKanjiListN5(kanjiList);
+        } catch (error) {
+            console.error('Eroare la încărcarea kanji:', error);
+            // Fallback la JSON local
+            setKanjiListN5(Object.keys(kanjiDataN5 as Record<string, KanjiInfo>));
+        } finally {
+            setKanjiLoading(false);
+        }
+    };
 
 
     const renderItem = ({ item }: { item: { romaji: string; kana: string } }, listType: 'basic' | 'dakuten' | 'yoon' | 'katakana') => (

@@ -24,19 +24,123 @@ export default function KanjiDetailsPage() {
   const { theme, toggleTheme } = useTheme(); // Acum funcționează corect!
   const currentTheme = theme === 'light' ? lightTheme : darkTheme;
 
+  const fetchKanjiBasicInfo = async (kanji: string) => {
+    try {
+        const response = await fetch(`https://kanjiapi.dev/v1/kanji/${kanji}`);
+        if(!response.ok) throw new Error('Failed to fetch kanji basic info');
+
+        const data = await response.json();
+        return {
+          onyomi: data.on_readings || [],
+          kunyomi: data.kun_readings || [],
+          meaning: data.meaning ? data.meaning.split(',') : '',
+        };
+      } catch (error) {
+        console.error('Error loading informations about kanji:', error);
+        throw error;
+      }
+  };
+
+  const fetchKanjiWords = async (kanji: string) => {
+    try {
+      const response = await fetch(`https://jisho.org/api/v1/search/words?keyword=${kanji}`);
+      const data = await response.json();
+
+      const onyomiWords: any[] = [];
+      const kunyomiWords: any[] = [];
+
+      data.data.slice(0,5).forEach((item: any) => {
+        if(item.japanese && item.senses) {
+          const word = item.japanese[0].word || item.japanese[0].reading;
+          const reading = item.japanese[0].reading;
+          const meaning = item.senses[0].english_definitions.join(', ');
+
+          if (reading.match(/[ァ-ヴ]/)) { // Katakana = onyomi
+            onyomiWords.push({ word, reading, meaning });
+          } else {
+            kunyomiWords.push({ word, reading, meaning });
+          }
+        }
+      });
+      return { onyomiWords, kunyomiWords };
+    } catch (error) {
+      console.error('Error loading words for kanji:', error);
+      return { onyomiWords: [], kunyomiWords: [] };
+    }
+  }
+
+  const fetchKanjiSentences = async (kanji: string) => {
+    try {
+      const response = await fetch(`https://tatoeba.org/en/api_v0/search?query=${kanji}&from=jpn&to=eng&limit=3`);
+      const data = await response.json();
+  
+      const examples: any[] = [];
+  
+      if (data.results) {
+        data.results.forEach((result: any) => {
+          if (result.text) {
+            // Caută traducerea în engleză în array-ul translations
+            const englishTranslation = result.translations?.find((t: any) => t.lang === 'eng');
+            
+            // Caută transcrierea romanji în array-ul transcriptions
+            const romanjiTranscription = result.transcriptions?.find((t: any) => 
+              t.script === 'Latn' && t.type === 'transcription'
+            );
+            
+            examples.push({
+              sentence: result.text,
+              reading: result.text, // Tatoeba nu oferă furigana separat
+              romanji: romanjiTranscription?.text || '', // Romanji din transcriptions
+              meaning: englishTranslation?.text || 'No translation available'
+            });
+          }
+        });
+      }
+  
+      return examples;
+    } catch (error) {
+      console.error('Error loading sentences for kanji:', error);
+      return [];
+    }
+  }
+
   useEffect(() => {
     const fetchKanjiDetails = async () => {
       setLoading(true);
       setError(null);
+      // try {
+      //   const data = (kanjiDataN5 as Record<string, KanjiInfo>)[selectedKanji as string];
+      //   if (data) {
+      //     setKanjiData(data);
+      //   } else {
+      //     setError('Informations for this kanji not found.');
+      //   }
+      // } catch (e: any) {
+      //   setError('Error loading informations about kanji.');
+      //   console.error(e);
+      // } finally {
+      //   setLoading(false);
+      // }
       try {
-        const data = (kanjiDataN5 as Record<string, KanjiInfo>)[selectedKanji as string];
-        if (data) {
-          setKanjiData(data);
-        } else {
-          setError('Informațiile pentru acest kanji nu au fost găsite.');
-        }
+        const [basicInfo, words, sentences] = await Promise.all([
+          fetchKanjiBasicInfo(selectedKanji as string),
+          fetchKanjiWords(selectedKanji as string),
+          fetchKanjiSentences(selectedKanji as string),
+        ]);
+
+        const combinedData: KanjiInfo = {
+          onyomi: basicInfo.onyomi,
+          kunyomi: basicInfo.kunyomi,
+          meaning: basicInfo.meaning,
+          onyomiWords: words.onyomiWords,
+          kunyomiWords: words.kunyomiWords,
+          specialReadings: [],
+          examples: sentences,
+        };
+
+        setKanjiData(combinedData);
       } catch (e: any) {
-        setError('Eroare la încărcarea informațiilor despre kanji.');
+        setError('Error loading informations about kanji.');
         console.error(e);
       } finally {
         setLoading(false);
