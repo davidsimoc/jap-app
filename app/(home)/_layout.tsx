@@ -4,12 +4,14 @@ import { StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '@/components/ThemeContext'; // Calea corectă!
 import { lightTheme, darkTheme } from '@/constants/Colors'; // Asigură-te că ai importat corect temele
+import { Host } from '@expo/ui/swift-ui';
 
 export default function HomeLayout() {
     const navigation = useNavigation();
     const { theme, toggleTheme } = useTheme(); // Acum funcționează corect!
     const currentTheme = theme === 'light' ? lightTheme : darkTheme;
     return (
+        <Host>
         <Tabs
             screenOptions={{
                 headerShown: false,
@@ -189,6 +191,7 @@ export default function HomeLayout() {
                 }}
             />
         </Tabs>
+        </Host>
     );
 }
 
