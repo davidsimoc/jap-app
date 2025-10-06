@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity } from 'react-native';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
-import kanjiDataN5 from '@/assets/data/kanjiData_N5.json'; // Importă datele kanji
-import { useTheme } from '@/components/ThemeContext'; // Calea corectă!
-import { lightTheme, darkTheme } from '@/constants/Colors'; // Asigură-te că ai importat corect temele
+import { useTheme } from '@/components/ThemeContext'; 
+import { lightTheme, darkTheme } from '@/constants/Colors';
 import { isKana, toRomaji, toKatakana } from 'wanakana';
 
 interface KanjiInfo {
@@ -22,7 +21,7 @@ export default function KanjiDetailsPage() {
   const [kanjiData, setKanjiData] = useState<KanjiInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { theme, toggleTheme } = useTheme(); // Acum funcționează corect!
+  const { theme, toggleTheme } = useTheme(); 
   const currentTheme = theme === 'light' ? lightTheme : darkTheme;
 
   const fetchKanjiBasicInfo = async (kanji: string) => {
@@ -103,21 +102,31 @@ export default function KanjiDetailsPage() {
       const examples: any[] = [];
 
       if (data.results) {
-        data.results.forEach((result: any) => {
+        data.results.slice(0,5).forEach((result: any) => {
           if (result.text) {
-            // Caută traducerea în engleză în array-ul translations
-            const englishTranslation = result.translations?.find((t: any) => t.lang === 'eng');
+            let englishMeaning = 'No translation available';
+            if (result.translations && result.translations.length > 0 && result.translations[0].length > 0) {
+              englishMeaning = result.translations[0][0].text || 'No translation available';
+            }
 
-            // Caută transcrierea romanji în array-ul transcriptions
-            const romanjiTranscription = result.transcriptions?.find((t: any) =>
-              t.script === 'Latn' && t.type === 'transcription'
+            const furiganaTranscription = result.transcriptions?.find((t: any) =>
+              t.script === 'Hrkt' && t.type === 'altscript'
             );
+
+            let readingText = '';
+            if (furiganaTranscription?.text) {
+              readingText = furiganaTranscription.text
+                .replace(/\[([^|]+)\|([^\]]+)\]/g, '$2') // Ex: [人|ひと] -> ひと
+                .replace(/[^ぁ-んァ-ヴ0-9.?!、。]+/g, ''); 
+            }
+
+            const romanjiText = readingText ? toRomaji(readingText) : '';
 
             examples.push({
               sentence: result.text,
-              reading: result.text, // Tatoeba nu oferă furigana separat
-              romanji: romanjiTranscription?.text || '', // Romanji din transcriptions
-              meaning: englishTranslation?.text || 'No translation available'
+              reading: readingText,  
+              romanji: romanjiText,  
+              meaning: englishMeaning 
             });
           }
         });
@@ -139,7 +148,7 @@ export default function KanjiDetailsPage() {
 
         const words = await fetchKanjiWords(
           selectedKanji as string,
-          basicInfo.onyomi,    
+          basicInfo.onyomi,
           basicInfo.kunyomi
         );
 
@@ -168,7 +177,7 @@ export default function KanjiDetailsPage() {
   }, [selectedKanji]);
 
   if (loading) {
-    return <View style={styles.container}><Text style={styles.loadingText}>Se încarcă informațiile...</Text></View>;
+    return <View style={styles.container}><Text style={styles.loadingText}>Loading informations...</Text></View>;
   }
 
   if (error) {
@@ -176,7 +185,7 @@ export default function KanjiDetailsPage() {
   }
 
   if (!kanjiData) {
-    return <View style={styles.container}><Text style={styles.notFoundText}>Kanji nu găsit.</Text></View>;
+    return <View style={styles.container}><Text style={styles.notFoundText}>Kanji not found.</Text></View>;
   }
 
   return (
@@ -199,16 +208,19 @@ export default function KanjiDetailsPage() {
           <Text style={{ ...styles.value, color: currentTheme.text }}>{kanjiData.meaning.join(', ')}</Text>
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Onyomi Readings:</Text>
-          {kanjiData.onyomiWords.map((item, index) => (
-            <View key={index} style={styles.wordItem}>
-              <Text style={{ ...styles.word, color: currentTheme.text }}>{item.word} ({item.reading})</Text>
-              <Text style={{ ...styles.wordMeaning, color: currentTheme.secondaryText }}>{item.meaning}</Text>
-            </View>
-          ))}
-        </View>
+        {kanjiData.onyomiWords.length > 0 && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Onyomi Readings:</Text>
+            {kanjiData.onyomiWords.map((item, index) => (
+              <View key={index} style={styles.wordItem}>
+                <Text style={{ ...styles.word, color: currentTheme.text }}>{item.word} ({item.reading})</Text>
+                <Text style={{ ...styles.wordMeaning, color: currentTheme.secondaryText }}>{item.meaning}</Text>
+              </View>
+            ))}
+          </View>
+        )}
 
+        {kanjiData.kunyomiWords.length > 0 && (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Kunyomi Readings:</Text>
           {kanjiData.kunyomiWords.map((item, index) => (
@@ -218,6 +230,7 @@ export default function KanjiDetailsPage() {
             </View>
           ))}
         </View>
+        )}
         {kanjiData.specialReadings && kanjiData.specialReadings.length > 0 && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Special Readings:</Text>
@@ -318,7 +331,7 @@ const styles = StyleSheet.create({
     // color: darkTheme.secondaryText,
   },
   exampleItem: {
-    marginBottom: 12,
+    marginBottom: 15,
   },
   example: {
     fontSize: 20,
