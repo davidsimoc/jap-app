@@ -24,17 +24,17 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// if (Platform.OS === 'web') {
+let auth;
 
-//   persistence = undefined; 
-// } else {
-//   // Pe mobile, folosește AsyncStorage
-//   persistence = getReactNativePersistence(AsyncStorage);
-// }
-
-const auth = initializeAuth(app, {
-  persistence: getReactNativePersistence(AsyncStorage),
-});
+if (Platform.OS === 'web') {
+  // Pe web, folosește getAuth() simplu
+  auth = getAuth(app);
+} else {
+  // Pe mobile, folosește AsyncStorage
+  auth = initializeAuth(app, {
+    persistence: getReactNativePersistence(AsyncStorage),
+  });
+}
 
 export {auth};
 export{app};
