@@ -10,7 +10,7 @@ export default function HomeScreen() {
   const { theme, toggleTheme } = useTheme(); // Acum funcționează corect!
   const currentTheme = theme === 'light' ? lightTheme : darkTheme;
 
-  const handleLessonPress = (route: string) => {
+  const handleLessonPress = (route: any) => {
     router.push(route);
   };
 

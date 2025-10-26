@@ -17,6 +17,7 @@ export default {
           backgroundColor: "#ffffff",
          // userInterfaceStyle: "dark",
         },
+        softwareKeyboardLayoutMode: "pan",
       },
       web: {
         bundler: "metro",
@@ -36,6 +37,9 @@ export default {
       ],
       experiments: {
         typedRoutes: true,
+      },
+      extra: {
+        GEMINI_API_KEY: process.env.EXPO_PUBLIC_GEMINI_API_KEY,
       },
     },
   };

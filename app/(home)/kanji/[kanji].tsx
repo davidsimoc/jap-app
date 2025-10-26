@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useTheme } from '@/components/ThemeContext'; 
 import { lightTheme, darkTheme } from '@/constants/Colors';
 import { isKana, toRomaji, toKatakana } from 'wanakana';
+import { preloadVoices, speakJapanese } from '@/services/ttsService';
 
 interface KanjiInfo {
 
@@ -140,6 +142,9 @@ export default function KanjiDetailsPage() {
   }
 
   useEffect(() => {
+    // Preload TTS voices la montare pentru a evita lag la primul play
+    preloadVoices();
+
     const fetchKanjiDetails = async () => {
       setLoading(true);
       setError(null);
@@ -213,7 +218,17 @@ export default function KanjiDetailsPage() {
             <Text style={styles.sectionTitle}>Onyomi Readings:</Text>
             {kanjiData.onyomiWords.map((item, index) => (
               <View key={index} style={styles.wordItem}>
-                <Text style={{ ...styles.word, color: currentTheme.text }}>{item.word} ({item.reading})</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <Text style={{ ...styles.word, color: currentTheme.text }}>{item.word} ({item.reading})</Text>
+                  <View style={{ flexDirection: 'row' }}>
+                    <TouchableOpacity style={styles.speakerButton} onPress={() => speakJapanese(item.reading || item.word)}>
+                      <Ionicons name="volume-high-outline" size={22} color={currentTheme.accent} />
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.speakerButton} onPress={() => speakJapanese(item.reading || item.word, { slow: true })}>
+                      <Ionicons name="volume-low-outline" size={22} color={currentTheme.secondary} />
+                    </TouchableOpacity>
+                  </View>
+                </View>
                 <Text style={{ ...styles.wordMeaning, color: currentTheme.secondaryText }}>{item.meaning}</Text>
               </View>
             ))}
@@ -225,7 +240,17 @@ export default function KanjiDetailsPage() {
           <Text style={styles.sectionTitle}>Kunyomi Readings:</Text>
           {kanjiData.kunyomiWords.map((item, index) => (
             <View key={index} style={styles.wordItem}>
-              <Text style={{ ...styles.word, color: currentTheme.text }}>{item.word} ({item.reading})</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Text style={{ ...styles.word, color: currentTheme.text }}>{item.word} ({item.reading})</Text>
+                <View style={{ flexDirection: 'row' }}>
+                  <TouchableOpacity style={styles.speakerButton} onPress={() => speakJapanese(item.reading || item.word)}>
+                    <Ionicons name="volume-high-outline" size={22} color={currentTheme.accent} />
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.speakerButton} onPress={() => speakJapanese(item.reading || item.word, { slow: true })}>
+                    <Ionicons name="volume-low-outline" size={22} color={currentTheme.secondary} />
+                  </TouchableOpacity>
+                </View>
+              </View>
               <Text style={{ ...styles.wordMeaning, color: currentTheme.secondaryText }}>{item.meaning}</Text>
             </View>
           ))}
@@ -247,7 +272,17 @@ export default function KanjiDetailsPage() {
           <Text style={styles.sectionTitle}>Examples:</Text>
           {kanjiData.examples.map((item, index) => (
             <View key={index} style={styles.exampleItem}>
-              <Text style={{ ...styles.example, color: currentTheme.text }}>{item.sentence}</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Text style={{ ...styles.example, color: currentTheme.text }}>{item.sentence}</Text>
+                <View style={{ flexDirection: 'row' }}>
+                  <TouchableOpacity style={styles.speakerButton} onPress={() => speakJapanese(item.reading || item.sentence)}>
+                    <Ionicons name="volume-high-outline" size={22} color={currentTheme.accent} />
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.speakerButton} onPress={() => speakJapanese(item.reading || item.sentence, { slow: true })}>
+                    <Ionicons name="volume-low-outline" size={22} color={currentTheme.secondary} />
+                  </TouchableOpacity>
+                </View>
+              </View>
               <Text style={{ ...styles.exampleReading, color: currentTheme.secondaryText }}>{item.reading}</Text>
               <Text style={{ ...styles.exampleReading, color: currentTheme.secondaryText }}>{item.romanji}</Text>
               <Text style={{ ...styles.exampleMeaning, color: currentTheme.accent }}>{item.meaning}</Text>
@@ -353,5 +388,9 @@ const styles = StyleSheet.create({
   backButtonText: {
     fontSize: 18,
     color: darkTheme.accent,
+  },
+  speakerButton: {
+    marginLeft: 8,
+    padding: 6,
   },
 });
