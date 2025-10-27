@@ -3,7 +3,8 @@ import { getFirestore } from 'firebase/firestore'; // Asigură-te că această l
 import { 
     getAuth, 
     initializeAuth, 
-    getReactNativePersistence 
+    getReactNativePersistence,
+    Auth
   } from 'firebase/auth';
   //import { getReactNativePersistence } from 'firebase/auth/react-native'; 
   import AsyncStorage from '@react-native-async-storage/async-storage';

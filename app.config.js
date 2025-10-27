@@ -3,15 +3,18 @@ export default {
       name: "Nihongo Master",
       slug: "frontend",
       version: "1.0.0",
+      owner: "davidsimoc",
       orientation: "portrait",
       icon: "./assets/images/icon.png",
       scheme: "myapp",
       userInterfaceStyle: "automatic",
       ios: {
+        bundleIdentifier: "com.nihongo.master",
         supportsTablet: true,
         userInterfaceStyle: "dark",
       },
       android: {
+        "package": "com.nihongo.master",
         adaptiveIcon: {
           foregroundImage: "./assets/images/adaptive-icon.png",
           backgroundColor: "#ffffff",
@@ -40,6 +43,10 @@ export default {
       },
       extra: {
         GEMINI_API_KEY: process.env.EXPO_PUBLIC_GEMINI_API_KEY,
+
+        eas: {
+          projectId: "f3b6bc3d-f9e4-46ca-b9c2-15d4dd34d558"
+        }
       },
     },
   };

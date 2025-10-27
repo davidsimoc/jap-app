@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useTheme } from '@/components/ThemeContext'; 
 import { lightTheme, darkTheme } from '@/constants/Colors';
 import { isKana, toRomaji, toKatakana } from 'wanakana';
 import { preloadVoices, speakJapanese } from '@/services/ttsService';
-
+import { SafeAreaView } from 'react-native-safe-area-context';
 interface KanjiInfo {
 
   onyomi: string[];

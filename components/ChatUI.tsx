@@ -154,7 +154,7 @@ export default function ChatUI() {
                     onChangeText={setInputText}
                     placeholder="Type a message..."
                     placeholderTextColor={currentTheme.text + '60'}
-                    multiline={false}
+                    multiline={true}
                     returnKeyType="send"
                     onSubmitEditing={handleSend}
                 />
@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     messageContainer: {
-        marginVertical: 5,
+        marginVertical: 10,
         padding: 10,
         borderRadius: 10,
         maxWidth: '80%',

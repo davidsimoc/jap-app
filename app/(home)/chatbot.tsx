@@ -34,17 +34,8 @@ export default function ChatbotScreen() {
     const currentTheme = theme === 'light' ? lightTheme : darkTheme;
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: currentTheme.background }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: currentTheme.background, marginBottom: -30 }}>
             <ChatUI /> 
         </SafeAreaView>
     );
 }
-
-
-const styles = StyleSheet.create({
-    title: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        marginBottom: 10,
-    },
-});

@@ -5,7 +5,7 @@ import {
   signInWithEmailAndPassword,
   signOut,
   sendEmailVerification as firebaseSendEmailVerification,
-  User
+  User,
 } from "firebase/auth";
 import { firebaseConfig } from '../../firebaseConfig' // ai deja asta
 import { AuthUser } from "./authUser";
