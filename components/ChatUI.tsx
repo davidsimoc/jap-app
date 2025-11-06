@@ -1,16 +1,18 @@
-import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, Platform, StatusBar, TextInput, TouchableOpacity, ScrollView, FlatList, KeyboardAvoidingView } from 'react-native';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, Platform, StatusBar, TextInput, TouchableOpacity, ScrollView, FlatList, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { GoogleGenAI } from '@google/genai';
 import { useTheme } from '@/components/ThemeContext';
 import { lightTheme, darkTheme } from '@/constants/Colors';
-import Constants from 'expo-constants'; 
+import Constants from 'expo-constants';
+import { updateCurrentUser } from 'firebase/auth';
+import { listenMessages, addMessage } from '@/services/firestoreChat';
 
 // 1. Configurare API
-const GEMINI_API_KEY = process.env.EXPO_PUBLIC_GEMINI_API_KEY; 
+const GEMINI_API_KEY = process.env.EXPO_PUBLIC_GEMINI_API_KEY;
 
 // 2. Inițializează clientul AI (cu verificare)
 const ai = GEMINI_API_KEY ? new GoogleGenAI({ apiKey: GEMINI_API_KEY }) : null;
-const model = "gemini-1.5-flash"; 
+const model = "gemini-1.5-flash";
 
 // 3. Instrucțiunile Sensei (Persona)
 // În components/ChatUI.tsx
@@ -31,32 +33,58 @@ const initialMessages = [
     },
 ];
 
-export default function ChatUI() {
+type ChatUIProps = { userId: string; conversationId: string | null };
+
+export default function ChatUI({ userId, conversationId }: ChatUIProps) {
     const [messages, setMessages] = useState(initialMessages);
+    const listRef = useRef<FlatList<any>>(null);
+    const INPUT_BOTTOM_SPACE = 96; // keep last message fully visible above input
     const [inputText, setInputText] = useState('');
     const { theme } = useTheme();
     const currentTheme = theme === 'light' ? lightTheme : darkTheme;
+
+    // Subscribe to Firestore messages for the selected conversation
+    useEffect(() => {
+        if (!conversationId) return;
+        const unsub = listenMessages(conversationId, (items) => {
+            const mapped = items.map((m: any) => ({
+                id: m.id,
+                text: m.text,
+                isUser: m.role === 'user',
+            }));
+            setMessages(mapped);
+        });
+        return unsub;
+    }, [conversationId]);
+
+    // Ensure we snap to bottom whenever messages change
+    useEffect(() => {
+        requestAnimationFrame(() => {
+            listRef.current?.scrollToEnd({ animated: true });
+        });
+    }, [messages]);
 
     const handleSend = useCallback(async () => {
         if (!inputText.trim() || !ai) {
             console.log('Missing input or AI client:', { inputText: inputText.trim(), ai: !!ai });
             return;
         }
+        if (!conversationId) {
+            console.warn('No conversation selected');
+            return;
+        }
 
-        const userMessage = {
-            id: Date.now(),
-            text: inputText,
-            isUser: true,
-        };
-
-        setMessages(prev => [...prev, userMessage]);
+        const userMessage = { id: Date.now(), text: inputText, isUser: true };
         setInputText('');
+
+        // Persist user message
+        await addMessage(conversationId, 'user', userMessage.text);
 
         try {
             // Use direct API call instead of SDK
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${GEMINI_API_KEY}`;
-            
-            // Build conversation history
+
+            // Build conversation history (use latest state + current user message)
             const conversationHistory = [...messages, userMessage].map(m => ({
                 role: m.isUser ? "user" : "model",
                 parts: [{ text: m.text }]
@@ -85,36 +113,31 @@ export default function ChatUI() {
 
             const data = await response.json();
             console.log('Direct API response:', data);
-            
+
             const aiResponse = data.candidates?.[0]?.content?.parts?.[0]?.text;
             console.log('AI Response text:', aiResponse);
 
-            const newAiMessage = {
-                id: Date.now() + 1,
-                text: aiResponse || "Sumimasen! Couldn't process an answer. Try again.",
-                isUser: false,
-            };
-            setMessages(prev => [...prev, newAiMessage]);
+            const finalText = aiResponse || "Sumimasen! Couldn't process an answer. Try again.";
+            // Persist model message
+            await addMessage(conversationId, 'model', finalText);
 
         } catch (error) {
             console.error("Error when calling Gemini API:", error);
-            const errorMessage = {
-                id: Date.now() + 1,
-                text: "Gomen nasai! A communication error occured.",
-                isUser: false,
-            };
-            setMessages(prev => [...prev, errorMessage]);
+            await addMessage(conversationId, 'model', 'Gomen nasai! A communication error occured.');
         }
-    }, [inputText, messages, ai]); 
-    
+    }, [inputText, messages, ai, conversationId]);
+
     const renderMessage = ({ item }: { item: any }) => (
         <View style={[
             styles.messageContainer,
-            item.isUser ? styles.userMessage : styles.aiMessage
+            item.isUser ? styles.userMessage : styles.aiMessage,
+            {
+                backgroundColor: item.isUser ? currentTheme.secondary : currentTheme.surface
+            }
         ]}>
             <Text style={[
                 styles.messageText,
-                { color: currentTheme.text }
+                { color: item.isUser ? currentTheme.text : currentTheme.text }
             ]}>
                 {item.text}
             </Text>
@@ -122,54 +145,61 @@ export default function ChatUI() {
     );
 
     return (
-        <KeyboardAvoidingView 
-            style={{ flex: 1, backgroundColor: currentTheme.background }}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            keyboardVerticalOffset={0}
-        >
-            <StatusBar barStyle={theme === 'dark' ? 'light-content' : 'dark-content'} />
-            <Text style={{ ...styles.title, color: currentTheme.text, alignSelf: 'center', marginTop: 10 }}>
-                AI Language Partner
-            </Text>
-            
-            <FlatList
-                data={messages}
-                renderItem={renderMessage}
-                keyExtractor={(item) => item.id.toString()}
-                style={{ flex: 1, padding: 10 }}
-                contentContainerStyle={{ paddingBottom: 10 }}
-            />
-            
-            <View style={styles.inputContainer}>
-                <TextInput
-                    style={[
-                        styles.textInput,
-                        {
-                            color: currentTheme.text,
-                            backgroundColor: currentTheme.background,
-                            borderColor: currentTheme.text + '30',
-                        }
-                    ]}
-                    value={inputText}
-                    onChangeText={setInputText}
-                    placeholder="Type a message..."
-                    placeholderTextColor={currentTheme.text + '60'}
-                    multiline={true}
-                    returnKeyType="send"
-                    onSubmitEditing={handleSend}
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+            <KeyboardAvoidingView
+                style={{ flex: 1, backgroundColor: currentTheme.background }}
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                keyboardVerticalOffset={0}
+            >
+                <StatusBar barStyle={theme === 'dark' ? 'light-content' : 'dark-content'} />
+
+                <FlatList
+                    ref={listRef}
+                    data={messages}
+                    renderItem={renderMessage}
+                    keyExtractor={(item) => item.id.toString()}
+                    style={{ flex: 1, padding: 10 }}
+                    contentContainerStyle={{ paddingTop: 10, paddingBottom: INPUT_BOTTOM_SPACE }}
+                    showsVerticalScrollIndicator
+                    onContentSizeChange={() => listRef.current?.scrollToEnd({ animated: true })}
+                    onLayout={() => listRef.current?.scrollToEnd({ animated: false })}
+                    ListFooterComponent={<View style={{ height: 4 }} />}
                 />
-                <TouchableOpacity
-                    style={[
-                        styles.sendButton,
-                        { backgroundColor: inputText.trim() ? '#007AFF' : '#ccc' }
-                    ]}
-                    onPress={handleSend}
-                    disabled={!inputText.trim()}
-                >
-                    <Text style={styles.sendButtonText}>Send</Text>
-                </TouchableOpacity>
-            </View>
-        </KeyboardAvoidingView>
+
+                <View style={styles.inputContainer}>
+                    <TextInput
+                        style={[
+                            styles.textInput,
+                            {
+                                color: currentTheme.text,
+                                backgroundColor: currentTheme.background,
+                                borderColor: currentTheme.text + '30',
+                            }
+                        ]}
+                        value={inputText}
+                        onChangeText={setInputText}
+                        placeholder="Type a message..."
+                        placeholderTextColor={currentTheme.text + '60'}
+                        multiline={true}
+                        returnKeyType="send"
+                        onSubmitEditing={handleSend}
+                    />
+                    <TouchableOpacity
+                        style={[
+                            styles.sendButton,
+                            { backgroundColor: inputText.trim() ? currentTheme.accent : currentTheme.surface }
+                        ]}
+                        onPress={handleSend}
+                        disabled={!inputText.trim()}
+                    >
+                        <Text style={[
+                            styles.sendButtonText,
+                            { color: inputText.trim() ? darkTheme.text : currentTheme.secondaryText}
+                        ]}>Send</Text>
+                    </TouchableOpacity>
+                </View>
+            </KeyboardAvoidingView>
+        </TouchableWithoutFeedback>
     );
 }
 
@@ -187,7 +217,6 @@ const styles = StyleSheet.create({
     },
     userMessage: {
         alignSelf: 'flex-end',
-        backgroundColor: '#007AFF',
     },
     aiMessage: {
         alignSelf: 'flex-start',
@@ -218,7 +247,6 @@ const styles = StyleSheet.create({
         borderRadius: 20,
     },
     sendButtonText: {
-        color: 'white',
         fontWeight: 'bold',
     },
 });

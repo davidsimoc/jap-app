@@ -1,12 +1,14 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import { View, Text, StyleSheet, Platform, StatusBar } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, SafeAreaView, Modal, FlatList, Pressable } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { GiftedChat, IMessage, InputToolbar, InputToolbarProps } from 'react-native-gifted-chat';
 import { GoogleGenAI } from '@google/genai';
 import { useTheme } from '@/components/ThemeContext';
 import { lightTheme, darkTheme } from '@/constants/Colors';
 import Constants from 'expo-constants'; // Pentru a accesa variabila de mediu
-import { SafeAreaView } from 'react-native-safe-area-context';
 import ChatUI from '@/components/ChatUI'; 
+import { getAuth } from 'firebase/auth';
+import { listConversations, createConversation, addMessage, deleteConversation } from '@/services/firestoreChat';
 
 const GEMINI_API_KEY = Constants.expoConfig?.extra?.GEMINI_API_KEY ||
     process.env.EXPO_PUBLIC_GEMINI_API_KEY;
@@ -30,12 +32,131 @@ const initialMessages: IMessage[] = [
 ];
 
 export default function ChatbotScreen() {
-    const { theme } = useTheme();
-    const currentTheme = theme === 'light' ? lightTheme : darkTheme;
+  const { theme } = useTheme();
+  const currentTheme = theme === 'light' ? lightTheme : darkTheme;
+  const uid = getAuth().currentUser?.uid || 'test-user';
 
-    return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: currentTheme.background, marginBottom: -30 }}>
-            <ChatUI /> 
+  const [showHistory, setShowHistory] = useState(false);
+  const [conversations, setConversations] = useState<any[]>([]);
+  const [conversationId, setConversationId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!uid) return;
+    const unsub = listConversations(uid, setConversations);
+    return unsub;
+  }, [uid]);
+
+  const handleNewChat = async () => {
+    const id = await createConversation(uid, 'New chat');
+    setConversationId(id);
+    setShowHistory(false);
+    // Seed with greeting so the chat isn't empty
+    try {
+      await addMessage(
+        id,
+        'model',
+        "こんにちは！私はあなたの日本語の先生です。何を練習したいですか？ (Kon'nichiwa! I am your Japanese teacher. What do you want to practice?)",
+      );
+    } catch {}
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteConversation(id);
+      if (conversationId === id) {
+        setConversationId(null);
+      }
+    } catch (e) {
+      // no-op
+    }
+  };
+
+  // Auto-select latest conversation or create one on first open
+  useEffect(() => {
+    if (!uid) return;
+    if (conversationId) return;
+    if (conversations.length > 0) {
+      setConversationId(conversations[0].id);
+    } else {
+      // create first chat automatically
+      (async () => {
+        await handleNewChat();
+      })();
+    }
+  }, [uid, conversations, conversationId]);
+
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: currentTheme.background }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 12 }}>
+        <Text style={{ fontSize: 18, fontWeight: '600', color: currentTheme.text }}>AI Language Partner</Text>
+        <Pressable onPress={() => setShowHistory(true)}>
+          <Text style={{ fontSize: 16, color: currentTheme.text }}>History</Text>
+        </Pressable>
+      </View>
+
+      <ChatUI userId={uid} conversationId={conversationId} />
+
+      <Modal visible={showHistory} animationType="slide" onRequestClose={() => setShowHistory(false)}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: currentTheme.background }}>
+          <View style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 12 }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+              <Text style={{ fontSize: 20, fontWeight: '600', color: currentTheme.text }}>Conversations</Text>
+              <Pressable onPress={() => setShowHistory(false)} style={{ paddingHorizontal: 8, paddingVertical: 4 }}>
+                <Text style={{ fontSize: 16, color: currentTheme.text }}>Close</Text>
+              </Pressable>
+            </View>
+
+            <Pressable 
+              onPress={handleNewChat} 
+              style={{ 
+                paddingHorizontal: 16, 
+                paddingVertical: 14, 
+                borderWidth: 1, 
+                borderRadius: 10, 
+                marginBottom: 16, 
+                borderColor: currentTheme.text + '40',
+                backgroundColor: currentTheme.surface || currentTheme.background
+              }}
+            >
+              <Text style={{ color: currentTheme.text, fontSize: 16 }}>+ New chat</Text>
+            </Pressable>
+          </View>
+
+          <FlatList
+            data={conversations}
+            keyExtractor={(item) => item.id}
+            contentContainerStyle={{ paddingHorizontal: 20 }}
+            renderItem={({ item }) => (
+              <View
+                style={{ 
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  paddingVertical: 16, 
+                  paddingHorizontal: 4,
+                  borderBottomWidth: 0.5, 
+                  borderBottomColor: currentTheme.text + '20' 
+                }}
+              >
+                <Pressable
+                  onPress={() => {
+                    setConversationId(item.id);
+                    setShowHistory(false);
+                  }}
+                  style={{ flex: 1, paddingRight: 12 }}
+                >
+                  <Text style={{ fontWeight: '600', color: currentTheme.text, fontSize: 16 }}>
+                    {item.title || 'Untitled chat'}
+                  </Text>
+                </Pressable>
+                <Pressable onPress={() => handleDelete(item.id)} hitSlop={8}>
+                  <Ionicons name="trash-outline" size={20} color={currentTheme.text} />
+                </Pressable>
+              </View>
+            )}
+          />
         </SafeAreaView>
-    );
+      </Modal>
+    </SafeAreaView>
+  );
 }
