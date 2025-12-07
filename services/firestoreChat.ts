@@ -27,15 +27,26 @@ export function listConversations(
   userId: string,
   onChange: (items: any[]) => void,
 ) {
+  if (!userId) {
+    console.warn('listConversations: userId is required');
+    return () => {}; // return empty unsubscribe function
+  }
   const q = query(
     collection(db, 'conversations'),
     where('userId', '==', userId),
     orderBy('updatedAt', 'desc'),
   );
-  return onSnapshot(q, (snap) => {
-    const items = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-    onChange(items);
-  });
+  return onSnapshot(
+    q,
+    (snap) => {
+      const items = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+      onChange(items);
+    },
+    (error) => {
+      console.error('Error in listConversations:', error);
+      onChange([]); // return empty array on error
+    }
+  );
 }
 
 export async function updateConversationTitle(

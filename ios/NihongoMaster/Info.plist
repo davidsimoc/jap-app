@@ -83,5 +83,7 @@
     <string>Dark</string>
     <key>UIViewControllerBasedStatusBarAppearance</key>
     <false/>
+    <key>NSSpeechRecognitionUsageDescription</key>
+    <string>We need access to speech recognition services to convert your spoken Japanese into text.</string>
   </dict>
 </plist>

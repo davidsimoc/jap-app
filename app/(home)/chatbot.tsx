@@ -1,61 +1,84 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, SafeAreaView, Modal, FlatList, Pressable } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { GiftedChat, IMessage, InputToolbar, InputToolbarProps } from 'react-native-gifted-chat';
-import { GoogleGenAI } from '@google/genai';
-import { useTheme } from '@/components/ThemeContext';
-import { lightTheme, darkTheme } from '@/constants/Colors';
-import Constants from 'expo-constants'; // Pentru a accesa variabila de mediu
-import ChatUI from '@/components/ChatUI'; 
-import { getAuth } from 'firebase/auth';
-import { listConversations, createConversation, addMessage, deleteConversation } from '@/services/firestoreChat';
+import React, { useState, useEffect } from "react";
+import { View, Text, Modal, FlatList, Pressable } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import {
+  GiftedChat,
+  IMessage,
+  InputToolbar,
+  InputToolbarProps,
+} from "react-native-gifted-chat";
+import { GoogleGenAI } from "@google/genai";
+import { useTheme } from "@/components/ThemeContext";
+import { lightTheme, darkTheme } from "@/constants/Colors";
+import Constants from "expo-constants"; // Pentru a accesa variabila de mediu
+import ChatUI from "@/components/ChatUI";
+import { getAuth } from "firebase/auth";
+import {
+  listConversations,
+  createConversation,
+  addMessage,
+  deleteConversation,
+} from "@/services/firestoreChat";
+import { SafeAreaView } from "react-native-safe-area-context";
+import VoiceChatUI from "@/components/VoiceChatUI";
 
-const GEMINI_API_KEY = Constants.expoConfig?.extra?.GEMINI_API_KEY ||
-    process.env.EXPO_PUBLIC_GEMINI_API_KEY;
+const GEMINI_API_KEY =
+  Constants.expoConfig?.extra?.GEMINI_API_KEY ||
+  process.env.EXPO_PUBLIC_GEMINI_API_KEY;
 
 const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 const model = "gemini-2.5-flash";
 
-const systemInstruction = "You are a 'Virtual Sensei' specialized in Japanese conversation practice, using N5 and N4 vocabulary. Respond only in Japanese, but if the user asks, you can provide the translation or explanations in English. Keep the conversation short, friendly, and focused on learning."
+const systemInstruction =
+  "You are a 'Virtual Sensei' specialized in Japanese conversation practice, using N5 and N4 vocabulary. Respond only in Japanese, but if the user asks, you can provide the translation or explanations in English. Keep the conversation short, friendly, and focused on learning.";
 
 const initialMessages: IMessage[] = [
-    {
-        _id: 1,
-        text: "こんにちは！私はあなたの日本語の先生です。何を練習したいですか？ (Kon'nichiwa! I am your Japanese teacher. What do you want to practice?)",
-        createdAt: new Date(),
-        user: {
-            _id: 2, // ID-ul AI-ului (Sensei-ului)
-            name: 'Sensei AI',
-            // Poți adăuga un avatar dacă vrei
-        },
+  {
+    _id: 1,
+    text: "こんにちは！私はあなたの日本語の先生です。何を練習したいですか？ (Kon'nichiwa! I am your Japanese teacher. What do you want to practice?)",
+    createdAt: new Date(),
+    user: {
+      _id: 2, // ID-ul AI-ului (Sensei-ului)
+      name: "Sensei AI",
+      // Poți adăuga un avatar dacă vrei
     },
+  },
 ];
 
 export default function ChatbotScreen() {
   const { theme } = useTheme();
-  const currentTheme = theme === 'light' ? lightTheme : darkTheme;
-  const uid = getAuth().currentUser?.uid || 'test-user';
+  const currentTheme = theme === "light" ? lightTheme : darkTheme;
+  const uid = getAuth().currentUser?.uid;
 
   const [showHistory, setShowHistory] = useState(false);
   const [conversations, setConversations] = useState<any[]>([]);
   const [conversationId, setConversationId] = useState<string | null>(null);
 
+  const [isVoiceMode, setIsVoiceMode] = useState(false);
+
   useEffect(() => {
-    if (!uid) return;
+    if (!uid) {
+      console.warn("User not authenticated - cannot load conversations");
+      return;
+    }
     const unsub = listConversations(uid, setConversations);
     return unsub;
   }, [uid]);
 
   const handleNewChat = async () => {
-    const id = await createConversation(uid, 'New chat');
+    if (!uid) {
+      console.warn("Cannot create conversation - user not authenticated");
+      return;
+    }
+    const id = await createConversation(uid, "New chat");
     setConversationId(id);
     setShowHistory(false);
     // Seed with greeting so the chat isn't empty
     try {
       await addMessage(
         id,
-        'model',
-        "こんにちは！私はあなたの日本語の先生です。何を練習したいですか？ (Kon'nichiwa! I am your Japanese teacher. What do you want to practice?)",
+        "model",
+        "こんにちは！私はあなたの日本語の先生です。何を練習したいですか？ (Kon'nichiwa! I am your Japanese teacher. What do you want to practice?)"
       );
     } catch {}
   };
@@ -87,38 +110,100 @@ export default function ChatbotScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: currentTheme.background }}>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 12 }}>
-        <Text style={{ fontSize: 18, fontWeight: '600', color: currentTheme.text }}>AI Language Partner</Text>
-        <Pressable onPress={() => setShowHistory(true)}>
-          <Text style={{ fontSize: 16, color: currentTheme.text }}>History</Text>
-        </Pressable>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          padding: 12,
+        }}
+      >
+        <Text
+          style={{ fontSize: 18, fontWeight: "600", color: currentTheme.text }}
+        >
+          AI Language Partner
+        </Text>
+        ]
+        <View style={{ flexDirection: "row", gap: 16 }}>
+          <Pressable onPress={() => setIsVoiceMode((prev) => !prev)}>
+            <Ionicons
+              name={isVoiceMode ? "chatbox-outline" : "mic-outline"}
+              size={24}
+              color={currentTheme.text}
+            />
+          </Pressable>
+
+          <Pressable onPress={() => setShowHistory(true)}>
+            <Text style={{ fontSize: 16, color: currentTheme.text }}>
+              History
+            </Text>
+          </Pressable>
+        </View>
       </View>
 
-      <ChatUI userId={uid} conversationId={conversationId} />
+      {isVoiceMode ? (
+        <VoiceChatUI
+          userId={uid ?? ""}
+          conversationId={conversationId}
+          systemInstruction={systemInstruction}
+        />
+      ) : (
+        <ChatUI userId={uid ?? ""} conversationId={conversationId} />
+      )}
 
-      <Modal visible={showHistory} animationType="slide" onRequestClose={() => setShowHistory(false)}>
-        <SafeAreaView style={{ flex: 1, backgroundColor: currentTheme.background }}>
-          <View style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 12 }}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-              <Text style={{ fontSize: 20, fontWeight: '600', color: currentTheme.text }}>Conversations</Text>
-              <Pressable onPress={() => setShowHistory(false)} style={{ paddingHorizontal: 8, paddingVertical: 4 }}>
-                <Text style={{ fontSize: 16, color: currentTheme.text }}>Close</Text>
+      <Modal
+        visible={showHistory}
+        animationType="slide"
+        onRequestClose={() => setShowHistory(false)}
+      >
+        <SafeAreaView
+          style={{ flex: 1, backgroundColor: currentTheme.background }}
+        >
+          <View
+            style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 12 }}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: 16,
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 20,
+                  fontWeight: "600",
+                  color: currentTheme.text,
+                }}
+              >
+                Conversations
+              </Text>
+              <Pressable
+                onPress={() => setShowHistory(false)}
+                style={{ paddingHorizontal: 8, paddingVertical: 4 }}
+              >
+                <Text style={{ fontSize: 16, color: currentTheme.text }}>
+                  Close
+                </Text>
               </Pressable>
             </View>
 
-            <Pressable 
-              onPress={handleNewChat} 
-              style={{ 
-                paddingHorizontal: 16, 
-                paddingVertical: 14, 
-                borderWidth: 1, 
-                borderRadius: 10, 
-                marginBottom: 16, 
-                borderColor: currentTheme.text + '40',
-                backgroundColor: currentTheme.surface || currentTheme.background
+            <Pressable
+              onPress={handleNewChat}
+              style={{
+                paddingHorizontal: 16,
+                paddingVertical: 14,
+                borderWidth: 1,
+                borderRadius: 10,
+                marginBottom: 16,
+                borderColor: currentTheme.text + "40",
+                backgroundColor:
+                  currentTheme.surface || currentTheme.background,
               }}
             >
-              <Text style={{ color: currentTheme.text, fontSize: 16 }}>+ New chat</Text>
+              <Text style={{ color: currentTheme.text, fontSize: 16 }}>
+                + New chat
+              </Text>
             </Pressable>
           </View>
 
@@ -128,14 +213,14 @@ export default function ChatbotScreen() {
             contentContainerStyle={{ paddingHorizontal: 20 }}
             renderItem={({ item }) => (
               <View
-                style={{ 
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  paddingVertical: 16, 
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  paddingVertical: 16,
                   paddingHorizontal: 4,
-                  borderBottomWidth: 0.5, 
-                  borderBottomColor: currentTheme.text + '20' 
+                  borderBottomWidth: 0.5,
+                  borderBottomColor: currentTheme.text + "20",
                 }}
               >
                 <Pressable
@@ -145,12 +230,22 @@ export default function ChatbotScreen() {
                   }}
                   style={{ flex: 1, paddingRight: 12 }}
                 >
-                  <Text style={{ fontWeight: '600', color: currentTheme.text, fontSize: 16 }}>
-                    {item.title || 'Untitled chat'}
+                  <Text
+                    style={{
+                      fontWeight: "600",
+                      color: currentTheme.text,
+                      fontSize: 16,
+                    }}
+                  >
+                    {item.title || "Untitled chat"}
                   </Text>
                 </Pressable>
                 <Pressable onPress={() => handleDelete(item.id)} hitSlop={8}>
-                  <Ionicons name="trash-outline" size={20} color={currentTheme.text} />
+                  <Ionicons
+                    name="trash-outline"
+                    size={20}
+                    color={currentTheme.text}
+                  />
                 </Pressable>
               </View>
             )}

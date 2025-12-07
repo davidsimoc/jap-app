@@ -12,10 +12,7 @@ const GEMINI_API_KEY = process.env.EXPO_PUBLIC_GEMINI_API_KEY;
 
 // 2. Inițializează clientul AI (cu verificare)
 const ai = GEMINI_API_KEY ? new GoogleGenAI({ apiKey: GEMINI_API_KEY }) : null;
-const model = "gemini-1.5-flash";
-
-// 3. Instrucțiunile Sensei (Persona)
-// În components/ChatUI.tsx
+const model = "gemini-2.5-flash-lite";
 
 const systemInstruction = `You are a 'Virtual Sensei' specialized in N5 and N4 Japanese conversation practice.
   
@@ -24,7 +21,6 @@ const systemInstruction = `You are a 'Virtual Sensei' specialized in N5 and N4 J
   2. LANGUAGE SWITCH: **Switch to English (or Romanian)** ONLY when the user explicitly asks for a translation, grammar explanation, or correction (e.g., if they say 'Explain this', 'What does X mean?', or 'Vorbeste in Engleza/Romana').
   3. TONE: Keep the tone friendly, encouraging, and educational.
   4. LENGTH: Keep responses concise, focusing on the current topic.`
-// 4. Mesajul inițial de întâmpinare
 const initialMessages = [
     {
         id: 1,
