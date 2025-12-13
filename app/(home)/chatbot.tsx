@@ -22,16 +22,9 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import VoiceChatUI from "@/components/VoiceChatUI";
 
-const GEMINI_API_KEY =
-  Constants.expoConfig?.extra?.GEMINI_API_KEY ||
-  process.env.EXPO_PUBLIC_GEMINI_API_KEY;
-
-const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
-const model = "gemini-2.5-flash";
-
 const systemInstruction =
-  "You are a 'Virtual Sensei' specialized in Japanese conversation practice, using N5 and N4 vocabulary. Respond only in Japanese, but if the user asks, you can provide the translation or explanations in English. Keep the conversation short, friendly, and focused on learning.";
-
+  "You are an engaging and fluent native Japanese speaker acting as a casual N5/N4 conversation partner. Your primary goal is to **ACKNOWLEDGE AND RESPOND IMMEDIATELY** to the user's last statement, maintaining a natural Japanese dialogue. NEVER explain the user's input or teach grammar unless they EXPLICITLY ask: 'What does X mean?' or 'Translate this'. Proactively suggest new topics. Respond ONLY in Japanese. Keep responses concise (under 60 tokens).";
+  
 const initialMessages: IMessage[] = [
   {
     _id: 1,
@@ -48,7 +41,10 @@ const initialMessages: IMessage[] = [
 export default function ChatbotScreen() {
   const { theme } = useTheme();
   const currentTheme = theme === "light" ? lightTheme : darkTheme;
-  const uid = getAuth().currentUser?.uid;
+  const auth = getAuth();
+  //const uid = getAuth().currentUser?.uid;
+
+  const [currentUid, setCurrentUid] = useState<string | null>(null);
 
   const [showHistory, setShowHistory] = useState(false);
   const [conversations, setConversations] = useState<any[]>([]);
@@ -57,20 +53,32 @@ export default function ChatbotScreen() {
   const [isVoiceMode, setIsVoiceMode] = useState(false);
 
   useEffect(() => {
-    if (!uid) {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        setCurrentUid(user.uid); 
+      } else {
+        setCurrentUid(null); 
+      }
+    });
+
+    return unsubscribe; 
+  }, []);
+
+  useEffect(() => {
+    if (!currentUid) {
       console.warn("User not authenticated - cannot load conversations");
       return;
     }
-    const unsub = listConversations(uid, setConversations);
+    const unsub = listConversations(currentUid, setConversations);
     return unsub;
-  }, [uid]);
+  }, [currentUid]);
 
   const handleNewChat = async () => {
-    if (!uid) {
+    if (!currentUid) {
       console.warn("Cannot create conversation - user not authenticated");
       return;
     }
-    const id = await createConversation(uid, "New chat");
+    const id = await createConversation(currentUid, "New chat");
     setConversationId(id);
     setShowHistory(false);
     // Seed with greeting so the chat isn't empty
@@ -96,7 +104,7 @@ export default function ChatbotScreen() {
 
   // Auto-select latest conversation or create one on first open
   useEffect(() => {
-    if (!uid) return;
+    if (!currentUid) return;
     if (conversationId) return;
     if (conversations.length > 0) {
       setConversationId(conversations[0].id);
@@ -106,7 +114,7 @@ export default function ChatbotScreen() {
         await handleNewChat();
       })();
     }
-  }, [uid, conversations, conversationId]);
+  }, [currentUid, conversations, conversationId]);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: currentTheme.background }}>
@@ -122,7 +130,6 @@ export default function ChatbotScreen() {
         >
           AI Language Partner
         </Text>
-        ]
         <View style={{ flexDirection: "row", gap: 16 }}>
           <Pressable onPress={() => setIsVoiceMode((prev) => !prev)}>
             <Ionicons
@@ -142,12 +149,12 @@ export default function ChatbotScreen() {
 
       {isVoiceMode ? (
         <VoiceChatUI
-          userId={uid ?? ""}
+          userId={currentUid ?? ""}
           conversationId={conversationId}
           systemInstruction={systemInstruction}
         />
       ) : (
-        <ChatUI userId={uid ?? ""} conversationId={conversationId} />
+        <ChatUI userId={currentUid ?? ""} conversationId={conversationId} />
       )}
 
       <Modal

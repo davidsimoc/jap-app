@@ -11,6 +11,7 @@ import {
   where,
   getDocs,
   writeBatch,
+  limit,
 } from 'firebase/firestore';
 
 export async function createConversation(userId: string, title: string) {
@@ -95,4 +96,26 @@ export async function addMessage(
   await updateDoc(doc(db, 'conversations', conversationId), {
     updatedAt: serverTimestamp(),
   });
+}
+
+export async function getMessages(conversationId: string, messageLimit: number = 10) {
+  if(!conversationId) return [];
+
+  const messagesRef = collection(db, 'conversations', conversationId, 'messages');
+
+  const q = query(
+    messagesRef,
+    orderBy('createdAt', 'desc'),
+    limit(messageLimit)
+  )
+
+  const snapshot = await getDocs(q);
+
+  let messages = snapshot.docs.map(doc => ({
+    id: doc.id,
+    role: doc.data().role as 'user' | 'model',
+    text: doc.data().text,
+  }));
+
+  return messages.reverse();
 }

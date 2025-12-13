@@ -11,18 +11,70 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@/components/ThemeContext";
 import { speakJapanese, stopSpeech } from "@/services/ttsService"; // NOU: Importăm serviciul tău TTS
-import { addMessage } from "@/services/firestoreChat";
+import { addMessage, getMessages } from "@/services/firestoreChat";
 import { lightTheme, darkTheme } from "@/constants/Colors";
-import Voice, { SpeechResultsEvent } from "@react-native-voice/voice";
+//import Voice, { SpeechResultsEvent } from "@react-native-voice/voice";
+import { Audio } from "expo-av";
+import * as FileSystem from "expo-file-system/legacy";
 
 const GEMINI_API_KEY = process.env.EXPO_PUBLIC_GEMINI_API_KEY;
-const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${GEMINI_API_KEY}`;
+//const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${GEMINI_API_KEY}`;
+
+const WHISPER_LOCAL_ENDPOINT = "http://192.168.0.126:8000/transcribe";
+
+const CHAT_LOCAL_ENDPOINT = "http://192.168.0.126:8000/chat";
+
+const sttApiCall = async (audioUri: string): Promise<string> => {
+  const audioFileBase64 = await FileSystem.readAsStringAsync(audioUri, {
+    encoding: FileSystem.EncodingType.Base64,
+  });
+
+  const requestBody = {
+    audio_base64: audioFileBase64,
+    language_code: "ja",
+  };
+
+  try {
+    const response = await fetch(WHISPER_LOCAL_ENDPOINT, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestBody),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Whisper API HTTP Error:", response.status, errorText);
+      throw new Error(`Whisper service failed with status ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    const transcription = data.transcript;
+
+    if (transcription) {
+      return transcription;
+    } else {
+      console.warn("STT API Warning: No transcription found.", data);
+      return "すみません、音声が聞き取れませんでした。"; // Răspuns de eșec
+    }
+  } catch (error) {
+    console.error("STT API Error:", error);
+    return "STT API failed to connect.";
+  }
+};
 
 type VoiceChatProps = {
   userId: string;
   conversationId: string | null;
   systemInstruction: string;
 };
+
+Audio.setAudioModeAsync({
+  allowsRecordingIOS: true,
+  playsInSilentModeIOS: true,
+});
 
 export default function VoiceChatUI({
   userId,
@@ -38,25 +90,83 @@ export default function VoiceChatUI({
 
   const [lastUserText, setLastUserText] = useState("");
   const [aiResponseText, setAiResponseText] = useState("");
-  const [partialTranscribedText, setPartialTranscribedText] = useState("");
+  const recordingRef = useRef<Audio.Recording | null>(null); 
+  const soundObjectRef = useRef<Audio.Sound | null>(null);
 
-  const playAiResponse = useCallback((text: string) => {
-    speakJapanese(text, {
-      slow: false,
-      onStart: () => setStatusText("Sensei is speaking..."),
-      onDone: () => setStatusText("Tap to Speak"),
-    });
-  }, []);
+  const stopPollyAudio = async () => {
+    if(soundObjectRef.current) {
+        try {
+            await soundObjectRef.current?.stopAsync();
+            await soundObjectRef.current?.unloadAsync();
+            soundObjectRef.current = null;
+        } catch (error) {
+
+        }
+    }
+    await stopSpeech();
+  }
+
+  const playAiResponse = useCallback(
+    async (text: string, audioBase64: string | null) => {
+      if (!audioBase64) {
+        setStatusText("Polly failed. Using native TTS...");
+        speakJapanese(text);
+        return;
+      }
+
+      await stopPollyAudio();
+
+      setStatusText("Sensei is speaking...");
+      const soundObject = new Audio.Sound();
+      soundObjectRef.current = soundObject;
+
+      try {
+        const fileName =
+          FileSystem.cacheDirectory +
+          "polly_audio_" +
+          new Date().getTime() +
+          ".mp3";
+        await FileSystem.writeAsStringAsync(fileName, audioBase64, {
+          encoding: FileSystem.EncodingType.Base64,
+        });
+
+        await soundObject.loadAsync({ uri: fileName });
+        await soundObject.playAsync();
+
+        soundObject.setOnPlaybackStatusUpdate((status) => {
+          if (status.isLoaded && status.didJustFinish) {
+            setStatusText("Tap to Speak");
+            soundObject.unloadAsync();
+            FileSystem.deleteAsync(fileName, { idempotent: true });
+            soundObjectRef.current = null;
+          }
+        });
+      } catch (error) {
+        console.error("Error playing Polly audio:", error);
+        setStatusText("Error playing audio. (Fallback to native TTS)");
+        speakJapanese(text);
+      }
+    },
+    []
+  );
 
   const startRecording = async () => {
     if (!conversationId || isThinking || isRecording) return;
 
     setLastUserText("");
     setAiResponseText("");
-    setPartialTranscribedText("");
+
+    await stopPollyAudio();
 
     try {
-      await Voice.start("ja-JP");
+      await Audio.requestPermissionsAsync();
+      const newRecording = new Audio.Recording();
+      await newRecording.prepareToRecordAsync(
+        Audio.RecordingOptionsPresets.HIGH_QUALITY
+      );
+      await newRecording.startAsync();
+
+      recordingRef.current = newRecording;
       setIsRecording(true);
       setStatusText("Listening in Japanese...");
     } catch (error) {
@@ -66,22 +176,26 @@ export default function VoiceChatUI({
     }
   };
 
-  const stopRecording = async (finalTranscript: string | null = null) => {
-    if (!isRecording) return;
+  const stopRecording = async () => {
+    if (!recordingRef.current) return;
+
+    setIsRecording(false);
+    setStatusText("Processing audio...");
 
     try {
-      await Voice.stop();
-      setIsRecording(false);
-      setPartialTranscribedText("");
+      await recordingRef.current.stopAndUnloadAsync();
+      const uri = recordingRef.current.getURI();
 
-      if (finalTranscript) {
+      if (uri) {
+        const finalTranscript = await sttApiCall(uri);
+
         await handleAiInteraction(finalTranscript);
-      } else {
-        setStatusText("No speech detected. Tap to Speak.");
       }
     } catch (error) {
-      console.error("STT Stop Error:", error);
-      setStatusText("Error stopping mic.");
+      console.error("Failed to stop recording or process audio", error);
+      setStatusText("Error processing audio.");
+    } finally {
+      recordingRef.current = null;
     }
   };
 
@@ -97,31 +211,41 @@ export default function VoiceChatUI({
     await addMessage(conversationId, "user", userText);
 
     try {
-      const conversationHistory = [
-        { role: "user", parts: [{ text: userText }] },
-      ];
+      const historyData = await getMessages(conversationId, 8);
+
+      const historyToSend = historyData.slice(0,-1).map(msg => ({
+        role: msg.role,
+        content: msg.text,
+      }));
 
       const requestBody = {
-        contents: conversationHistory,
-        systemInstruction: {
-          parts: [{ text: systemInstruction }],
-        },
-        genetationConfig: { temperature: 0.7, maxOutputTokens: 1000 },
+        user_prompt: userText,
+        system_instruction: systemInstruction,
+        history: historyToSend,
       };
 
-      const response = await fetch(apiUrl, {
+      const response = await fetch(CHAT_LOCAL_ENDPOINT, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(requestBody),
       });
 
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("LLM Chat API HTTP Error:", response.status, errorText);
+        throw new Error(
+          `LLM Chat service failed with status ${response.status}`
+        );
+      }
+
       const data = await response.json();
       const aiResponse =
-        data.candidates?.[0]?.content?.parts?.[0]?.text ||
-        "すみません、エラーが発生しました。";
+        data.ai_response || "すみません、エラーが発生しました。(LLM Fail)";
+
+      const audioBase64 = data.audio_base64;
 
       setAiResponseText(aiResponse);
-      playAiResponse(aiResponse);
+      playAiResponse(aiResponse, audioBase64);
 
       await addMessage(conversationId, "model", aiResponse);
     } catch (error) {
@@ -133,37 +257,13 @@ export default function VoiceChatUI({
   };
 
   useEffect(() => {
-    Voice.onSpeechResults = (e: SpeechResultsEvent) => {
-      const results = e.value;
-      if (results && results.length > 0) {
-        const finalTranscript = results[0];
-        stopRecording(finalTranscript);
-      }
-    };
-
-    Voice.onSpeechPartialResults = (e: SpeechResultsEvent) => {
-      if (e.value && e.value.length > 0) {
-        setPartialTranscribedText(e.value[0]);
-      }
-    };
-
-    Voice.onSpeechError = (e: any) => {
-      console.error("Speech Error:", e.error);
-      setIsRecording(false);
-      setStatusText("STT Error. Tap to Speak.");
-    };
-
-    Voice.onSpeechEnd = () => {
-      if (isRecording) {
-        stopRecording(null);
-      }
-    };
-
     return () => {
       stopSpeech();
-      Voice.destroy().then(Voice.removeAllListeners);
+      if (recordingRef.current) {
+        recordingRef.current.stopAndUnloadAsync();
+      }
     };
-  }, [isRecording]);
+  }, []);
 
   return (
     <View

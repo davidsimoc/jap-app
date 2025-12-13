@@ -77,10 +77,8 @@ export default function ChatUI({ userId, conversationId }: ChatUIProps) {
         await addMessage(conversationId, 'user', userMessage.text);
 
         try {
-            // Use direct API call instead of SDK
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${GEMINI_API_KEY}`;
-
-            // Build conversation history (use latest state + current user message)
+            const API_MODEL = "gemma-3-2b";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${API_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
             const conversationHistory = [...messages, userMessage].map(m => ({
                 role: m.isUser ? "user" : "model",
                 parts: [{ text: m.text }]
