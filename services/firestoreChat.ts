@@ -85,7 +85,7 @@ export function listenMessages(
 
 export async function addMessage(
   conversationId: string,
-  role: 'user' | 'model',
+  role: 'user' | 'assistant',
   text: string,
 ) {
   await addDoc(collection(db, 'conversations', conversationId, 'messages'), {

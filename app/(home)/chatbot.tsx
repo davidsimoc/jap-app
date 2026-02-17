@@ -21,10 +21,25 @@ import {
 } from "@/services/firestoreChat";
 import { SafeAreaView } from "react-native-safe-area-context";
 import VoiceChatUI from "@/components/VoiceChatUI";
+import { getFirestore, doc, getDoc } from "firebase/firestore";
 
-const systemInstruction =
-  "You are an engaging and fluent native Japanese speaker acting as a casual N5/N4 conversation partner. Your primary goal is to **ACKNOWLEDGE AND RESPOND IMMEDIATELY** to the user's last statement, maintaining a natural Japanese dialogue. NEVER explain the user's input or teach grammar unless they EXPLICITLY ask: 'What does X mean?' or 'Translate this'. Proactively suggest new topics. Respond ONLY in Japanese. Keep responses concise (under 60 tokens).";
-  
+const TEXT_INSTRUCTION = `
+### MANDATORY RULES ###
+1. LANGUAGE: Respond ONLY in Japanese (primary) and English (secondary/explanations).
+2. FORBIDDEN: Never use Russian, Romanian, or any other language. 
+3. ROLE: You are Yuki, a friendly Japanese friend.
+4. BEHAVIOR: Be very talkative, expressive, and natural. Do not limit your words. Write long stories if you want!
+`;
+
+const VOICE_INSTRUCTION = `
+### MANDATORY RULES ###
+1. LANGUAGE: Respond ONLY in Japanese (primary) and English (secondary/explanations).
+2. FORBIDDEN: Never use Russian, Romanian, or any other language. 
+3. ROLE: You are Yuki, a friendly Japanese friend.
+4. BEHAVIOR: Keep responses VERY SHORT (max 10-15 words). This is for a voice call, so be concise!
+`;
+
+
 const initialMessages: IMessage[] = [
   {
     _id: 1,
@@ -43,6 +58,8 @@ export default function ChatbotScreen() {
   const currentTheme = theme === "light" ? lightTheme : darkTheme;
   const auth = getAuth();
   //const uid = getAuth().currentUser?.uid;
+  const db = getFirestore();
+  const [userMemory, setUserMemory] = useState<string>("");
 
   const [currentUid, setCurrentUid] = useState<string | null>(null);
 
@@ -51,6 +68,26 @@ export default function ChatbotScreen() {
   const [conversationId, setConversationId] = useState<string | null>(null);
 
   const [isVoiceMode, setIsVoiceMode] = useState(false);
+
+  useEffect(() => {
+    const fetchMemory = async () => {
+      if(!currentUid) return;
+      try {
+        const userRef = doc(db, "users", currentUid);
+        const snap = await getDoc(userRef);
+
+        if(snap.exists()) {
+            const data = snap.data();
+            const memoryArray = data.aiMemory || [];
+            setUserMemory(memoryArray.join(". "));
+        }
+      }
+      catch (e) {
+        console.error("Error loading memory:", e);
+      }
+    };
+    fetchMemory();
+  }, [currentUid]);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -85,7 +122,7 @@ export default function ChatbotScreen() {
     try {
       await addMessage(
         id,
-        "model",
+        "assistant",
         "こんにちは！私はあなたの日本語の先生です。何を練習したいですか？ (Kon'nichiwa! I am your Japanese teacher. What do you want to practice?)"
       );
     } catch {}
@@ -151,10 +188,16 @@ export default function ChatbotScreen() {
         <VoiceChatUI
           userId={currentUid ?? ""}
           conversationId={conversationId}
-          systemInstruction={systemInstruction}
+          systemInstruction={VOICE_INSTRUCTION}
+          userContext = {userMemory}
         />
       ) : (
-        <ChatUI userId={currentUid ?? ""} conversationId={conversationId} />
+        <ChatUI 
+        systemInstruction={TEXT_INSTRUCTION}
+        userId={currentUid ?? ""} 
+        conversationId={conversationId}
+        userContext={userMemory}
+      />
       )}
 
       <Modal

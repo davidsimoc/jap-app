@@ -16,13 +16,14 @@ import { lightTheme, darkTheme } from "@/constants/Colors";
 //import Voice, { SpeechResultsEvent } from "@react-native-voice/voice";
 import { Audio } from "expo-av";
 import * as FileSystem from "expo-file-system/legacy";
+import { arrayUnion, getFirestore, doc, updateDoc } from "firebase/firestore";
 
 const GEMINI_API_KEY = process.env.EXPO_PUBLIC_GEMINI_API_KEY;
 //const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${GEMINI_API_KEY}`;
 
-const WHISPER_LOCAL_ENDPOINT = "http://192.168.0.126:8000/transcribe";
+const WHISPER_LOCAL_ENDPOINT = "http://192.168.0.109:8000/transcribe";
 
-const CHAT_LOCAL_ENDPOINT = "http://192.168.0.126:8000/chat";
+const CHAT_LOCAL_ENDPOINT = "http://192.168.0.109:8000/chat";
 
 const sttApiCall = async (audioUri: string): Promise<string> => {
   const audioFileBase64 = await FileSystem.readAsStringAsync(audioUri, {
@@ -69,6 +70,7 @@ type VoiceChatProps = {
   userId: string;
   conversationId: string | null;
   systemInstruction: string;
+  userContext: string;
 };
 
 Audio.setAudioModeAsync({
@@ -80,6 +82,7 @@ export default function VoiceChatUI({
   userId,
   conversationId,
   systemInstruction,
+  userContext
 }: VoiceChatProps) {
   const { theme } = useTheme();
   const currentTheme = theme === "light" ? lightTheme : darkTheme;
@@ -202,6 +205,8 @@ export default function VoiceChatUI({
   const handleAiInteraction = async (userText: string) => {
     if (!userText || !conversationId) return;
 
+    const db = getFirestore();
+
     setIsThinking(true);
     setStatusText("Sensei is thinking...");
     setLastUserText(userText);
@@ -222,6 +227,7 @@ export default function VoiceChatUI({
         user_prompt: userText,
         system_instruction: systemInstruction,
         history: historyToSend,
+        user_context: userContext
       };
 
       const response = await fetch(CHAT_LOCAL_ENDPOINT, {
@@ -239,6 +245,20 @@ export default function VoiceChatUI({
       }
 
       const data = await response.json();
+      if(data.new_fact) {
+        console.log("New fact learned:", data.new_fact);
+
+        const userRef = doc(db, "users", userId);
+
+        try {
+          await updateDoc(userRef, {
+            aiMemory: arrayUnion(data.new_fact)
+          });
+        }
+        catch (e) {
+          console.error("Error updating user memory:", e);
+        }
+      }
       const aiResponse =
         data.ai_response || "すみません、エラーが発生しました。(LLM Fail)";
 
@@ -247,7 +267,7 @@ export default function VoiceChatUI({
       setAiResponseText(aiResponse);
       playAiResponse(aiResponse, audioBase64);
 
-      await addMessage(conversationId, "model", aiResponse);
+      await addMessage(conversationId, "assistant", aiResponse);
     } catch (error) {
       console.error("Error when calling Gemini API:", error);
       setAiResponseText("Gomen nasai! A communication error occured.");
