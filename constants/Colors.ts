@@ -11,16 +11,15 @@ const lightTheme = {
 };
 
 const darkTheme = {
- // background: '#1A1A1A',
-  background: '#121212', // Fundalul principal foarte închis
-  primary: '#D32F2F', // Roșu intens pentru butoanele principale
-  secondary: '#FF6F00', // Portocaliu vibrant pentru butoanele secundare
-  text: '#E5E5E5', // Text principal deschis
-  secondaryText: '#A1A1A1', // Text secundar (pentru texte mai puțin importante)
-  border: '#B0B0B0', // Borduri și elemente interactive
-  navbar: '#1A1A1A', // Bara de navigare gri închis
-  accent: '#FF1744', // Accente și iconițe importante (roșu aprins)\
-  surface: '#2A2A2A',       // <-- pentru inputuri
+  background: '#0F0F0F',    // Deep charcoal
+  primary: '#FF5252',       // Vibrant coral-red for dark mode
+  secondary: '#FFA726',     // Softer amber
+  text: '#F5F5F5',          // High contrast off-white
+  secondaryText: '#9E9E9E', // Subtle grey
+  border: '#2C2C2C',        // Subtle border
+  navbar: '#1A1A1A',        // Dark card/nav background
+  accent: '#FF1744',        // Brand accent
+  surface: '#1E1E1E',       // Card surfaces
 };
 
 

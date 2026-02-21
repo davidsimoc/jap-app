@@ -30,7 +30,7 @@ export function listConversations(
 ) {
   if (!userId) {
     console.warn('listConversations: userId is required');
-    return () => {}; // return empty unsubscribe function
+    return () => { }; // return empty unsubscribe function
   }
   const q = query(
     collection(db, 'conversations'),
@@ -73,14 +73,25 @@ export function listenMessages(
   conversationId: string,
   onChange: (msgs: any[]) => void,
 ) {
+  if (!conversationId) {
+    console.warn('listenMessages: conversationId is required');
+    return () => { };
+  }
   const q = query(
     collection(db, 'conversations', conversationId, 'messages'),
     orderBy('createdAt', 'asc'),
   );
-  return onSnapshot(q, (snap) => {
-    const items = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-    onChange(items);
-  });
+  return onSnapshot(
+    q,
+    (snap) => {
+      const items = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+      onChange(items);
+    },
+    (error) => {
+      console.error('Error in listenMessages:', error);
+      onChange([]);
+    }
+  );
 }
 
 export async function addMessage(
@@ -99,7 +110,7 @@ export async function addMessage(
 }
 
 export async function getMessages(conversationId: string, messageLimit: number = 10) {
-  if(!conversationId) return [];
+  if (!conversationId) return [];
 
   const messagesRef = collection(db, 'conversations', conversationId, 'messages');
 

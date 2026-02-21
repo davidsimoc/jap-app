@@ -73,12 +73,6 @@ export default function ChatUI({
     return unsub;
   }, [conversationId]);
 
-  // Ensure we snap to bottom whenever messages change
-  useEffect(() => {
-    requestAnimationFrame(() => {
-      listRef.current?.scrollToEnd({ animated: true });
-    });
-  }, [messages]);
 
   const handleSend = useCallback(async () => {
     if (!inputText.trim()) return;
@@ -172,82 +166,82 @@ export default function ChatUI({
   );
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <KeyboardAvoidingView
-        style={{ flex: 1, backgroundColor: currentTheme.background }}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={Platform.OS == "ios" ? 0 : 0}
-      >
-        <StatusBar
-          barStyle={theme === "dark" ? "light-content" : "dark-content"}
-        />
+    <KeyboardAvoidingView
+      style={{ flex: 1, backgroundColor: currentTheme.background }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS == "ios" ? 0 : 0}
+    >
+      <StatusBar
+        barStyle={theme === "dark" ? "light-content" : "dark-content"}
+      />
 
-        <FlatList
-          ref={listRef}
-          data={messages}
-          renderItem={renderMessage}
-          keyExtractor={(item) => item.id.toString()}
-          style={{ flex: 1, paddingLeft: 10, paddingRight: 10 }}
-          contentContainerStyle={{
-            paddingTop: 10,
-            paddingBottom: INPUT_BOTTOM_SPACE,
-          }}
-          showsVerticalScrollIndicator
-          onContentSizeChange={() => {
-            if (messages.length > 0) {
-              listRef.current?.scrollToEnd({ animated: true });
-            }
-          }}
-          //onLayout={() => listRef.current?.scrollToEnd({ animated: false })}
-          ListFooterComponent={<View style={{ height: 4 }} />}
-        />
+      <FlatList
+        ref={listRef}
+        data={messages}
+        renderItem={renderMessage}
+        keyExtractor={(item) => item.id.toString()}
+        style={{ flex: 1 }}
+        contentContainerStyle={{
+          paddingHorizontal: 10,
+          paddingTop: 10,
+          paddingBottom: INPUT_BOTTOM_SPACE,
+        }}
+        showsVerticalScrollIndicator={true}
+        keyboardDismissMode="on-drag"
+        keyboardShouldPersistTaps="handled"
+        onContentSizeChange={() => {
+          if (messages.length > 0) {
+            listRef.current?.scrollToEnd({ animated: true });
+          }
+        }}
+        ListFooterComponent={<View style={{ height: 4 }} />}
+      />
 
-        <View style={styles.inputContainer}>
-          <TextInput
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={[
+            styles.textInput,
+            {
+              color: currentTheme.text,
+              backgroundColor: currentTheme.background,
+              borderColor: currentTheme.text + "30",
+            },
+          ]}
+          value={inputText}
+          onChangeText={setInputText}
+          placeholder="Type a message..."
+          placeholderTextColor={currentTheme.text + "60"}
+          multiline={true}
+          returnKeyType="send"
+          onSubmitEditing={handleSend}
+        />
+        <TouchableOpacity
+          style={[
+            styles.sendButton,
+            {
+              backgroundColor: inputText.trim()
+                ? currentTheme.accent
+                : currentTheme.surface,
+            },
+          ]}
+          onPress={handleSend}
+          disabled={!inputText.trim()}
+        >
+          <Text
             style={[
-              styles.textInput,
+              styles.sendButtonText,
               {
-                color: currentTheme.text,
-                backgroundColor: currentTheme.background,
-                borderColor: currentTheme.text + "30",
+                color: inputText.trim()
+                  ? darkTheme.text
+                  : currentTheme.secondaryText,
               },
             ]}
-            value={inputText}
-            onChangeText={setInputText}
-            placeholder="Type a message..."
-            placeholderTextColor={currentTheme.text + "60"}
-            multiline={true}
-            returnKeyType="send"
-            onSubmitEditing={handleSend}
-          />
-          <TouchableOpacity
-            style={[
-              styles.sendButton,
-              {
-                backgroundColor: inputText.trim()
-                  ? currentTheme.accent
-                  : currentTheme.surface,
-              },
-            ]}
-            onPress={handleSend}
-            disabled={!inputText.trim()}
           >
-            <Text
-              style={[
-                styles.sendButtonText,
-                {
-                  color: inputText.trim()
-                    ? darkTheme.text
-                    : currentTheme.secondaryText,
-                },
-              ]}
-            >
-              Send
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </KeyboardAvoidingView>
-    </TouchableWithoutFeedback>
+            Send
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </KeyboardAvoidingView>
   );
 }
 

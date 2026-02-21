@@ -19,7 +19,7 @@ import {
   addMessage,
   deleteConversation,
 } from "@/services/firestoreChat";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import VoiceChatUI from "@/components/VoiceChatUI";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 import SettingsModal from "@/components/SettingsModal";
@@ -55,6 +55,7 @@ const initialMessages: IMessage[] = [
 
 export default function ChatbotScreen() {
   const { theme } = useTheme();
+  const insets = useSafeAreaInsets();
   const currentTheme = theme === "light" ? lightTheme : darkTheme;
   const auth = getAuth();
   //const uid = getAuth().currentUser?.uid;
@@ -65,6 +66,7 @@ export default function ChatbotScreen() {
 
   const [showHistory, setShowHistory] = useState(false);
   const [conversations, setConversations] = useState<any[]>([]);
+  const [isLoadingConversations, setIsLoadingConversations] = useState(true);
   const [conversationId, setConversationId] = useState<string | null>(null);
 
   const [isVoiceMode, setIsVoiceMode] = useState(false);
@@ -139,11 +141,11 @@ export default function ChatbotScreen() {
   }, []);
 
   useEffect(() => {
-    if (!currentUid) {
-      console.warn("User not authenticated - cannot load conversations");
-      return;
-    }
-    const unsub = listConversations(currentUid, setConversations);
+    if (!currentUid) return;
+    const unsub = listConversations(currentUid, (items) => {
+      setConversations(items);
+      setIsLoadingConversations(false);
+    });
     return unsub;
   }, [currentUid]);
 
@@ -176,10 +178,10 @@ export default function ChatbotScreen() {
     }
   };
 
-  // Auto-select latest conversation or create one on first open
   useEffect(() => {
-    if (!currentUid) return;
+    if (!currentUid || isLoadingConversations) return;
     if (conversationId) return;
+
     if (conversations.length > 0) {
       setConversationId(conversations[0].id);
     } else {
@@ -188,10 +190,13 @@ export default function ChatbotScreen() {
         await handleNewChat();
       })();
     }
-  }, [currentUid, conversations, conversationId]);
+  }, [currentUid, conversations, conversationId, isLoadingConversations]);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: currentTheme.background }}>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: currentTheme.background }}
+      edges={["top", "left", "right"]}
+    >
       <View
         style={{
           flexDirection: "row",
@@ -254,12 +259,18 @@ export default function ChatbotScreen() {
         visible={showHistory}
         animationType="slide"
         onRequestClose={() => setShowHistory(false)}
+        statusBarTranslucent={true}
       >
         <SafeAreaView
           style={{ flex: 1, backgroundColor: currentTheme.background }}
+          edges={["left", "right", "bottom"]}
         >
           <View
-            style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 12 }}
+            style={{ 
+              paddingHorizontal: 20, 
+              paddingTop: Math.max(insets.top, 20), 
+              paddingBottom: 12 
+            }}
           >
             <View
               style={{
