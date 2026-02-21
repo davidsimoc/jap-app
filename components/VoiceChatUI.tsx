@@ -21,9 +21,9 @@ import { arrayUnion, getFirestore, doc, updateDoc } from "firebase/firestore";
 const GEMINI_API_KEY = process.env.EXPO_PUBLIC_GEMINI_API_KEY;
 //const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${GEMINI_API_KEY}`;
 
-const WHISPER_LOCAL_ENDPOINT = "http://192.168.0.109:8000/transcribe";
+const WHISPER_LOCAL_ENDPOINT = "http://192.168.0.112:8000/transcribe";
 
-const CHAT_LOCAL_ENDPOINT = "http://192.168.0.109:8000/chat";
+const CHAT_LOCAL_ENDPOINT = "http://192.168.0.112:8000/chat";
 
 const sttApiCall = async (audioUri: string): Promise<string> => {
   const audioFileBase64 = await FileSystem.readAsStringAsync(audioUri, {

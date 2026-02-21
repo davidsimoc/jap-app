@@ -19,8 +19,9 @@ import { lightTheme, darkTheme } from "@/constants/Colors";
 import Constants from "expo-constants";
 import { updateCurrentUser } from "firebase/auth";
 import { listenMessages, addMessage } from "@/services/firestoreChat";
+import { arrayUnion, getFirestore, doc, updateDoc } from "firebase/firestore";
 
-const CHAT_LOCAL_ENDPOINT = "http://192.168.0.109:8000/chat";
+const CHAT_LOCAL_ENDPOINT = "http://192.168.0.112:8000/chat";
 
 const initialMessages: MessageType[] = [
   {
@@ -47,14 +48,16 @@ export default function ChatUI({
   userId,
   conversationId,
   systemInstruction,
-  userContext
+  userContext,
 }: ChatUIProps) {
   const [messages, setMessages] = useState<MessageType[]>(initialMessages);
   const listRef = useRef<FlatList<any>>(null);
-  const INPUT_BOTTOM_SPACE = 96; // keep last message fully visible above input
+  const INPUT_BOTTOM_SPACE = 96; 
   const [inputText, setInputText] = useState("");
   const { theme } = useTheme();
   const currentTheme = theme === "light" ? lightTheme : darkTheme;
+
+  const db = getFirestore();
 
   // Subscribe to Firestore messages for the selected conversation
   useEffect(() => {
@@ -105,11 +108,25 @@ export default function ChatUI({
           user_prompt: userMessageText,
           system_instruction: systemInstruction, // Trimitem instrucțiunea definită în componentă
           history: historyToSend,
-          user_context: userContext
+          user_context: userContext,
         }),
       });
 
       const data = await response.json();
+      if (data.new_fact) {
+        console.log("New fact learned:", data.new_fact);
+
+        const userRef = doc(db, "users", userId);
+
+        try {
+          await updateDoc(userRef, {
+            aiMemory: arrayUnion(data.new_fact),
+          });
+        } catch (e) {
+          console.error("Error updating user memory:", e);
+        }
+      }
+
       const aiResponse = data.ai_response || "すみません (Eroare server)";
 
       const newAiMessage = {
@@ -159,7 +176,7 @@ export default function ChatUI({
       <KeyboardAvoidingView
         style={{ flex: 1, backgroundColor: currentTheme.background }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={Platform.OS == "ios" ? 90 : 0}
+        keyboardVerticalOffset={Platform.OS == "ios" ? 0 : 0}
       >
         <StatusBar
           barStyle={theme === "dark" ? "light-content" : "dark-content"}

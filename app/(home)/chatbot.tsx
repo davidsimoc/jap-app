@@ -22,6 +22,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import VoiceChatUI from "@/components/VoiceChatUI";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
+import SettingsModal from "@/components/SettingsModal";
 
 const TEXT_INSTRUCTION = `
 ### MANDATORY RULES ###
@@ -38,7 +39,6 @@ const VOICE_INSTRUCTION = `
 3. ROLE: You are Yuki, a friendly Japanese friend.
 4. BEHAVIOR: Keep responses VERY SHORT (max 10-15 words). This is for a voice call, so be concise!
 `;
-
 
 const initialMessages: IMessage[] = [
   {
@@ -69,20 +69,57 @@ export default function ChatbotScreen() {
 
   const [isVoiceMode, setIsVoiceMode] = useState(false);
 
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [aiSettings, setAiSettings] = useState({
+    level: "N5",
+    personality: "Friendly",
+    translations: true,
+  });
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      if (!currentUid) return;
+      const userRef = doc(db, "users", currentUid);
+      const snap = await getDoc(userRef);
+
+      if (snap.exists()) {
+        const data = snap.data();
+        if (data.aiSettings) {
+          setAiSettings(data.aiSettings);
+        }
+      }
+    };
+    fetchSettings();
+  }, [currentUid, isSettingsOpen]);
+
+  const getDynamicInstructions = (mode: "text" | "voice") => {
+    const base = `
+      ### ROLE ###
+      You are Yuki, a ${aiSettings.personality} Japanese friend. 
+      ### CONSTRAINTS ###
+      1. User level: ${aiSettings.level}. Use vocabulary/Kanji ONLY for ${aiSettings.level}.
+      2. ${aiSettings.translations ? "Provide English translations in ()." : "No English translations."}
+      3. Respond ONLY in Japanese/English.
+          `;
+    const voiceExtra = "\n4. VOICE CALL: Keep response max 15 words.";
+    const textExtra = "\n4. CHAT: Be expressive and write as much as you want.";
+
+    return mode === "voice" ? base + voiceExtra : base + textExtra;
+  };
+
   useEffect(() => {
     const fetchMemory = async () => {
-      if(!currentUid) return;
+      if (!currentUid) return;
       try {
         const userRef = doc(db, "users", currentUid);
         const snap = await getDoc(userRef);
 
-        if(snap.exists()) {
-            const data = snap.data();
-            const memoryArray = data.aiMemory || [];
-            setUserMemory(memoryArray.join(". "));
+        if (snap.exists()) {
+          const data = snap.data();
+          const memoryArray = data.aiMemory || [];
+          setUserMemory(memoryArray.join(". "));
         }
-      }
-      catch (e) {
+      } catch (e) {
         console.error("Error loading memory:", e);
       }
     };
@@ -92,13 +129,13 @@ export default function ChatbotScreen() {
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
-        setCurrentUid(user.uid); 
+        setCurrentUid(user.uid);
       } else {
-        setCurrentUid(null); 
+        setCurrentUid(null);
       }
     });
 
-    return unsubscribe; 
+    return unsubscribe;
   }, []);
 
   useEffect(() => {
@@ -123,7 +160,7 @@ export default function ChatbotScreen() {
       await addMessage(
         id,
         "assistant",
-        "こんにちは！私はあなたの日本語の先生です。何を練習したいですか？ (Kon'nichiwa! I am your Japanese teacher. What do you want to practice?)"
+        "こんにちは！私はあなたの日本語の先生です。何を練習したいですか？ (Kon'nichiwa! I am your Japanese teacher. What do you want to practice?)",
       );
     } catch {}
   };
@@ -168,6 +205,13 @@ export default function ChatbotScreen() {
           AI Language Partner
         </Text>
         <View style={{ flexDirection: "row", gap: 16 }}>
+          <Pressable onPress={() => setIsSettingsOpen(true)}>
+            <Ionicons
+              name="settings-outline"
+              size={24}
+              color={currentTheme.text}
+            />
+          </Pressable>
           <Pressable onPress={() => setIsVoiceMode((prev) => !prev)}>
             <Ionicons
               name={isVoiceMode ? "chatbox-outline" : "mic-outline"}
@@ -188,17 +232,23 @@ export default function ChatbotScreen() {
         <VoiceChatUI
           userId={currentUid ?? ""}
           conversationId={conversationId}
-          systemInstruction={VOICE_INSTRUCTION}
-          userContext = {userMemory}
+          systemInstruction={getDynamicInstructions("voice")}
+          userContext={userMemory}
         />
       ) : (
-        <ChatUI 
-        systemInstruction={TEXT_INSTRUCTION}
-        userId={currentUid ?? ""} 
-        conversationId={conversationId}
-        userContext={userMemory}
-      />
+        <ChatUI
+          systemInstruction={getDynamicInstructions("text")}
+          userId={currentUid ?? ""}
+          conversationId={conversationId}
+          userContext={userMemory}
+        />
       )}
+
+      <SettingsModal
+        visible={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+        userId={currentUid ?? ""}
+      />
 
       <Modal
         visible={showHistory}
