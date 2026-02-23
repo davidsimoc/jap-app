@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { Audio } from 'expo-av';
 import { useTheme } from '@/components/ThemeContext';
 import { lightTheme, darkTheme } from '@/constants/Colors';
+import { speakJapanese, stopSpeech } from '@/services/ttsService';
 
 const { width } = Dimensions.get('window');
 
@@ -16,13 +17,25 @@ export default function StoryStep({ text, onComplete }: Props) {
   const currentTheme = theme === 'light' ? lightTheme : darkTheme;
   const [displayedText, setDisplayedText] = useState('');
   const [isAudioReady, setIsAudioReady] = useState(false);
+  const [isAudioFinished, setIsAudioFinished] = useState(false);
+  const [isTextFinished, setIsTextFinished] = useState(false);
+  const [hasStarted, setHasStarted] = useState(false);
+  const [minTimeReached, setMinTimeReached] = useState(false);
+  const [hasCompleted, setHasCompleted] = useState(false);
   const soundRef = useRef<Audio.Sound | null>(null);
   const isMounted = useRef(true);
+  // Ensure at least some time passes before completion is possible
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (isMounted.current) setMinTimeReached(true);
+    }, 2000); 
+    return () => clearTimeout(timer);
+  }, []);
 
   // ... (logic remains same)
   useEffect(() => {
     isMounted.current = true;
-    if (!isAudioReady) return;
+    if (!isAudioReady || !hasStarted) return;
 
     let index = 0;
     setDisplayedText('');
@@ -38,9 +51,9 @@ export default function StoryStep({ text, onComplete }: Props) {
       
       if (index >= text.length) {
         clearInterval(interval);
-        onComplete?.();
+        setIsTextFinished(true);
       }
-    }, 70);
+    }, 85);
 
     return () => {
       clearInterval(interval);
@@ -49,67 +62,40 @@ export default function StoryStep({ text, onComplete }: Props) {
 
   useEffect(() => {
     isMounted.current = true;
-    let localSound: Audio.Sound | null = null;
-
-    const speakText = async () => {
-      try {
-        const response = await fetch("http://192.168.0.112:8000/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            user_prompt: `Citește exact acest text: ${text}`,
-            system_instruction: "Citește textul exact așa cum este trimis. Fără comentarii adiționale. Your name is Yuki.",
-            history: []
-          }),
-        });
-        const data = await response.json();
-        
-        if (!isMounted.current) return;
-
-        if (data.audio_base64) {
-          const { sound: newSound } = await Audio.Sound.createAsync(
-            { uri: `data:audio/mp3;base64,${data.audio_base64}` },
-            { shouldPlay: true }
-          );
-          
-          if (!isMounted.current) {
-            newSound.unloadAsync().catch(() => {});
-            return;
+    
+    const startAudio = async () => {
+      setHasStarted(true);
+      console.log(`[StoryStep] SPEAKING: "${text.slice(0, 30)}..."`);
+      await speakJapanese(text, {
+        onStart: () => {
+          if (isMounted.current) setIsAudioReady(true);
+        },
+        onDone: () => {
+          if (isMounted.current) setIsAudioFinished(true);
+        },
+        onError: () => {
+          if (isMounted.current) {
+            setIsAudioReady(true);
+            setIsAudioFinished(true);
           }
-
-          localSound = newSound;
-          soundRef.current = newSound;
-          setIsAudioReady(true);
-        } else {
-          setIsAudioReady(true);
         }
-      } catch (e) {
-        console.error("StoryStep TTS Error:", e);
-        if (isMounted.current) setIsAudioReady(true);
-      }
+      });
     };
 
-    speakText();
+    startAudio();
 
     return () => {
       isMounted.current = false;
-      const cleanup = async () => {
-        try {
-          if (soundRef.current) {
-            await soundRef.current.stopAsync().catch(() => {});
-            await soundRef.current.unloadAsync().catch(() => {});
-          }
-          if (localSound) {
-            await localSound.stopAsync().catch(() => {});
-            await localSound.unloadAsync().catch(() => {});
-          }
-        } catch (e) {
-          // Suppress errors
-        }
-      };
-      cleanup();
+      stopSpeech();
     };
   }, [text]);
+
+  useEffect(() => {
+    if (hasStarted && isTextFinished && isAudioFinished && minTimeReached && !hasCompleted) {
+      setHasCompleted(true);
+      onComplete?.();
+    }
+  }, [isTextFinished, isAudioFinished, minTimeReached, hasStarted, hasCompleted]);
 
   return (
     <View style={styles.container}>

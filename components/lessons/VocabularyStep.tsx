@@ -17,9 +17,11 @@ type VocabItem = {
 
 type Props = {
   item: VocabItem;
+  isStarred?: boolean;
+  onToggleStar?: () => void;
 };
 
-export default function VocabularyStep({ item }: Props) {
+export default function VocabularyStep({ item, isStarred, onToggleStar }: Props) {
   const { theme } = useTheme();
   const currentTheme = theme === 'light' ? lightTheme : darkTheme;
   const [showMeaning, setShowMeaning] = useState(false);
@@ -41,8 +43,9 @@ export default function VocabularyStep({ item }: Props) {
     // Avoid double play
     await stopSpeech();
     setIsPlaying(true);
+    console.log(`[VocabularyStep] SPEAKING: "${item.word}"`);
     
-    await speakJapanese(item.word, {
+    await speakJapanese(item.reading || item.word, {
       onDone: () => setIsPlaying(false),
       onError: () => setIsPlaying(false),
     });
@@ -57,16 +60,40 @@ export default function VocabularyStep({ item }: Props) {
         onPress={() => setShowMeaning(!showMeaning)}
         activeOpacity={0.9}
       >
-        <TouchableOpacity style={styles.soundIconButton} onPress={playSound}>
+        <TouchableOpacity 
+          style={[styles.soundIconButton, { left: 25, right: undefined, backgroundColor: isStarred ? '#FFD70020' : currentTheme.primary + '10' }]} 
+          onPress={onToggleStar}
+        >
           <Ionicons 
-            name={isPlaying ? "volume-high" : "volume-medium-outline"} 
-            size={36} 
-            color={currentTheme.primary} 
+            name={isStarred ? "star" : "star-outline"} 
+            size={24} 
+            color={isStarred ? "#FFD700" : currentTheme.primary} 
+          />
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={[
+            styles.soundIconButton, 
+            { backgroundColor: isPlaying ? currentTheme.primary : currentTheme.primary + '10' }
+          ]} 
+          onPress={playSound}
+        >
+          <Ionicons 
+            name={isPlaying ? "volume-high" : "volume-high-outline"} 
+            size={24} 
+            color={isPlaying ? "#FFFFFF" : currentTheme.primary} 
           />
         </TouchableOpacity>
 
         {/* Word Display (Big Kanji/Kana) */}
-        <Text style={[styles.word, { color: currentTheme.text }]}>{item.word}</Text>
+        <Text 
+          style={[styles.word, { color: currentTheme.text }]}
+          numberOfLines={1}
+          adjustsFontSizeToFit
+          minimumFontScale={0.4}
+        >
+          {item.word}
+        </Text>
         
         {/* Pronunciation Stack (Fixed to force Kana vs Romaji) */}
         <View style={[styles.pronunciationCard, { backgroundColor: currentTheme.text + '05' }]}>
@@ -127,15 +154,24 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 25,
     right: 25,
-    padding: 10,
-    backgroundColor: '#00000005',
-    borderRadius: 20,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
   },
   word: {
-    fontSize: 64,
+    fontSize: 68,
     fontWeight: '900',
     marginBottom: 25,
     textAlign: 'center',
+    paddingHorizontal: 20,
+    width: '100%',
   },
   pronunciationCard: {
     paddingVertical: 18,

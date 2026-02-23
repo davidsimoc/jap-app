@@ -82,7 +82,8 @@ export const INITIAL_ROAD_DATA: RoadNode[] = [
                     { word: "です", reading: "です", romaji: "desu", meaning: "am / is / are" }
                 ]
             }
-        ]
+        ],
+        souvenir: { id: "suica1", name: "Suica Card", icon: "card-outline" }
     },
     {
         id: '1.5',
@@ -102,7 +103,8 @@ export const INITIAL_ROAD_DATA: RoadNode[] = [
                     { word: "すみません", reading: "すみません", romaji: "sumimasen", meaning: "excuse me" }
                 ]
             }
-        ]
+        ],
+        souvenir: { id: "passport1", name: "Passport Stamp", icon: "qr-code-outline" }
     },
     {
         id: '1.8',
@@ -178,7 +180,8 @@ export const INITIAL_ROAD_DATA: RoadNode[] = [
                 options: ["Narita", "Tokyo", "Osaka", "Kyoto"],
                 correctAnswer: "Tokyo"
             }
-        ]
+        ],
+        souvenir: { id: "ticket1", name: "Tokyo Ticket", icon: "train-outline" }
     },
     {
         id: '4',
@@ -199,6 +202,7 @@ export const INITIAL_ROAD_DATA: RoadNode[] = [
                     { word: "お茶", reading: "おちゃ", romaji: "ocha", meaning: "tea" }
                 ]
             }
-        ]
+        ],
+        souvenir: { id: "onigiri1", name: "Onigiri Sticker", icon: "fast-food-outline" }
     }
 ];

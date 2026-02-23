@@ -200,6 +200,30 @@ export default function HomeLayout() {
                     headerShown: false, // Afișează header-ul pe pagina [kanji]
                 }}
             />
+            <Tabs.Screen
+                name="diary"
+                options={{
+                    href: null,
+                    tabBarIcon: () => null,
+                    tabBarStyle: { display: 'none' },
+                }}
+            />
+            <Tabs.Screen
+                name="flashcards"
+                options={{
+                    href: null,
+                    tabBarIcon: () => null,
+                    tabBarStyle: { display: 'none' },
+                }}
+            />
+            <Tabs.Screen
+                name="settings"
+                options={{
+                    href: null,
+                    tabBarIcon: () => null,
+                    tabBarStyle: { display: 'none' },
+                }}
+            />
         </Tabs>
     );
 }

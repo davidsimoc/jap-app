@@ -6,6 +6,7 @@ import { useTheme } from '@/components/ThemeContext';
 import { lightTheme, darkTheme } from '@/constants/Colors';
 import { RoadNode } from '@/constants/roadData';
 
+import { speakJapanese, stopSpeech, prefetchAudio } from '@/services/ttsService';
 import StoryStep from './lessons/StoryStep';
 import VocabularyStep from './lessons/VocabularyStep';
 import MatchStep from './lessons/MatchStep';
@@ -19,15 +20,39 @@ type Props = {
   node: RoadNode | null;
   onClose: () => void;
   onComplete: (nodeId: string) => void;
+  starredWords: string[];
+  onToggleStar: (word: string) => void;
 };
 
-export default function LessonRunner({ visible, node, onClose, onComplete }: Props) {
+export default function LessonRunner({ visible, node, onClose, onComplete, starredWords, onToggleStar }: Props) {
   const insets = useSafeAreaInsets();
   const { theme } = useTheme();
   const currentTheme = theme === 'light' ? lightTheme : darkTheme;
   
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [internalIndex, setInternalIndex] = useState(0);
+
+  // Pre-fetch all audio content when the lesson starts
+  React.useEffect(() => {
+    if (visible && node) {
+      const textsToPrefetch: string[] = [];
+      
+      node.steps.forEach(step => {
+        if (step.type === 'story') {
+          textsToPrefetch.push(step.text);
+        } else if (step.type === 'vocabulary') {
+          step.items.forEach(item => textsToPrefetch.push(item.word));
+        } else if (step.type === 'listening') {
+          textsToPrefetch.push(step.audioText);
+        }
+        // Quiz steps often use the question as audio if desired, but let's stick to these for now
+      });
+
+      if (textsToPrefetch.length > 0) {
+        prefetchAudio(textsToPrefetch);
+      }
+    }
+  }, [visible, node?.id]);
 
   if (!node) return null;
 
@@ -45,27 +70,30 @@ export default function LessonRunner({ visible, node, onClose, onComplete }: Pro
     }
 
     // Otherwise move to next main step
+    // Otherwise move to next main step
     if (currentStepIndex < totalSteps - 1) {
+      console.log(`[LessonRunner] Moving to step ${currentStepIndex + 2}`);
       setCurrentStepIndex(currentStepIndex + 1);
       setInternalIndex(0);
     } else {
-      // End reached
+      console.log("[LessonRunner] Lesson complete!");
       onComplete(node.id);
       onClose();
-      // Reset after modal close animation
-      setTimeout(() => {
-        setCurrentStepIndex(0);
-        setInternalIndex(0);
-      }, 300);
     }
   };
 
   const renderStepContent = () => {
     switch (currentStep.type) {
       case 'story':
-        return <StoryStep text={currentStep.text} onComplete={handleNextAction} />;
+        return <StoryStep key={currentStep.text} text={currentStep.text} onComplete={handleNextAction} />;
       case 'vocabulary':
-        return <VocabularyStep item={currentStep.items[internalIndex]} />;
+        return (
+          <VocabularyStep 
+            item={currentStep.items[internalIndex]} 
+            isStarred={starredWords.includes(currentStep.items[internalIndex].word)}
+            onToggleStar={() => onToggleStar(currentStep.items[internalIndex].word)}
+          />
+        );
       case 'grammar':
         return (
           <GrammarStep 

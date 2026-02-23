@@ -20,8 +20,10 @@ import Constants from "expo-constants";
 import { updateCurrentUser } from "firebase/auth";
 import { listenMessages, addMessage } from "@/services/firestoreChat";
 import { arrayUnion, getFirestore, doc, updateDoc } from "firebase/firestore";
+import { Ionicons } from "@expo/vector-icons";
+import Animated, { FadeInUp, Layout, FadeIn } from "react-native-reanimated";
 
-const CHAT_LOCAL_ENDPOINT = "http://192.168.0.112:8000/chat";
+const CHAT_LOCAL_ENDPOINT = "http://192.168.0.111:8000/chat";
 
 const initialMessages: MessageType[] = [
   {
@@ -54,6 +56,7 @@ export default function ChatUI({
   const listRef = useRef<FlatList<any>>(null);
   const INPUT_BOTTOM_SPACE = 96; 
   const [inputText, setInputText] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
   const { theme } = useTheme();
   const currentTheme = theme === "light" ? lightTheme : darkTheme;
 
@@ -87,7 +90,8 @@ export default function ChatUI({
 
     try {
       await addMessage(conversationId, "user", userMessageText);
-      // Pregătim istoricul pentru serverul tău
+      setIsTyping(true);
+      
       const historyToSend = messages
         .map((m) => ({
           role: m.isUser ? "user" : "assistant",
@@ -100,7 +104,7 @@ export default function ChatUI({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           user_prompt: userMessageText,
-          system_instruction: systemInstruction, // Trimitem instrucțiunea definită în componentă
+          system_instruction: systemInstruction,
           history: historyToSend,
           user_context: userContext,
         }),
@@ -108,10 +112,7 @@ export default function ChatUI({
 
       const data = await response.json();
       if (data.new_fact) {
-        console.log("New fact learned:", data.new_fact);
-
         const userRef = doc(db, "users", userId);
-
         try {
           await updateDoc(userRef, {
             aiMemory: arrayUnion(data.new_fact),
@@ -128,12 +129,13 @@ export default function ChatUI({
         text: aiResponse,
         isUser: false,
       };
+      
       setMessages((prev) => [...prev, newAiMessage]);
-
-      // Salvează răspunsul AI în Firestore
       await addMessage(conversationId, "assistant", aiResponse);
+      setIsTyping(false);
     } catch (error) {
       console.error("Eroare Chat Local:", error);
+      setIsTyping(false);
       await addMessage(
         conversationId,
         "assistant",
@@ -142,27 +144,36 @@ export default function ChatUI({
     }
   }, [inputText, messages, conversationId, systemInstruction]);
 
-  const renderMessage = ({ item }: { item: any }) => (
-    <View
+  const renderMessage = ({ item, index }: { item: any; index: number }) => (
+    <Animated.View
+      entering={FadeInUp.springify().mass(0.4).damping(18).delay(index < 10 ? index * 50 : 0)}
+      layout={Layout.springify().damping(20)}
       style={[
         styles.messageContainer,
         item.isUser ? styles.userMessage : styles.aiMessage,
-        {
-          backgroundColor: item.isUser
-            ? currentTheme.secondary
-            : currentTheme.surface,
-        },
       ]}
     >
-      <Text
+      <View
         style={[
-          styles.messageText,
-          { color: item.isUser ? currentTheme.text : currentTheme.text },
+          styles.bubble,
+          item.isUser 
+            ? { backgroundColor: currentTheme.primary, borderBottomRightRadius: 4 }
+            : { backgroundColor: currentTheme.surface, borderBottomLeftRadius: 4, borderColor: currentTheme.text + '08', borderWidth: 1 }
         ]}
       >
-        {item.text}
+        <Text
+          style={[
+            styles.messageText,
+            { color: item.isUser ? '#fff' : currentTheme.text },
+          ]}
+        >
+          {item.text}
+        </Text>
+      </View>
+      <Text style={[styles.timestamp, { color: currentTheme.text + '30' }]}>
+        {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
       </Text>
-    </View>
+    </Animated.View>
   );
 
   return (
@@ -174,6 +185,17 @@ export default function ChatUI({
       <StatusBar
         barStyle={theme === "dark" ? "light-content" : "dark-content"}
       />
+
+      {/* Subtle Journal Background */}
+      <View style={[StyleSheet.absoluteFill, { backgroundColor: currentTheme.background, zIndex: -1 }]}>
+        {theme === 'light' && (
+          <View style={styles.gridContainer}>
+            {Array.from({ length: 40 }).map((_, i) => (
+              <View key={i} style={styles.gridLine} />
+            ))}
+          </View>
+        )}
+      </View>
 
       <FlatList
         ref={listRef}
@@ -190,105 +212,139 @@ export default function ChatUI({
         keyboardDismissMode="on-drag"
         keyboardShouldPersistTaps="handled"
         onContentSizeChange={() => {
-          if (messages.length > 0) {
+          if (messages.length > 0 || isTyping) {
             listRef.current?.scrollToEnd({ animated: true });
           }
         }}
-        ListFooterComponent={<View style={{ height: 4 }} />}
+        ListFooterComponent={
+          isTyping ? (
+            <Animated.View 
+              entering={FadeIn.duration(400)}
+              style={[styles.messageContainer, styles.aiMessage, { marginLeft: 10 }]}
+            >
+              <View style={[styles.bubble, { backgroundColor: currentTheme.surface, paddingVertical: 8 }]}>
+                <Text style={{ color: currentTheme.text + '40', fontStyle: 'italic', fontSize: 13 }}>
+                  Yuki is typing...
+                </Text>
+              </View>
+            </Animated.View>
+          ) : <View style={{ height: 10 }} />
+        }
       />
 
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={[
-            styles.textInput,
-            {
-              color: currentTheme.text,
-              backgroundColor: currentTheme.background,
-              borderColor: currentTheme.text + "30",
-            },
-          ]}
-          value={inputText}
-          onChangeText={setInputText}
-          placeholder="Type a message..."
-          placeholderTextColor={currentTheme.text + "60"}
-          multiline={true}
-          returnKeyType="send"
-          onSubmitEditing={handleSend}
-        />
-        <TouchableOpacity
-          style={[
-            styles.sendButton,
-            {
-              backgroundColor: inputText.trim()
-                ? currentTheme.accent
-                : currentTheme.surface,
-            },
-          ]}
-          onPress={handleSend}
-          disabled={!inputText.trim()}
-        >
-          <Text
+      <View style={[styles.inputWrapper, { backgroundColor: currentTheme.background }]}>
+        <View style={[styles.inputContainer, { backgroundColor: currentTheme.surface, borderColor: currentTheme.text + "10" }]}>
+            <TextInput
             style={[
-              styles.sendButtonText,
-              {
-                color: inputText.trim()
-                  ? darkTheme.text
-                  : currentTheme.secondaryText,
-              },
+                styles.textInput,
+                { color: currentTheme.text },
             ]}
-          >
-            Send
-          </Text>
-        </TouchableOpacity>
+            value={inputText}
+            onChangeText={setInputText}
+            placeholder="Type a message..."
+            placeholderTextColor={currentTheme.text + "40"}
+            multiline={true}
+            returnKeyType="send"
+            onSubmitEditing={handleSend}
+            />
+            <TouchableOpacity
+            style={[
+                styles.sendButton,
+                {
+                backgroundColor: inputText.trim()
+                    ? currentTheme.primary
+                    : currentTheme.text + "05",
+                },
+            ]}
+            onPress={handleSend}
+            disabled={!inputText.trim()}
+            >
+            <Ionicons 
+                name="send" 
+                size={18} 
+                color={inputText.trim() ? "#fff" : currentTheme.text + "30"} 
+            />
+            </TouchableOpacity>
+        </View>
       </View>
     </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
   messageContainer: {
-    marginVertical: 10,
-    padding: 10,
-    borderRadius: 10,
-    maxWidth: "80%",
+    marginVertical: 6,
+    maxWidth: "85%",
   },
   userMessage: {
     alignSelf: "flex-end",
+    alignItems: 'flex-end',
   },
   aiMessage: {
     alignSelf: "flex-start",
-    backgroundColor: "#E5E5EA",
+    alignItems: 'flex-start',
+  },
+  bubble: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 5,
+    elevation: 2,
   },
   messageText: {
     fontSize: 16,
+    lineHeight: 22,
+    fontWeight: '600',
+  },
+  timestamp: {
+    fontSize: 10,
+    marginTop: 4,
+    fontWeight: '600',
+    marginHorizontal: 4,
+  },
+  inputWrapper: {
+    paddingHorizontal: 15,
+    paddingBottom: Platform.OS === 'ios' ? 20 : 15,
+    paddingTop: 10,
   },
   inputContainer: {
     flexDirection: "row",
-    padding: 10,
     alignItems: "center",
-    borderTopWidth: 1,
-    borderTopColor: "#E5E5EA",
+    padding: 8,
+    borderRadius: 30,
+    borderWidth: 1,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 5,
   },
   textInput: {
     flex: 1,
-    borderWidth: 1,
-    borderRadius: 20,
     paddingHorizontal: 15,
-    paddingVertical: 10,
-    marginRight: 10,
+    paddingVertical: 8,
     fontSize: 16,
+    maxHeight: 100,
+    fontWeight: '600',
   },
   sendButton: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 20,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    justifyContent: "center",
+    alignItems: "center",
   },
-  sendButtonText: {
-    fontWeight: "bold",
+  gridContainer: {
+    ...StyleSheet.absoluteFillObject,
+    opacity: 0.03,
   },
+  gridLine: {
+    height: 30,
+    borderBottomWidth: 1,
+    borderColor: '#000',
+    width: '100%',
+  }
 });

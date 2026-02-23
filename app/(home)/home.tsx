@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'expo-router';
 import { 
   View, 
   Text, 
@@ -16,6 +17,7 @@ import { useTheme } from '@/components/ThemeContext';
 import { lightTheme, darkTheme } from '@/constants/Colors';
 import { INITIAL_ROAD_DATA, RoadNode, CHAPTERS, Chapter } from '@/constants/roadData';
 import LessonRunner from '@/components/LessonRunner';
+import { prefetchAudio, clearSpeechCache } from '@/services/ttsService';
 import { db, auth } from '@/firebaseConfig';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { onAuthStateChanged, Auth } from 'firebase/auth';
@@ -24,6 +26,7 @@ const { width } = Dimensions.get('window');
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 
 export default function HomeScreen() {
+  const router = useRouter();
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
   const currentTheme = theme === 'light' ? lightTheme : darkTheme;
@@ -31,13 +34,16 @@ export default function HomeScreen() {
   const [roadData, setRoadData] = useState<RoadNode[]>(INITIAL_ROAD_DATA);
   const [selectedNode, setSelectedNode] = useState<RoadNode | null>(null);
   const [lessonVisible, setLessonVisible] = useState(false);
+  const [starredWords, setStarredWords] = useState<string[]>([]);
   
   // Animation state (initialized to a large value to hide the solid path at start)
   const pathLength = useSharedValue(3000);
   const progress = useSharedValue(0);
+  const [maxCompletedIndex, setMaxCompletedIndex] = useState(-1);
 
   // Load progress from Firebase on mount
   useEffect(() => {
+    clearSpeechCache();
     const firebaseAuth = auth as Auth;
     const unsubscribe = onAuthStateChanged(firebaseAuth, async (user) => {
       if (!user) return;
@@ -47,12 +53,16 @@ export default function HomeScreen() {
         const docRef = doc(db, 'userProgress', user.uid);
         const docSnap = await getDoc(docRef);
 
-        if (docSnap.exists() && docSnap.data().road) {
-          const savedProgress = docSnap.data().road;
-          setRoadData(prevData => prevData.map(node => ({
-            ...node,
-            status: savedProgress[node.id] || node.status
-          })));
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          if (data.road) {
+            setRoadData(prevData => prevData.map(node => ({
+              ...node,
+              status: data.road[node.id] || node.status
+            })));
+          }
+          setStarredWords(data.starredWords || []);
+          setMaxCompletedIndex(data.maxCompletedIndex ?? -1);
         }
       } catch (error: any) {
         console.error("Error loading progress details:", {
@@ -66,6 +76,20 @@ export default function HomeScreen() {
     return () => unsubscribe();
   }, []);
 
+  // Proactive pre-fetch for the NEXT unlocked node
+  useEffect(() => {
+    const nextNode = roadData.find(n => n.status === 'unlocked');
+    if (nextNode) {
+      const texts: string[] = [];
+      nextNode.steps.forEach(step => {
+        if (step.type === 'story') texts.push(step.text);
+        else if (step.type === 'vocabulary') step.items.forEach(i => texts.push(i.word));
+        else if (step.type === 'listening') texts.push(step.audioText);
+      });
+      if (texts.length > 0) prefetchAudio(texts);
+    }
+  }, [roadData]);
+
   const handleNodeComplete = async (nodeId: string) => {
     const firebaseAuth = auth as Auth;
     const user = firebaseAuth.currentUser;
@@ -78,10 +102,14 @@ export default function HomeScreen() {
       const newData = [...prevData];
       newData[currentIndex] = { ...newData[currentIndex], status: 'completed' };
 
-      if (currentIndex < newData.length - 1) {
+      if (currentIndex < newData.length - 1 && newData[currentIndex + 1].status === 'locked') {
         newData[currentIndex + 1] = { ...newData[currentIndex + 1], status: 'unlocked' };
       }
       
+      if (currentIndex > maxCompletedIndex) {
+        setMaxCompletedIndex(currentIndex);
+      }
+
       updatedData = newData;
       return newData;
     });
@@ -96,7 +124,22 @@ export default function HomeScreen() {
         }), {});
 
         const docRef = doc(db, 'userProgress', user.uid);
-        await setDoc(docRef, { road: progressMap }, { merge: true });
+        const docSnap = await getDoc(docRef);
+        let currentSouvenirs = [];
+        if (docSnap.exists()) {
+          currentSouvenirs = docSnap.data().souvenirs || [];
+        }
+
+        const completedNode = roadData.find(n => n.id === nodeId);
+        if (completedNode?.souvenir && !currentSouvenirs.includes(completedNode.souvenir.id)) {
+          currentSouvenirs.push(completedNode.souvenir.id);
+        }
+
+        await setDoc(docRef, { 
+          road: progressMap,
+          souvenirs: currentSouvenirs,
+          maxCompletedIndex: Math.max(maxCompletedIndex, roadData.findIndex(n => n.id === nodeId))
+        }, { merge: true });
         console.log("Progress saved successfully!");
       } catch (error: any) {
         console.error("Error saving progress details:", {
@@ -106,6 +149,29 @@ export default function HomeScreen() {
           progressCount: updatedData.length
         });
       }
+    }
+  };
+
+  const toggleStar = async (word: string) => {
+    const firebaseAuth = auth as any;
+    const user = firebaseAuth.currentUser;
+    if (!user) return;
+
+    const isStarred = starredWords.includes(word);
+    const newStarred = isStarred
+      ? starredWords.filter(w => w !== word)
+      : [...starredWords, word];
+    
+    setStarredWords(newStarred);
+
+    try {
+      const { arrayUnion, arrayRemove, updateDoc } = await import('firebase/firestore');
+      const docRef = doc(db, 'userProgress', user.uid);
+      await updateDoc(docRef, {
+        starredWords: isStarred ? arrayRemove(word) : arrayUnion(word)
+      });
+    } catch (error) {
+      console.error('Error toggling star:', error);
     }
   };
 
@@ -127,17 +193,13 @@ export default function HomeScreen() {
       segmentLengths.push(totalLen);
     }
 
-    // 2. Find the target node (furthest completed index + 1)
-    const lastCompletedIndex = [...roadData].reverse().findIndex(n => n.status === 'completed');
-    const currentIndex = lastCompletedIndex === -1 ? -1 : (roadData.length - 1 - lastCompletedIndex);
-    
-    // Target: Reach the NEXT node if current is completed
-    const targetNodeIndex = Math.min(currentIndex + 1, roadData.length - 1);
+    // 2. Find the target node (max completed index + 1)
+    const targetNodeIndex = Math.min(maxCompletedIndex + 1, roadData.length - 1);
     const targetPixelLength = segmentLengths[targetNodeIndex];
 
     pathLength.value = totalLen || 1000;
     progress.value = withTiming(targetPixelLength, { duration: 1500 });
-  }, [roadData, width]);
+  }, [roadData, width, maxCompletedIndex]);
 
   const animatedProps = useAnimatedProps(() => {
     // Show 'progress.value' pixels, then a huge gap to hide rest of solid line
@@ -219,6 +281,15 @@ export default function HomeScreen() {
           ]}
           onPress={() => {
             if (!isLocked) {
+              // Pre-fetch immediately on tap for zero-delay
+              const texts: string[] = [];
+              node.steps.forEach(step => {
+                if (step.type === 'story') texts.push(step.text);
+                else if (step.type === 'vocabulary') step.items.forEach(i => texts.push(i.word));
+                else if (step.type === 'listening') texts.push(step.audioText);
+              });
+              prefetchAudio(texts);
+
               setSelectedNode(node);
               setLessonVisible(true);
             }
@@ -299,7 +370,10 @@ export default function HomeScreen() {
           <Text style={[styles.headerSubtitle, { color: currentTheme.text + '50' }]}>MY JOURNEY</Text>
           <Text style={[styles.headerTitle, { color: currentTheme.text }]}>Learning Path</Text>
         </View>
-        <TouchableOpacity style={[styles.diaryButton, { backgroundColor: currentTheme.primary + '10' }]}>
+        <TouchableOpacity 
+          style={[styles.diaryButton, { backgroundColor: currentTheme.primary + '10' }]}
+          onPress={() => router.push('/diary')}
+        >
           <Ionicons name="journal-outline" size={20} color={currentTheme.primary} />
           <Text style={[styles.diaryButtonText, { color: currentTheme.primary }]}>Diary</Text>
         </TouchableOpacity>
@@ -317,11 +391,28 @@ export default function HomeScreen() {
       </ScrollView>
 
       <LessonRunner 
+        key={selectedNode?.id || 'none'}
         visible={lessonVisible}
         node={selectedNode}
         onClose={() => setLessonVisible(false)}
         onComplete={handleNodeComplete}
+        starredWords={starredWords}
+        onToggleStar={toggleStar}
       />
+
+      {/* Floating Action Button for Review */}
+      <TouchableOpacity 
+        style={[styles.fab, { backgroundColor: currentTheme.primary }]}
+        onPress={() => router.push('/flashcards')}
+        activeOpacity={0.8}
+      >
+        <Ionicons name="layers" size={28} color="#fff" />
+        {starredWords.length > 0 && (
+          <View style={[styles.badge, { backgroundColor: '#FF3B30' }]}>
+            <Text style={styles.badgeText}>{starredWords.length}</Text>
+          </View>
+        )}
+      </TouchableOpacity>
     </View>
   );
 }
@@ -437,4 +528,38 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     letterSpacing: 0.3,
   },
+  fab: {
+    position: 'absolute',
+    bottom: 30,
+    right: 30,
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 8,
+    zIndex: 100,
+  },
+  badge: {
+    position: 'absolute',
+    top: -4,
+    right: -4,
+    minWidth: 22,
+    height: 22,
+    borderRadius: 11,
+    borderWidth: 2,
+    borderColor: '#fff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 4,
+  },
+  badgeText: {
+    color: '#fff',
+    fontSize: 10,
+    fontWeight: '900',
+  }
 });

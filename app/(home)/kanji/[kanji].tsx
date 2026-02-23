@@ -5,7 +5,7 @@ import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useTheme } from '@/components/ThemeContext'; 
 import { lightTheme, darkTheme } from '@/constants/Colors';
 import { isKana, toRomaji, toKatakana } from 'wanakana';
-import { preloadVoices, speakJapanese } from '@/services/ttsService';
+import { speakJapanese } from '@/services/ttsService';
 import { SafeAreaView } from 'react-native-safe-area-context';
 interface KanjiInfo {
 
@@ -143,7 +143,7 @@ export default function KanjiDetailsPage() {
 
   useEffect(() => {
     // Preload TTS voices la montare pentru a evita lag la primul play
-    preloadVoices();
+    // Voice preloading is now handled contextually or is automatic
 
     const fetchKanjiDetails = async () => {
       setLoading(true);

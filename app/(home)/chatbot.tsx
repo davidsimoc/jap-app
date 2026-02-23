@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Modal, FlatList, Pressable } from "react-native";
+import { View, Text, Modal, FlatList, Pressable, TouchableOpacity, Image, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import {
   GiftedChat,
@@ -198,38 +198,59 @@ export default function ChatbotScreen() {
       edges={["top", "left", "right"]}
     >
       <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          padding: 12,
-        }}
+        style={[
+          styles.header,
+          { borderBottomColor: currentTheme.text + "05" }
+        ]}
       >
-        <Text
-          style={{ fontSize: 18, fontWeight: "600", color: currentTheme.text }}
-        >
-          AI Language Partner
-        </Text>
-        <View style={{ flexDirection: "row", gap: 16 }}>
-          <Pressable onPress={() => setIsSettingsOpen(true)}>
-            <Ionicons
-              name="settings-outline"
-              size={24}
-              color={currentTheme.text}
+        <View style={styles.headerLeft}>
+          <View style={[styles.avatarContainer, { borderColor: currentTheme.primary + "20" }]}>
+            <Image 
+              source={require('../../assets/images/yuki_avatar.png')} 
+              style={styles.headerAvatar}
+              defaultSource={require('../../assets/images/profileImg.avif')}
             />
-          </Pressable>
-          <Pressable onPress={() => setIsVoiceMode((prev) => !prev)}>
+            <View style={[styles.statusDot, { backgroundColor: '#4CAF50' }]} />
+          </View>
+          <View>
+            <Text style={[styles.headerTitle, { color: currentTheme.text }]}>Talk to Yuki</Text>
+            <Text style={[styles.headerSubtitle, { color: currentTheme.text + "60" }]}>Online Partner</Text>
+          </View>
+        </View>
+
+        <View style={styles.headerActions}>
+          <TouchableOpacity 
+            onPress={() => setIsVoiceMode((prev) => !prev)}
+            style={[styles.actionBtn, { backgroundColor: currentTheme.surface }]}
+          >
             <Ionicons
               name={isVoiceMode ? "chatbox-outline" : "mic-outline"}
-              size={24}
+              size={20}
               color={currentTheme.text}
             />
-          </Pressable>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            onPress={() => setShowHistory(true)}
+            style={[styles.actionBtn, { backgroundColor: currentTheme.surface }]}
+          >
+            <Ionicons
+              name="time-outline"
+              size={20}
+              color={currentTheme.text}
+            />
+          </TouchableOpacity>
 
-          <Pressable onPress={() => setShowHistory(true)}>
-            <Text style={{ fontSize: 16, color: currentTheme.text }}>
-              History
-            </Text>
-          </Pressable>
+          <TouchableOpacity 
+            onPress={() => setIsSettingsOpen(true)}
+            style={[styles.actionBtn, { backgroundColor: currentTheme.surface }]}
+          >
+            <Ionicons
+              name="options-outline"
+              size={20}
+              color={currentTheme.text}
+            />
+          </TouchableOpacity>
         </View>
       </View>
 
@@ -366,3 +387,67 @@ export default function ChatbotScreen() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    borderBottomWidth: 1,
+  },
+  headerLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+  avatarContainer: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    borderWidth: 1,
+    padding: 2,
+    position: 'relative',
+  },
+  headerAvatar: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 20,
+    backgroundColor: '#eee',
+  },
+  statusDot: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    borderWidth: 2,
+    borderColor: '#fff',
+  },
+  headerTitle: {
+    fontSize: 17,
+    fontWeight: "800",
+  },
+  headerSubtitle: {
+    fontSize: 12,
+    fontWeight: "600",
+  },
+  headerActions: {
+    flexDirection: "row",
+    gap: 10,
+  },
+  actionBtn: {
+    width: 38,
+    height: 38,
+    borderRadius: 12,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 5,
+    elevation: 2,
+  }
+});
