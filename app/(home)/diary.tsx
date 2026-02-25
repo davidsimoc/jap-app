@@ -1,10 +1,10 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  ScrollView, 
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
   Image,
   TouchableOpacity,
   Dimensions,
@@ -19,8 +19,8 @@ import { useTheme } from '@/components/ThemeContext';
 import { lightTheme, darkTheme } from '@/constants/Colors';
 // @ts-ignore
 import { db, auth } from '@/firebaseConfig';
-import { doc, getDoc } from 'firebase/firestore';
-import { Auth } from 'firebase/auth';
+import { doc, getDoc, onSnapshot } from 'firebase/firestore';
+import { Auth, onAuthStateChanged, User } from 'firebase/auth';
 import { INITIAL_ROAD_DATA, RoadNode, LessonStep } from '@/constants/roadData';
 
 const { width } = Dimensions.get('window');
@@ -32,7 +32,7 @@ export default function DiaryScreen() {
   const insets = useSafeAreaInsets();
   const { theme } = useTheme();
   const currentTheme = theme === 'light' ? lightTheme : darkTheme;
-  
+
   const [activeTab, setActiveTab] = useState<TabType>('passport');
   const [searchQuery, setSearchQuery] = useState('');
   const [collectedSouvenirs, setCollectedSouvenirs] = useState<string[]>([]);
@@ -41,28 +41,34 @@ export default function DiaryScreen() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const firebaseAuth = auth as any;
-      const user = firebaseAuth.currentUser;
-      if (!user) return;
+    const firebaseAuth = auth as Auth;
+    let unsubscribeProgress: () => void;
 
-      try {
-        const docRef = doc(db, 'userProgress', user.uid);
-        const docSnap = await getDoc(docRef);
+    const authUnsubscribe = onAuthStateChanged(firebaseAuth, (user: User | null) => {
+      if (!user) {
+        if (unsubscribeProgress) unsubscribeProgress();
+        return;
+      }
+
+      const docRef = doc(db, 'userProgress', user.uid);
+      unsubscribeProgress = onSnapshot(docRef, (docSnap) => {
         if (docSnap.exists()) {
           const data = docSnap.data();
           setCollectedSouvenirs(data.souvenirs || []);
           setStarredWords(data.starredWords || []);
           setRoadProgress(data.road || {});
         }
-      } catch (error) {
-        console.error('Error fetching diary data:', error);
-      } finally {
         setLoading(false);
-      }
-    };
+      }, (error) => {
+        console.error('Error listening to diary data:', error);
+        setLoading(false);
+      });
+    });
 
-    fetchData();
+    return () => {
+      authUnsubscribe();
+      if (unsubscribeProgress) unsubscribeProgress();
+    };
   }, []);
 
   // Aggregated data from completed nodes
@@ -80,12 +86,12 @@ export default function DiaryScreen() {
               }
             });
           } else if (step.type === 'grammar') {
-            grammar.push({ 
-              title: step.title, 
-              explanation: step.explanation, 
+            grammar.push({
+              title: step.title,
+              explanation: step.explanation,
               examples: step.examples || [],
               nodeId: node.id,
-              nodeTitle: node.title 
+              nodeTitle: node.title
             });
           }
         });
@@ -95,13 +101,13 @@ export default function DiaryScreen() {
     // Apply search filter
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
-      vocab = vocab.filter(v => 
-        v.word.toLowerCase().includes(q) || 
-        v.reading.toLowerCase().includes(q) || 
+      vocab = vocab.filter(v =>
+        v.word.toLowerCase().includes(q) ||
+        v.reading.toLowerCase().includes(q) ||
         v.meaning.toLowerCase().includes(q)
       );
-      grammar = grammar.filter(g => 
-        g.title.toLowerCase().includes(q) || 
+      grammar = grammar.filter(g =>
+        g.title.toLowerCase().includes(q) ||
         g.explanation.toLowerCase().includes(q)
       );
     }
@@ -126,7 +132,7 @@ export default function DiaryScreen() {
     const newStarred = starredWords.includes(word)
       ? starredWords.filter(w => w !== word)
       : [...starredWords, word];
-    
+
     setStarredWords(newStarred);
 
     try {
@@ -145,12 +151,12 @@ export default function DiaryScreen() {
       <View style={[styles.passportCard, { backgroundColor: currentTheme.surface, borderColor: currentTheme.text + '05' }]}>
         <View style={styles.passportPattern}>
           {[...Array(5)].map((_, i) => (
-            <View 
-              key={i} 
+            <View
+              key={i}
               style={[
-                styles.patternLine, 
+                styles.patternLine,
                 { backgroundColor: currentTheme.primary + '05', transform: [{ rotate: '45deg' }] }
-              ]} 
+              ]}
             />
           ))}
         </View>
@@ -181,10 +187,10 @@ export default function DiaryScreen() {
           const isCollected = collectedSouvenirs.includes(souvenir.id);
           return (
             <View key={souvenir.id} style={styles.stampWrapper}>
-              <View 
+              <View
                 style={[
-                  styles.stampInner, 
-                  { 
+                  styles.stampInner,
+                  {
                     backgroundColor: isCollected ? currentTheme.primary + '15' : currentTheme.surface,
                     borderColor: isCollected ? currentTheme.primary : currentTheme.text + '10',
                     borderStyle: isCollected ? 'solid' : 'dashed'
@@ -228,14 +234,14 @@ export default function DiaryScreen() {
           const isStarred = starredWords.includes(item.word);
           return (
             <View key={index} style={[styles.vocabRow, { borderBottomColor: currentTheme.text + '05' }]}>
-              <TouchableOpacity 
-                style={styles.starSmall} 
+              <TouchableOpacity
+                style={styles.starSmall}
                 onPress={() => toggleStar(item.word)}
               >
-                <Ionicons 
-                  name={isStarred ? "star" : "star-outline"} 
-                  size={18} 
-                  color={isStarred ? "#FFD700" : currentTheme.text + '20'} 
+                <Ionicons
+                  name={isStarred ? "star" : "star-outline"}
+                  size={18}
+                  color={isStarred ? "#FFD700" : currentTheme.text + '20'}
                 />
               </TouchableOpacity>
               <View style={styles.vocabMain}>
@@ -299,16 +305,16 @@ export default function DiaryScreen() {
       {/* Tab Switcher */}
       <View style={styles.tabContainer}>
         {(['passport', 'vocabulary', 'grammar'] as TabType[]).map((tab) => (
-          <TouchableOpacity 
+          <TouchableOpacity
             key={tab}
             onPress={() => switchTab(tab)}
             style={[
-              styles.tab, 
+              styles.tab,
               activeTab === tab && { borderBottomColor: currentTheme.primary, borderBottomWidth: 3 }
             ]}
           >
             <Text style={[
-              styles.tabText, 
+              styles.tabText,
               { color: activeTab === tab ? currentTheme.primary : currentTheme.text + '40' }
             ]}>
               {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -424,7 +430,7 @@ const styles = StyleSheet.create({
   },
   stampName: { fontSize: 13, fontWeight: '700', textAlign: 'center' },
   verifiedBadge: { position: 'absolute', top: 10, right: 10 },
-  notebookContainer: { paddingBottom: 20 },
+  notebookContainer: { paddingBottom: 100 },
   vocabRow: {
     flexDirection: 'row', paddingVertical: 15, borderBottomWidth: 1, alignItems: 'center', justifyContent: 'space-between',
   },

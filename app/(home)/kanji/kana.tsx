@@ -1,5 +1,6 @@
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions, FlatList, SectionList, ScrollView, ActivityIndicator } from 'react-native';
-import { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions, FlatList, ScrollView, ActivityIndicator, LayoutAnimation, Platform } from 'react-native';
+import { useEffect, useState, useMemo } from 'react';
+import { Ionicons } from '@expo/vector-icons';
 import hiraganaData from '@/assets/data/hiragana.json';
 import dakutenHiraganaData from '@/assets/data/hiraganaDakuten.json';
 import yoonHiraganaData from '@/assets/data/hiraganaYōon.json';
@@ -12,8 +13,12 @@ import { useTheme } from '@/components/ThemeContext'; // Calea corectă!
 import { lightTheme, darkTheme } from '@/constants/Colors'; // Asigură-te că ai importat corect temele
 
 const { width } = Dimensions.get('window');
-const CARD_SIZE = width / 5 - 10;
-const CARD_SIZE_KANJI = width / 6 - 10;
+const SIDE_PADDING = 20;
+const CARD_MARGIN = 5;
+const CONTENT_PADDING = SIDE_PADDING * 2;
+const AVAILABLE_WIDTH = width - CONTENT_PADDING;
+const CARD_SIZE = (AVAILABLE_WIDTH - (CARD_MARGIN * 2 * 5)) / 5;
+const CARD_SIZE_KANJI = CARD_SIZE;
 
 interface KanjiInfo { // Aici definim tipul datelor din kanjiDataN5
     onyomi: string[];
@@ -34,14 +39,14 @@ const N5_KANJI_FALLBACK = [
     '名', '川', '千', '水', '半', '男', '西', '電', '校', '語',
     '土', '木', '聞', '食', '車', '何', '南', '万', '毎', '白',
     '天', '母', '火', '右', '読', '友', '左', '休', '父', '雨'
-  ];
+];
 
 const fetchN5Kanji = async (): Promise<string[]> => {
     try {
-        await new Promise(resolve => setTimeout(resolve, 1000)); 
-        
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
         return N5_KANJI_FALLBACK;
-        
+
     } catch (error) {
         console.error('Eroare la încărcarea kanji N5:', error);
         // Fallback la JSON local
@@ -57,11 +62,11 @@ export default function HiraganaScreen() {
     const [katakanaFlatData, setKatakanaFlatData] = useState<any[]>([]);
     const [katakanaDakutenFlatData, setKatakanaDakutenFlatData] = useState<any[]>([]);
     const [katakanaYoonFlatData, setKatakanaYoonFlatData] = useState<any[]>([]);
-    
+
     // State pentru kanji cu API
     const [kanjiListN5, setKanjiListN5] = useState<string[]>([]);
     const [kanjiLoading, setKanjiLoading] = useState<boolean>(false);
-    
+
     const { theme, toggleTheme } = useTheme(); // Acum funcționează corect!
     const currentTheme = theme === 'light' ? lightTheme : darkTheme;
 
@@ -118,76 +123,74 @@ export default function HiraganaScreen() {
 
 
     return (
-        <View style={{ ...styles.container, backgroundColor: currentTheme.background }}>
-            {/* Tabs */}
-            <View style={{ ...styles.tabContainer, backgroundColor: currentTheme.background, borderColor: currentTheme.border }}>
-                <TouchableOpacity
-                    onPress={() => setSelectedTab('hiragana')}
-                    style={[
-                        styles.tab,
-                        selectedTab === 'hiragana'
-                            ? { backgroundColor: currentTheme.accent } // Culoare activă din tema curentă
-                            : { backgroundColor: currentTheme.surface }, // Culoare inactivă din tema curentă (sau altă culoare)
-                    ]}
-                >
-                    <Text
-                        style={[
-                            styles.tabText,
-                            selectedTab === 'hiragana'
-                                ? { color: currentTheme.background, fontWeight: 'bold' } // Culoare text activă din tema curentă
-                                : { color: currentTheme.text }, // Culoare text inactivă din tema curentă
-                        ]}
-                    >
-                        Hiragana
-                    </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    onPress={() => setSelectedTab('katakana')}
-                    style={[
-                        styles.tab,
-                        selectedTab === 'katakana'
-                            ? { backgroundColor: currentTheme.accent } // Culoare activă din tema curentă
-                            : { backgroundColor: currentTheme.surface }, // Culoare inactivă din tema curentă (sau altă culoare)
-                    ]}
-                >
-                    <Text
-                        style={[
-                            styles.tabText,
-                            selectedTab === 'katakana'
-                                ? { color: currentTheme.background, fontWeight: 'bold' } // Culoare text activă din tema curentă
-                                : { color: currentTheme.text }, // Culoare text inactivă din tema curentă
-                        ]}
-                    >
-                        Katakana
-                    </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    onPress={() => setSelectedTab('kanji')}
-                    style={[
-                        styles.tab,
-                        selectedTab === 'kanji'
-                            ? { backgroundColor: currentTheme.accent } // Culoare activă din tema curentă
-                            : { backgroundColor: currentTheme.surface }, // Culoare inactivă din tema curentă (sau altă culoare)
-                    ]}
-                >
-                    <Text
-                        style={[
-                            styles.tabText,
-                            selectedTab === 'kanji'
-                                ? { color: currentTheme.background, fontWeight: 'bold' } // Culoare text activă din tema curentă
-                                : { color: currentTheme.text }, // Culoare text inactivă din tema curentă
-                        ]}
-                    >
-                        Kanji
-                    </Text>
-                </TouchableOpacity>
+        <View style={[styles.container, { backgroundColor: currentTheme.background }]}>
+            {/* Premium Header */}
+            <View style={[styles.header, { paddingTop: 60 }]}>
+                <View>
+                    <Text style={[styles.headerTitle, { color: currentTheme.text }]}>Learning Kana</Text>
+                    <Text style={[styles.headerSubtitle, { color: currentTheme.text + '60' }]}>MASTER THE BASICS</Text>
+                </View>
             </View>
 
-            <View style={{ ...styles.content, backgroundColor: currentTheme.background }}>
+            {/* Premium Segmented Control */}
+            <View style={styles.segmentedWrapper}>
+                <View style={[styles.tabContainer, { backgroundColor: currentTheme.surface, borderColor: currentTheme.text + '05' }]}>
+                    <TouchableOpacity
+                        onPress={() => {
+                            LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+                            setSelectedTab('hiragana');
+                        }}
+                        style={[
+                            styles.tab,
+                            selectedTab === 'hiragana' && { backgroundColor: currentTheme.primary }
+                        ]}
+                    >
+                        <Text style={[styles.tabText, { color: selectedTab === 'hiragana' ? '#fff' : currentTheme.text + '60' }]}>
+                            Hiragana
+                        </Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        onPress={() => {
+                            LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+                            setSelectedTab('katakana');
+                        }}
+                        style={[
+                            styles.tab,
+                            selectedTab === 'katakana' && { backgroundColor: currentTheme.primary }
+                        ]}
+                    >
+                        <Text style={[styles.tabText, { color: selectedTab === 'katakana' ? '#fff' : currentTheme.text + '60' }]}>
+                            Katakana
+                        </Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        onPress={() => {
+                            LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+                            setSelectedTab('kanji');
+                        }}
+                        style={[
+                            styles.tab,
+                            selectedTab === 'kanji' && { backgroundColor: currentTheme.primary }
+                        ]}
+                    >
+                        <Text style={[styles.tabText, { color: selectedTab === 'kanji' ? '#fff' : currentTheme.text + '60' }]}>
+                            Kanji
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+
+            <View style={[styles.content, { backgroundColor: currentTheme.background }]}>
                 {selectedTab === 'hiragana' && (
-                    <ScrollView style={{ flex: 1 }}>
-                        <Text style={{ ...styles.category, color: currentTheme.text }}>Hiragana</Text>
-                        <Text style={{ ...styles.subtitle, color: currentTheme.secondaryText }}>The main Japanese writing system</Text>
+                    <ScrollView
+                        style={{ flex: 1 }}
+                        showsVerticalScrollIndicator={false}
+                        contentContainerStyle={styles.scrollContent}
+                    >
+                        <Text style={[styles.category, { color: currentTheme.text }]}>Hiragana</Text>
+                        <Text style={[styles.subtitle, { color: currentTheme.text + '60' }]}>The main Japanese writing system</Text>
                         <FlatList
                             data={basicData}
                             renderItem={(props) => renderItem(props, 'basic')}
@@ -196,10 +199,10 @@ export default function HiraganaScreen() {
                             columnWrapperStyle={styles.row}
                             scrollEnabled={false}
                         />
-                        <View style={{ ...styles.separator, borderBottomColor: currentTheme.border }} />
+                        <View style={[styles.separator, { borderBottomColor: currentTheme.border }]} />
 
-                        <Text style={{ ...styles.category, color: currentTheme.text }}>Dakuten</Text>
-                        <Text style={{ ...styles.subtitle, color: currentTheme.secondaryText }}>A symbol changes the sound</Text>
+                        <Text style={[styles.category, { color: currentTheme.text }]}>Dakuten</Text>
+                        <Text style={[styles.subtitle, { color: currentTheme.text + '60' }]}>A symbol changes the sound</Text>
                         <FlatList
                             data={dakutenData}
                             renderItem={(props) => renderItem(props, 'dakuten')}
@@ -208,11 +211,10 @@ export default function HiraganaScreen() {
                             columnWrapperStyle={styles.row}
                             scrollEnabled={false}
                         />
-                        <View style={{ ...styles.separator, borderBottomColor: currentTheme.border }} />
+                        <View style={[styles.separator, { borderBottomColor: currentTheme.border }]} />
 
-
-                        <Text style={{ ...styles.category, color: currentTheme.text }}>Yōon (Combinations)</Text>
-                        <Text style={{ ...styles.subtitle, color: currentTheme.secondaryText }}>A small character to make new syllable</Text>
+                        <Text style={[styles.category, { color: currentTheme.text }]}>Yōon (Combinations)</Text>
+                        <Text style={[styles.subtitle, { color: currentTheme.text + '60' }]}>A small character to make new syllable</Text>
                         <FlatList
                             data={yoonData}
                             renderItem={(props) => renderItem(props, 'yoon')}
@@ -225,9 +227,13 @@ export default function HiraganaScreen() {
                 )}
 
                 {selectedTab === 'katakana' && (
-                    <ScrollView style={{ flex: 1 }}>
-                        <Text style={{ ...styles.category, color: currentTheme.text }}>Katakana</Text>
-                        <Text style={{ ...styles.subtitle, color: currentTheme.secondaryText }}>Characters used for loanwords</Text>
+                    <ScrollView
+                        style={{ flex: 1 }}
+                        showsVerticalScrollIndicator={false}
+                        contentContainerStyle={styles.scrollContent}
+                    >
+                        <Text style={[styles.category, { color: currentTheme.text }]}>Katakana</Text>
+                        <Text style={[styles.subtitle, { color: currentTheme.text + '60' }]}>Characters used for loanwords</Text>
                         <FlatList
                             data={katakanaFlatData}
                             renderItem={(props) => renderItem(props, 'basic')}
@@ -236,10 +242,10 @@ export default function HiraganaScreen() {
                             columnWrapperStyle={styles.row}
                             scrollEnabled={false}
                         />
-                        <View style={{ ...styles.separator, borderBottomColor: currentTheme.border }} />
+                        <View style={[styles.separator, { borderBottomColor: currentTheme.border }]} />
 
-                        <Text style={{ ...styles.category, color: currentTheme.text }}>Dakuten</Text>
-                        <Text style={{ ...styles.subtitle, color: currentTheme.secondaryText }}>A symbol changes the sound</Text>
+                        <Text style={[styles.category, { color: currentTheme.text }]}>Dakuten</Text>
+                        <Text style={[styles.subtitle, { color: currentTheme.text + '60' }]}>A symbol changes the sound</Text>
                         <FlatList
                             data={katakanaDakutenFlatData}
                             renderItem={(props) => renderItem(props, 'dakuten')}
@@ -248,11 +254,10 @@ export default function HiraganaScreen() {
                             columnWrapperStyle={styles.row}
                             scrollEnabled={false}
                         />
-                        <View style={{ ...styles.separator, borderBottomColor: currentTheme.border }} />
+                        <View style={[styles.separator, { borderBottomColor: currentTheme.border }]} />
 
-
-                        <Text style={{ ...styles.category, color: currentTheme.text }}>Yōon (Combinations)</Text>
-                        <Text style={{ ...styles.subtitle, color: currentTheme.secondaryText }}>A small character to make new syllable</Text>
+                        <Text style={[styles.category, { color: currentTheme.text }]}>Yōon (Combinations)</Text>
+                        <Text style={[styles.subtitle, { color: currentTheme.text + '60' }]}>A small character to make new syllable</Text>
                         <FlatList
                             data={katakanaYoonFlatData}
                             renderItem={(props) => renderItem(props, 'yoon')}
@@ -265,17 +270,22 @@ export default function HiraganaScreen() {
                 )}
 
                 {selectedTab === 'kanji' && (
-                    <View style={{ flex: 1 }}>
-                        <Text style={{ ...styles.category, color: currentTheme.text }}>Kanji (N5)</Text>
+                    <ScrollView
+                        style={{ flex: 1 }}
+                        showsVerticalScrollIndicator={false}
+                        contentContainerStyle={styles.scrollContent}
+                    >
+                        <Text style={[styles.category, { color: currentTheme.text }]}>Kanji (N5)</Text>
+                        <Text style={[styles.subtitle, { color: currentTheme.text + '60' }]}>Essential characters for daily life</Text>
                         <FlatList
                             data={kanjiListN5}
                             renderItem={renderKanjiItem}
                             keyExtractor={(item) => item}
-                            numColumns={6}
-                            columnWrapperStyle={styles.rowKanji}
-                            contentContainerStyle={styles.kanjiListContainer}
+                            numColumns={5}
+                            columnWrapperStyle={styles.row}
+                            scrollEnabled={false}
                         />
-                    </View>
+                    </ScrollView>
                 )}
             </View>
         </View>
@@ -285,113 +295,141 @@ export default function HiraganaScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        // backgroundColor: darkTheme.background,
-        paddingTop: 40,
+    },
+    header: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+        marginBottom: 20,
+    },
+    headerTitle: {
+        fontSize: 28,
+        fontWeight: '900',
+        letterSpacing: -0.5,
+    },
+    headerSubtitle: {
+        fontSize: 10,
+        fontWeight: '800',
+        letterSpacing: 1.5,
+        marginTop: 4,
+    },
+    themeToggle: {
+        width: 44,
+        height: 44,
+        borderRadius: 22,
+        justifyContent: 'center',
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 5,
+        elevation: 2,
+    },
+    segmentedWrapper: {
+        paddingHorizontal: 20,
+        marginBottom: 20,
     },
     tabContainer: {
         flexDirection: 'row',
-        justifyContent: 'center',
-        paddingVertical: 10,
-        // backgroundColor: darkTheme.background,
-        borderBottomWidth: 1,
-        // borderBottomColor: darkTheme.border,
-        width: '100%',
+        padding: 6,
+        borderRadius: 16,
+        borderWidth: 1,
     },
     tab: {
         flex: 1,
-        marginHorizontal: 10,
-        paddingVertical: 8,
-        paddingHorizontal: 16,
-        borderRadius: 10,
+        height: 40,
+        borderRadius: 12,
         alignItems: 'center',
         justifyContent: 'center',
-        // backgroundColor: darkTheme.surface,
-    },
-    tabActive: {
-        //  backgroundColor: darkTheme.accent,
     },
     tabText: {
-        color: darkTheme.text,
-        fontSize: 16,
-    },
-    tabTextActive: {
-        // color: darkTheme.background,
-        fontWeight: 'bold',
+        fontSize: 14,
+        fontWeight: '700',
     },
     content: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        // backgroundColor: darkTheme.background,
-        marginTop: 10,
+    },
+    scrollContent: {
+        paddingHorizontal: 20,
+        paddingBottom: 120,
     },
     separator: {
-        borderBottomWidth: 2,
-        // borderBottomColor: darkTheme.border,
-        alignSelf: 'center', // Centrează linia orizontal
-        marginVertical: 20, // Adaugă spațiu deasupra și dedesubtul liniei
-        width: '100%', // Ajustează lățimea liniei după nevoie
+        height: 1,
+        width: '90%',
+        alignSelf: 'center',
+        marginVertical: 30,
+        opacity: 0.1,
+        borderBottomWidth: 1,
     },
     card: {
         width: CARD_SIZE,
-        height: CARD_SIZE,
+        height: CARD_SIZE + 10,
         justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 4,
-        margin: 4,
-        // backgroundColor: darkTheme.surface,
-        borderRadius: 10,
+        margin: 5,
+        borderRadius: 18,
+        borderWidth: 1,
+        borderColor: 'rgba(0,0,0,0.03)',
+        ...Platform.select({
+            ios: {
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.05,
+                shadowRadius: 10,
+            },
+            android: { elevation: 2 },
+        }),
     },
     category: {
-        fontSize: 30,
-        // color: darkTheme.text,
-        marginBottom: 5,
-        fontWeight: 'bold',
-        textAlign: 'left',
-        marginLeft: 10,
-        //marginTop: 10,
+        fontSize: 22,
+        fontWeight: '900',
+        marginBottom: 4,
+        marginTop: 10,
     },
     subtitle: {
-        fontSize: 18,
-        // color: darkTheme.secondaryText,
-        marginLeft: 10,
-        marginBottom: 15,
-    },
-    romaji: {
-        fontSize: 18,
-        // color: darkTheme.text,
+        fontSize: 13,
+        fontWeight: '600',
+        marginBottom: 20,
+        opacity: 0.5,
     },
     kana: {
-        fontSize: 24,
-        // color: darkTheme.accent,
+        fontSize: 28,
+        fontWeight: '700',
+        marginBottom: 2,
+    },
+    romaji: {
+        fontSize: 12,
+        fontWeight: '800',
+        opacity: 0.4,
+        textTransform: 'uppercase',
+        letterSpacing: 1,
     },
     row: {
-        justifyContent: 'space-between',
-        //justifyContent: 'center',
+        justifyContent: 'center',
     },
     rowKanji: {
         justifyContent: 'center',
-
     },
     yoonCard: {
-        justifyContent: 'space-around',
-        width: width / 3 - 10, // Adjust width for 3 items
+        width: (width - 60) / 3,
+        height: CARD_SIZE + 15,
     },
     kanjiCard: {
         width: CARD_SIZE_KANJI,
         height: CARD_SIZE_KANJI,
         justifyContent: 'center',
         alignItems: 'center',
-        //backgroundColor: darkTheme.surface,
-        borderRadius: 10,
-        margin: 4,
+        borderRadius: 15,
+        margin: 5,
+        borderWidth: 1,
+        borderColor: 'rgba(0,0,0,0.03)',
     },
     kanjiText: {
-        fontSize: 40,
-        // color: darkTheme.accent,
+        fontSize: 24,
+        fontWeight: '700',
     },
     kanjiListContainer: {
-        paddingBottom: 20,
-        paddingHorizontal: 10,
+        paddingBottom: 120,
     },
 });

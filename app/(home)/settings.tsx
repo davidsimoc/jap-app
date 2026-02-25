@@ -1,11 +1,11 @@
 
-import React from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  TouchableOpacity, 
-  ScrollView, 
+import React, { useEffect } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
   Switch,
   Platform
 } from 'react-native';
@@ -14,18 +14,29 @@ import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/components/ThemeContext';
 import { lightTheme, darkTheme } from '@/constants/Colors';
+import { Auth, onAuthStateChanged } from 'firebase/auth'; // Added Auth and onAuthStateChanged
 // @ts-ignore
 import { auth } from '@/firebaseConfig';
 
 export default function SettingsScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+
+  useEffect(() => {
+    const firebaseAuth = auth as Auth;
+    const unsubscribe = onAuthStateChanged(firebaseAuth, (user) => {
+      // You can add logic here if needed, e.g., redirect if user logs out
+      // For now, we just ensure the type cast is present.
+    });
+    return () => unsubscribe();
+  }, []);
+
   const { theme, toggleTheme } = useTheme();
   const currentTheme = theme === 'light' ? lightTheme : darkTheme;
 
   const handleLogout = async () => {
     try {
-      await (auth as any).signOut();
+      await (auth as Auth).signOut(); // Added Auth type cast here as well
       router.replace('/(auth)/login');
     } catch (error) {
       console.error('Error signing out:', error);
@@ -33,8 +44,8 @@ export default function SettingsScreen() {
   };
 
   const SettingItem = ({ icon, label, children, onPress, color }: any) => (
-    <TouchableOpacity 
-      style={[styles.item, { borderBottomColor: currentTheme.text + '08' }]} 
+    <TouchableOpacity
+      style={[styles.item, { borderBottomColor: currentTheme.text + '08' }]}
       onPress={onPress}
       disabled={!onPress}
       activeOpacity={0.7}
@@ -64,8 +75,8 @@ export default function SettingsScreen() {
           <Text style={[styles.sectionTitle, { color: currentTheme.text + '70' }]}>APPEARANCE</Text>
           <View style={[styles.card, { backgroundColor: currentTheme.surface }]}>
             <SettingItem icon="moon" label="Dark Mode">
-              <Switch 
-                value={theme === 'dark'} 
+              <Switch
+                value={theme === 'dark'}
                 onValueChange={toggleTheme}
                 trackColor={{ false: '#767577', true: currentTheme.primary }}
                 thumbColor={Platform.OS === 'ios' ? '#fff' : (theme === 'dark' ? '#fff' : '#f4f3f4')}
@@ -90,10 +101,10 @@ export default function SettingsScreen() {
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: currentTheme.text + '70' }]}>SYSTEM</Text>
           <View style={[styles.card, { backgroundColor: currentTheme.surface }]}>
-            <SettingItem 
-              icon="log-out-outline" 
-              label="Log Out" 
-              color="#FF3B30" 
+            <SettingItem
+              icon="log-out-outline"
+              label="Log Out"
+              color="#FF3B30"
               onPress={handleLogout}
             />
           </View>
@@ -170,7 +181,7 @@ const styles = StyleSheet.create({
   footer: {
     marginTop: 20,
     alignItems: 'center',
-    paddingBottom: 40,
+    paddingBottom: 120,
   },
   versionText: {
     fontSize: 11,

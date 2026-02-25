@@ -1,22 +1,22 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  TouchableOpacity, 
-  Dimensions, 
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Dimensions,
   ActivityIndicator,
   LayoutAnimation
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Animated, { 
-  useSharedValue, 
-  useAnimatedStyle, 
-  withSpring, 
-  interpolate 
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  interpolate
 } from 'react-native-reanimated';
 import { useTheme } from '@/components/ThemeContext';
 import { lightTheme, darkTheme } from '@/constants/Colors';
@@ -45,92 +45,103 @@ export default function FlashcardsScreen() {
   const [cards, setCards] = useState<any[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
-  
+  const [practiceAllMode, setPracticeAllMode] = useState(false);
+
   const rotateY = useSharedValue(0);
 
-  useEffect(() => {
-    const fetchFlashcards = async () => {
-      // @ts-ignore
-      const user = auth?.currentUser;
-      if (!user) return;
+  const fetchFlashcards = async (ignoreDue: boolean = false) => {
+    setLoading(true);
+    // @ts-ignore
+    const user = auth?.currentUser;
+    if (!user) return;
 
-      try {
-        // 1. Get starred words from userProgress
-        const progRef = doc(db, 'userProgress', user.uid);
-        const progSnap = await getDoc(progRef);
-        const starredWords = progSnap.exists() ? (progSnap.data().starredWords || []) : [];
+    try {
+      // 1. Get starred words from userProgress
+      const progRef = doc(db, 'userProgress', user.uid);
+      const progSnap = await getDoc(progRef);
+      const starredWords = progSnap.exists() ? (progSnap.data().starredWords || []) : [];
 
-        if (starredWords.length === 0) {
-          setCards([]);
-          setLoading(false);
-          return;
-        }
-
-        // 2. Get SRS metadata from flashcards collection
-        const flashRef = collection(db, 'users', user.uid, 'flashcards');
-        const flashSnap = await getDocs(flashRef);
-        const metadataMap: Record<string, FlashcardMetadata> = {};
-        flashSnap.forEach(doc => {
-          metadataMap[doc.id] = doc.data() as FlashcardMetadata;
-        });
-
-        // 3. Find full word data from roadData
-        const allVocab: Record<string, any> = {};
-        INITIAL_ROAD_DATA.forEach(node => {
-          node.steps.forEach(step => {
-            if (step.type === 'vocabulary') {
-              step.items.forEach(item => {
-                allVocab[item.word] = { ...item, nodeTitle: node.title };
-              });
-            }
-          });
-        });
-
-        // 4. Combine and filter for "due" cards
-        const now = Date.now();
-        const dueCards = starredWords
-          .map((word: string) => {
-            const meta = metadataMap[word] || {
-              word,
-              interval: 0,
-              repetitions: 0,
-              easeFactor: 2.5,
-              nextReview: 0
-            };
-            return { ...allVocab[word], ...meta };
-          })
-          .filter((card: any) => card.nextReview <= now)
-          // Sort by urgency (oldest first)
-          .sort((a: any, b: any) => a.nextReview - b.nextReview);
-
-        setCards(dueCards);
-      } catch (error) {
-        console.error('Error fetching cards:', error);
-      } finally {
+      if (starredWords.length === 0) {
+        setCards([]);
         setLoading(false);
+        return;
       }
-    };
 
-    fetchFlashcards();
+      // 2. Get SRS metadata from flashcards collection
+      const flashRef = collection(db, 'users', user.uid, 'flashcards');
+      const flashSnap = await getDocs(flashRef);
+      const metadataMap: Record<string, FlashcardMetadata> = {};
+      flashSnap.forEach(doc => {
+        metadataMap[doc.id] = doc.data() as FlashcardMetadata;
+      });
+
+      // 3. Find full word data from roadData
+      const allVocab: Record<string, any> = {};
+      INITIAL_ROAD_DATA.forEach(node => {
+        node.steps.forEach(step => {
+          if (step.type === 'vocabulary') {
+            step.items.forEach(item => {
+              allVocab[item.word] = { ...item, nodeTitle: node.title };
+            });
+          }
+        });
+      });
+
+      // 4. Combine and filter
+      const now = Date.now();
+      const processedCards = starredWords
+        .map((word: string) => {
+          const meta = metadataMap[word] || {
+            word,
+            interval: 0,
+            repetitions: 0,
+            easeFactor: 2.5,
+            nextReview: 0
+          };
+          return { ...allVocab[word], ...meta };
+        })
+        .filter((card: any) => ignoreDue || card.nextReview <= now)
+        // Sort by urgency (oldest first)
+        .sort((a: any, b: any) => a.nextReview - b.nextReview);
+
+      setCards(processedCards);
+      setCurrentIndex(0);
+      setIsFlipped(false);
+      rotateY.value = 0;
+    } catch (error) {
+      console.error('Error fetching cards:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchFlashcards(false);
   }, []);
 
   const flipCard = () => {
+    // Prevent multiple flips during animation
+    if (Math.abs(rotateY.value % 180) > 1) return;
+
+    const target = isFlipped ? 0 : 180;
+    rotateY.value = withSpring(target, {
+      damping: 20,
+      stiffness: 90,
+      mass: 0.8
+    });
     setIsFlipped(!isFlipped);
-    rotateY.value = withSpring(isFlipped ? 0 : 180, { damping: 15 });
   };
 
   const frontAnimatedStyle = useAnimatedStyle(() => {
-    const rotateValue = interpolate(rotateY.value, [0, 180], [0, 180]);
     return {
-      transform: [{ rotateY: `${rotateValue}deg` }],
+      transform: [{ rotateY: `${rotateY.value}deg` }],
       backfaceVisibility: 'hidden',
     };
   });
 
   const backAnimatedStyle = useAnimatedStyle(() => {
-    const rotateValue = interpolate(rotateY.value, [0, 180], [180, 360]);
     return {
-      transform: [{ rotateY: `${rotateValue}deg` }],
+      transform: [{ rotateY: `${rotateY.value + 180}deg` }],
       backfaceVisibility: 'hidden',
       position: 'absolute',
       top: 0,
@@ -213,11 +224,21 @@ export default function FlashcardsScreen() {
           <Text style={[styles.emptySubtitle, { color: currentTheme.text + '50' }]}>
             You've reviewed all your due flashcards. Come back later for more!
           </Text>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={[styles.finishButton, { backgroundColor: currentTheme.primary }]}
             onPress={() => router.back()}
           >
             <Text style={styles.finishText}>Back to Journey</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.practiceAllButton, { marginTop: 15 }]}
+            onPress={() => {
+              setPracticeAllMode(true);
+              fetchFlashcards(true);
+            }}
+          >
+            <Text style={[styles.practiceAllText, { color: currentTheme.primary }]}>Practice All Starred Words</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -243,8 +264,8 @@ export default function FlashcardsScreen() {
       </View>
 
       <View style={styles.content}>
-        <TouchableOpacity 
-          activeOpacity={1} 
+        <TouchableOpacity
+          activeOpacity={1}
           onPress={flipCard}
           style={styles.cardContainer}
         >
@@ -263,8 +284,8 @@ export default function FlashcardsScreen() {
           <Animated.View style={[styles.card, { backgroundColor: currentTheme.surface }, backAnimatedStyle]}>
             <Text style={[styles.meaningText, { color: currentTheme.text }]}>{currentCard.meaning}</Text>
             <View style={styles.backReadingContainer}>
-               <Text style={[styles.backWord, { color: currentTheme.text + '40' }]}>{currentCard.word}</Text>
-               <Text style={[styles.backReading, { color: currentTheme.primary }]}>{currentCard.reading}</Text>
+              <Text style={[styles.backWord, { color: currentTheme.text + '40' }]}>{currentCard.word}</Text>
+              <Text style={[styles.backReading, { color: currentTheme.primary }]}>{currentCard.reading}</Text>
             </View>
           </Animated.View>
         </TouchableOpacity>
@@ -274,32 +295,32 @@ export default function FlashcardsScreen() {
       {isFlipped && (
         <View style={[styles.actions, { paddingBottom: Math.max(insets.bottom, 20) }]}>
           <View style={styles.buttonRow}>
-            <TouchableOpacity 
-              style={[styles.rateButton, { backgroundColor: '#FF3B3015' }]} 
+            <TouchableOpacity
+              style={[styles.rateButton, { backgroundColor: '#FF3B3015' }]}
               onPress={() => handleReview(1)}
             >
               <Text style={[styles.rateLabel, { color: '#FF3B30' }]}>Again</Text>
               <Text style={[styles.rateTime, { color: '#FF3B30' }]}>1m</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity 
-              style={[styles.rateButton, { backgroundColor: '#FF950015' }]} 
+            <TouchableOpacity
+              style={[styles.rateButton, { backgroundColor: '#FF950015' }]}
               onPress={() => handleReview(3)}
             >
               <Text style={[styles.rateLabel, { color: '#FF9500' }]}>Hard</Text>
               <Text style={[styles.rateTime, { color: '#FF9500' }]}>1d</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity 
-              style={[styles.rateButton, { backgroundColor: '#34C75915' }]} 
+            <TouchableOpacity
+              style={[styles.rateButton, { backgroundColor: '#34C75915' }]}
               onPress={() => handleReview(4)}
             >
               <Text style={[styles.rateLabel, { color: '#34C759' }]}>Good</Text>
               <Text style={[styles.rateTime, { color: '#34C759' }]}>4d</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity 
-              style={[styles.rateButton, { backgroundColor: '#007AFF15' }]} 
+            <TouchableOpacity
+              style={[styles.rateButton, { backgroundColor: '#007AFF15' }]}
               onPress={() => handleReview(5)}
             >
               <Text style={[styles.rateLabel, { color: '#007AFF' }]}>Easy</Text>
@@ -365,5 +386,14 @@ const styles = StyleSheet.create({
   emptyTitle: { fontSize: 28, fontWeight: '900', marginBottom: 15 },
   emptySubtitle: { fontSize: 16, textAlign: 'center', lineHeight: 24, marginBottom: 40 },
   finishButton: { height: 60, paddingHorizontal: 35, borderRadius: 30, justifyContent: 'center', alignItems: 'center' },
-  finishText: { color: '#fff', fontSize: 18, fontWeight: '800' }
+  finishText: { color: '#fff', fontSize: 18, fontWeight: '800' },
+  practiceAllButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+  },
+  practiceAllText: {
+    fontSize: 16,
+    fontWeight: '700',
+    textDecorationLine: 'underline'
+  }
 });

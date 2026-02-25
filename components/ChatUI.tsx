@@ -54,7 +54,7 @@ export default function ChatUI({
 }: ChatUIProps) {
   const [messages, setMessages] = useState<MessageType[]>(initialMessages);
   const listRef = useRef<FlatList<any>>(null);
-  const INPUT_BOTTOM_SPACE = 96; 
+  const INPUT_BOTTOM_SPACE = 95;
   const [inputText, setInputText] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const { theme } = useTheme();
@@ -91,7 +91,7 @@ export default function ChatUI({
     try {
       await addMessage(conversationId, "user", userMessageText);
       setIsTyping(true);
-      
+
       const historyToSend = messages
         .map((m) => ({
           role: m.isUser ? "user" : "assistant",
@@ -129,7 +129,7 @@ export default function ChatUI({
         text: aiResponse,
         isUser: false,
       };
-      
+
       setMessages((prev) => [...prev, newAiMessage]);
       await addMessage(conversationId, "assistant", aiResponse);
       setIsTyping(false);
@@ -156,7 +156,7 @@ export default function ChatUI({
       <View
         style={[
           styles.bubble,
-          item.isUser 
+          item.isUser
             ? { backgroundColor: currentTheme.primary, borderBottomRightRadius: 4 }
             : { backgroundColor: currentTheme.surface, borderBottomLeftRadius: 4, borderColor: currentTheme.text + '08', borderWidth: 1 }
         ]}
@@ -218,7 +218,7 @@ export default function ChatUI({
         }}
         ListFooterComponent={
           isTyping ? (
-            <Animated.View 
+            <Animated.View
               entering={FadeIn.duration(400)}
               style={[styles.messageContainer, styles.aiMessage, { marginLeft: 10 }]}
             >
@@ -234,10 +234,10 @@ export default function ChatUI({
 
       <View style={[styles.inputWrapper, { backgroundColor: currentTheme.background }]}>
         <View style={[styles.inputContainer, { backgroundColor: currentTheme.surface, borderColor: currentTheme.text + "10" }]}>
-            <TextInput
+          <TextInput
             style={[
-                styles.textInput,
-                { color: currentTheme.text },
+              styles.textInput,
+              { color: currentTheme.text },
             ]}
             value={inputText}
             onChangeText={setInputText}
@@ -246,25 +246,25 @@ export default function ChatUI({
             multiline={true}
             returnKeyType="send"
             onSubmitEditing={handleSend}
-            />
-            <TouchableOpacity
+          />
+          <TouchableOpacity
             style={[
-                styles.sendButton,
-                {
+              styles.sendButton,
+              {
                 backgroundColor: inputText.trim()
-                    ? currentTheme.primary
-                    : currentTheme.text + "05",
-                },
+                  ? currentTheme.primary
+                  : currentTheme.text + "05",
+              },
             ]}
             onPress={handleSend}
             disabled={!inputText.trim()}
-            >
-            <Ionicons 
-                name="send" 
-                size={18} 
-                color={inputText.trim() ? "#fff" : currentTheme.text + "30"} 
+          >
+            <Ionicons
+              name="send"
+              size={18}
+              color={inputText.trim() ? "#fff" : currentTheme.text + "30"}
             />
-            </TouchableOpacity>
+          </TouchableOpacity>
         </View>
       </View>
     </KeyboardAvoidingView>
@@ -307,7 +307,7 @@ const styles = StyleSheet.create({
   },
   inputWrapper: {
     paddingHorizontal: 15,
-    paddingBottom: Platform.OS === 'ios' ? 20 : 15,
+    paddingBottom: Platform.OS === 'ios' ? 90 : 85,
     paddingTop: 10,
   },
   inputContainer: {
@@ -321,6 +321,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 10,
     elevation: 5,
+    bottom: 20
   },
   textInput: {
     flex: 1,

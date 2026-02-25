@@ -1,14 +1,14 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore'; // Asigură-te că această linie există
-import { 
-    getAuth, 
-    initializeAuth, 
-    getReactNativePersistence,
-    Auth
-  } from 'firebase/auth';
-  //import { getReactNativePersistence } from 'firebase/auth/react-native'; 
-  import AsyncStorage from '@react-native-async-storage/async-storage';
-import {Platform} from 'react-native';
+import {
+  getAuth,
+  initializeAuth,
+  getReactNativePersistence,
+  Auth
+} from 'firebase/auth';
+//import { getReactNativePersistence } from 'firebase/auth/react-native'; 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
 import { getStorage } from 'firebase/storage'; // Import getStorage
 
 
@@ -25,6 +25,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
+/** @type {Auth} */
 let auth;
 
 if (Platform.OS === 'web') {
@@ -37,8 +38,8 @@ if (Platform.OS === 'web') {
   });
 }
 
-export {auth};
-export{app};
+export { auth };
+export { app };
 export { firebaseConfig };
 export const db = getFirestore(app); // Exportă instanța Firestore fără adnotare de tip
 export const storage = getStorage(app); // Exportă instanța Storage

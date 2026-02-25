@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'expo-router';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  ScrollView, 
-  TouchableOpacity, 
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
   StatusBar,
   Dimensions
 } from 'react-native';
@@ -19,7 +19,7 @@ import { INITIAL_ROAD_DATA, RoadNode, CHAPTERS, Chapter } from '@/constants/road
 import LessonRunner from '@/components/LessonRunner';
 import { prefetchAudio, clearSpeechCache } from '@/services/ttsService';
 import { db, auth } from '@/firebaseConfig';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, onSnapshot, collection } from 'firebase/firestore';
 import { onAuthStateChanged, Auth } from 'firebase/auth';
 
 const { width } = Dimensions.get('window');
@@ -30,29 +30,45 @@ export default function HomeScreen() {
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
   const currentTheme = theme === 'light' ? lightTheme : darkTheme;
-  
+
   const [roadData, setRoadData] = useState<RoadNode[]>(INITIAL_ROAD_DATA);
   const [selectedNode, setSelectedNode] = useState<RoadNode | null>(null);
   const [lessonVisible, setLessonVisible] = useState(false);
   const [starredWords, setStarredWords] = useState<string[]>([]);
-  
+
   // Animation state (initialized to a large value to hide the solid path at start)
   const pathLength = useSharedValue(3000);
   const progress = useSharedValue(0);
   const [maxCompletedIndex, setMaxCompletedIndex] = useState(-1);
+  const [flashMeta, setFlashMeta] = useState<Record<string, any>>({});
+
+  const dueCardsCount = useMemo(() => {
+    const now = Date.now();
+    return starredWords.filter(word => {
+      const meta = flashMeta[word];
+      // If no meta exists, it's a "new" card and interval is 0, so nextReview is 0
+      // We should treat it as due if never reviewed
+      return (meta?.nextReview ?? 0) <= now;
+    }).length;
+  }, [starredWords, flashMeta]);
 
   // Load progress from Firebase on mount
   useEffect(() => {
     clearSpeechCache();
     const firebaseAuth = auth as Auth;
-    const unsubscribe = onAuthStateChanged(firebaseAuth, async (user) => {
-      if (!user) return;
+    let unsubscribeProgress: () => void;
+    let unsubscribeFlashcards: () => void;
 
-      try {
-        console.log("Fetching progress for UID:", user.uid);
-        const docRef = doc(db, 'userProgress', user.uid);
-        const docSnap = await getDoc(docRef);
+    const authUnsubscribe = onAuthStateChanged(firebaseAuth, (user) => {
+      if (!user) {
+        if (unsubscribeProgress) unsubscribeProgress();
+        if (unsubscribeFlashcards) unsubscribeFlashcards();
+        return;
+      }
 
+      // 1. Listen for userProgress (starredWords, road, etc.)
+      const docRef = doc(db, 'userProgress', user.uid);
+      unsubscribeProgress = onSnapshot(docRef, (docSnap) => {
         if (docSnap.exists()) {
           const data = docSnap.data();
           if (data.road) {
@@ -64,16 +80,26 @@ export default function HomeScreen() {
           setStarredWords(data.starredWords || []);
           setMaxCompletedIndex(data.maxCompletedIndex ?? -1);
         }
-      } catch (error: any) {
-        console.error("Error loading progress details:", {
-          message: error.message,
-          code: error.code,
-          uid: user.uid
+      }, (error) => {
+        console.error("Error listening to progress:", error);
+      });
+
+      // 2. Listen for flashcards subcollection metadata
+      const flashRef = collection(db, 'users', user.uid, 'flashcards');
+      unsubscribeFlashcards = onSnapshot(flashRef, (snap) => {
+        const meta: Record<string, any> = {};
+        snap.forEach(doc => {
+          meta[doc.id] = doc.data();
         });
-      }
+        setFlashMeta(meta);
+      });
     });
 
-    return () => unsubscribe();
+    return () => {
+      authUnsubscribe();
+      if (unsubscribeProgress) unsubscribeProgress();
+      if (unsubscribeFlashcards) unsubscribeFlashcards();
+    };
   }, []);
 
   // Proactive pre-fetch for the NEXT unlocked node
@@ -94,7 +120,7 @@ export default function HomeScreen() {
     const firebaseAuth = auth as Auth;
     const user = firebaseAuth.currentUser;
     let updatedData: RoadNode[] = [];
-    
+
     setRoadData(prevData => {
       const currentIndex = prevData.findIndex(n => n.id === nodeId);
       if (currentIndex === -1) return prevData;
@@ -105,7 +131,7 @@ export default function HomeScreen() {
       if (currentIndex < newData.length - 1 && newData[currentIndex + 1].status === 'locked') {
         newData[currentIndex + 1] = { ...newData[currentIndex + 1], status: 'unlocked' };
       }
-      
+
       if (currentIndex > maxCompletedIndex) {
         setMaxCompletedIndex(currentIndex);
       }
@@ -135,7 +161,7 @@ export default function HomeScreen() {
           currentSouvenirs.push(completedNode.souvenir.id);
         }
 
-        await setDoc(docRef, { 
+        await setDoc(docRef, {
           road: progressMap,
           souvenirs: currentSouvenirs,
           maxCompletedIndex: Math.max(maxCompletedIndex, roadData.findIndex(n => n.id === nodeId))
@@ -161,7 +187,7 @@ export default function HomeScreen() {
     const newStarred = isStarred
       ? starredWords.filter(w => w !== word)
       : [...starredWords, word];
-    
+
     setStarredWords(newStarred);
 
     try {
@@ -180,15 +206,15 @@ export default function HomeScreen() {
     // 1. Calculate segment lengths
     let totalLen = 0;
     const segmentLengths = [0];
-    
+
     for (let i = 1; i < roadData.length; i++) {
-      const p1 = roadData[i-1].position;
+      const p1 = roadData[i - 1].position;
       const p2 = roadData[i].position;
       const dx = (p2.x - p1.x) * width / 100;
       const dy = p2.y - p1.y;
-      const dist = Math.sqrt(dx*dx + dy*dy);
+      const dist = Math.sqrt(dx * dx + dy * dy);
       // Rough bezier approximation (S-curves are ~8% longer than straight lines)
-      const approxDist = dist * 1.08; 
+      const approxDist = dist * 1.08;
       totalLen += approxDist;
       segmentLengths.push(totalLen);
     }
@@ -204,7 +230,7 @@ export default function HomeScreen() {
   const animatedProps = useAnimatedProps(() => {
     // Show 'progress.value' pixels, then a huge gap to hide rest of solid line
     return {
-      strokeDasharray: [progress.value, 5000], 
+      strokeDasharray: [progress.value, 5000],
     };
   });
 
@@ -214,7 +240,7 @@ export default function HomeScreen() {
     let pathData = "";
     roadData.forEach((node, index) => {
       const x = (node.position.x * width) / 100;
-      const y = node.position.y + 40; 
+      const y = node.position.y + 40;
 
       if (index === 0) {
         pathData += `M ${x} ${y}`;
@@ -222,7 +248,7 @@ export default function HomeScreen() {
         const prevNode = roadData[index - 1];
         const prevX = (prevNode.position.x * width) / 100;
         const prevY = prevNode.position.y + 40;
-        
+
         const cp1y = prevY + (y - prevY) / 2;
         const cp2y = prevY + (y - prevY) / 2;
         pathData += ` C ${prevX} ${cp1y}, ${x} ${cp2y}, ${x} ${y}`;
@@ -234,22 +260,22 @@ export default function HomeScreen() {
         {/* Layer 1: Solid faint gray/beige base (The "road" base) */}
         <Path
           d={pathData}
-          stroke={theme === 'dark' ? '#222' : '#F0EAD6'} 
+          stroke={theme === 'dark' ? '#222' : '#F0EAD6'}
           strokeWidth="10"
           fill="none"
           strokeLinecap="round"
         />
-        
+
         {/* Layer 2: Dotted Red overlay (The "latent" or locked path) */}
         <Path
           d={pathData}
-          stroke={currentTheme.primary + '35'} 
+          stroke={currentTheme.primary + '35'}
           strokeWidth="8"
           fill="none"
           strokeDasharray="8, 16"
           strokeLinecap="round"
         />
-        
+
         {/* Layer 3: Animated Solid Red (The completed progress) */}
         <AnimatedPath
           d={pathData}
@@ -269,8 +295,8 @@ export default function HomeScreen() {
     const leftPosition = (node.position.x * width) / 100;
 
     return (
-      <View 
-        key={node.id} 
+      <View
+        key={node.id}
         style={[styles.nodeAbsoluteContainer, { top: node.position.y }]}
       >
         <TouchableOpacity
@@ -296,8 +322,8 @@ export default function HomeScreen() {
           }}
         >
           <View style={[
-            styles.nodeCircle, 
-            { 
+            styles.nodeCircle,
+            {
               backgroundColor: isLocked ? (theme === 'light' ? '#E8E8E8' : '#2A2A2A') : currentTheme.primary,
               borderColor: isCompleted ? '#4CAF50' : (isLocked ? 'transparent' : '#fff'),
               borderWidth: isCompleted ? 4 : (isLocked ? 0 : 3),
@@ -307,24 +333,24 @@ export default function HomeScreen() {
             {isCompleted ? (
               <Ionicons name="checkmark" size={32} color="#fff" />
             ) : (
-              <Ionicons 
-                name={node.type === 'story' ? 'book' : (node.type === 'quiz' ? 'flash' : 'flag')} 
-                size={28} 
-                color={isLocked ? currentTheme.text + '25' : '#fff'} 
+              <Ionicons
+                name={node.type === 'story' ? 'book' : (node.type === 'quiz' ? 'flash' : 'flag')}
+                size={28}
+                color={isLocked ? currentTheme.text + '25' : '#fff'}
               />
             )}
           </View>
-          
+
           <View style={[
-            styles.labelContainer, 
-            { 
+            styles.labelContainer,
+            {
               backgroundColor: currentTheme.surface,
               borderColor: isLocked ? currentTheme.text + '10' : currentTheme.primary + '15',
               borderWidth: 1
             }
           ]}>
             <Text style={[
-              styles.nodeTitle, 
+              styles.nodeTitle,
               { color: isLocked ? currentTheme.text + '40' : currentTheme.text }
             ]}>
               {node.title}
@@ -344,11 +370,11 @@ export default function HomeScreen() {
       if (!firstNode) return null;
 
       // Position header 120px above the first node of the chapter for perfect visibility
-      const topOffset = firstNode.position.y - 120; 
+      const topOffset = firstNode.position.y - 120;
 
       return (
-        <View 
-          key={chapter.id} 
+        <View
+          key={chapter.id}
           style={[styles.chapterHeaderContainer, { top: topOffset }]}
         >
           <View style={[styles.chapterBadge, { backgroundColor: currentTheme.surface, borderColor: currentTheme.primary + '25' }]}>
@@ -364,13 +390,13 @@ export default function HomeScreen() {
   return (
     <View style={[styles.container, { backgroundColor: currentTheme.background }]}>
       <StatusBar translucent backgroundColor="transparent" barStyle={theme === 'dark' ? 'light-content' : 'dark-content'} />
-      
+
       <View style={[styles.header, { paddingTop: insets.top + 10, borderBottomColor: currentTheme.text + '10' }]}>
         <View>
           <Text style={[styles.headerSubtitle, { color: currentTheme.text + '50' }]}>MY JOURNEY</Text>
           <Text style={[styles.headerTitle, { color: currentTheme.text }]}>Learning Path</Text>
         </View>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={[styles.diaryButton, { backgroundColor: currentTheme.primary + '10' }]}
           onPress={() => router.push('/diary')}
         >
@@ -379,8 +405,8 @@ export default function HomeScreen() {
         </TouchableOpacity>
       </View>
 
-      <ScrollView 
-        contentContainerStyle={styles.scrollPadding} 
+      <ScrollView
+        contentContainerStyle={styles.scrollPadding}
         showsVerticalScrollIndicator={false}
       >
         <View style={[styles.roadMapContainer, { minHeight: 2500 }]}>
@@ -390,7 +416,7 @@ export default function HomeScreen() {
         </View>
       </ScrollView>
 
-      <LessonRunner 
+      <LessonRunner
         key={selectedNode?.id || 'none'}
         visible={lessonVisible}
         node={selectedNode}
@@ -401,15 +427,15 @@ export default function HomeScreen() {
       />
 
       {/* Floating Action Button for Review */}
-      <TouchableOpacity 
+      <TouchableOpacity
         style={[styles.fab, { backgroundColor: currentTheme.primary }]}
         onPress={() => router.push('/flashcards')}
         activeOpacity={0.8}
       >
         <Ionicons name="layers" size={28} color="#fff" />
-        {starredWords.length > 0 && (
+        {dueCardsCount > 0 && (
           <View style={[styles.badge, { backgroundColor: '#FF3B30' }]}>
-            <Text style={styles.badgeText}>{starredWords.length}</Text>
+            <Text style={styles.badgeText}>{dueCardsCount}</Text>
           </View>
         )}
       </TouchableOpacity>
@@ -530,7 +556,7 @@ const styles = StyleSheet.create({
   },
   fab: {
     position: 'absolute',
-    bottom: 30,
+    bottom: 130,
     right: 30,
     width: 64,
     height: 64,

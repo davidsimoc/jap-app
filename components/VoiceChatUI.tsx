@@ -21,9 +21,9 @@ import { arrayUnion, getFirestore, doc, updateDoc } from "firebase/firestore";
 const GEMINI_API_KEY = process.env.EXPO_PUBLIC_GEMINI_API_KEY;
 //const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${GEMINI_API_KEY}`;
 
-const WHISPER_LOCAL_ENDPOINT = "http://192.168.0.111:8000/transcribe";
+const WHISPER_LOCAL_ENDPOINT = "http://192.168.0.108:8000/transcribe";
 
-const CHAT_LOCAL_ENDPOINT = "http://192.168.0.111:8000/chat";
+const CHAT_LOCAL_ENDPOINT = "http://192.168.0.108:8000/chat";
 
 const sttApiCall = async (audioUri: string): Promise<string> => {
   const audioFileBase64 = await FileSystem.readAsStringAsync(audioUri, {
@@ -93,18 +93,18 @@ export default function VoiceChatUI({
 
   const [lastUserText, setLastUserText] = useState("");
   const [aiResponseText, setAiResponseText] = useState("");
-  const recordingRef = useRef<Audio.Recording | null>(null); 
+  const recordingRef = useRef<Audio.Recording | null>(null);
   const soundObjectRef = useRef<Audio.Sound | null>(null);
 
   const stopPollyAudio = async () => {
-    if(soundObjectRef.current) {
-        try {
-            await soundObjectRef.current?.stopAsync();
-            await soundObjectRef.current?.unloadAsync();
-            soundObjectRef.current = null;
-        } catch (error) {
+    if (soundObjectRef.current) {
+      try {
+        await soundObjectRef.current?.stopAsync();
+        await soundObjectRef.current?.unloadAsync();
+        soundObjectRef.current = null;
+      } catch (error) {
 
-        }
+      }
     }
     await stopSpeech();
   }
@@ -218,7 +218,7 @@ export default function VoiceChatUI({
     try {
       const historyData = await getMessages(conversationId, 8);
 
-      const historyToSend = historyData.slice(0,-1).map(msg => ({
+      const historyToSend = historyData.slice(0, -1).map(msg => ({
         role: msg.role,
         content: msg.text,
       }));
@@ -245,7 +245,7 @@ export default function VoiceChatUI({
       }
 
       const data = await response.json();
-      if(data.new_fact) {
+      if (data.new_fact) {
         console.log("New fact learned:", data.new_fact);
 
         const userRef = doc(db, "users", userId);
@@ -289,67 +289,73 @@ export default function VoiceChatUI({
     <View
       style={[styles.container, { backgroundColor: currentTheme.background }]}
     >
-      <Text style={[styles.statusText, { color: currentTheme.text }]}>
-        {statusText}
-      </Text>
+      <View style={styles.topSpacer} />
 
-      <View style={styles.messageDisplay}>
-        {lastUserText ? (
-          <Text
-            style={[
-              styles.message,
-              styles.userMessage,
-              {
-                backgroundColor: currentTheme.secondary,
-                color: currentTheme.text,
-              },
-            ]}
-          >
-            You: {lastUserText}
-          </Text>
-        ) : null}
-        {aiResponseText ? (
-          <Text
-            style={[
-              styles.message,
-              styles.aiMessage,
-              {
-                backgroundColor: currentTheme.surface,
-                color: currentTheme.text,
-              },
-            ]}
-          >
-            {aiResponseText}
-          </Text>
-        ) : null}
+      <View style={styles.contentContainer}>
+        <Text style={[styles.statusText, { color: currentTheme.text }]}>
+          {statusText}
+        </Text>
+
+        <View style={styles.messageDisplay}>
+          {lastUserText ? (
+            <Text
+              style={[
+                styles.message,
+                styles.userMessage,
+                {
+                  backgroundColor: currentTheme.secondary,
+                  color: currentTheme.text,
+                },
+              ]}
+            >
+              You: {lastUserText}
+            </Text>
+          ) : null}
+          {aiResponseText ? (
+            <Text
+              style={[
+                styles.message,
+                styles.aiMessage,
+                {
+                  backgroundColor: currentTheme.surface,
+                  color: currentTheme.text,
+                },
+              ]}
+            >
+              {aiResponseText}
+            </Text>
+          ) : null}
+        </View>
+
+        <TouchableOpacity
+          style={[
+            styles.micButton,
+            {
+              backgroundColor:
+                isRecording || isThinking
+                  ? currentTheme.accent
+                  : currentTheme.primary,
+              borderColor: isRecording ? currentTheme.secondary : "transparent",
+            },
+          ]}
+          onPressIn={startRecording}
+          onPressOut={() => stopRecording()}
+          disabled={isThinking}
+          activeOpacity={0.7}
+        >
+          {isThinking ? (
+            <ActivityIndicator size="large" color={currentTheme.background} />
+          ) : (
+            <Ionicons
+              name={isRecording ? "mic" : "mic-outline"}
+              size={64}
+              color={currentTheme.background}
+            />
+          )}
+        </TouchableOpacity>
       </View>
 
-      <TouchableOpacity
-        style={[
-          styles.micButton,
-          {
-            backgroundColor:
-              isRecording || isThinking
-                ? currentTheme.accent
-                : currentTheme.primary,
-            borderColor: isRecording ? currentTheme.secondary : "transparent",
-          },
-        ]}
-        onPressIn={startRecording}
-        onPressOut={() => stopRecording()}
-        disabled={isThinking}
-        activeOpacity={0.7}
-      >
-        {isThinking ? (
-          <ActivityIndicator size="large" color={currentTheme.background} />
-        ) : (
-          <Ionicons
-            name={isRecording ? "mic" : "mic-outline"}
-            size={64}
-            color={currentTheme.background}
-          />
-        )}
-      </TouchableOpacity>
+      <View style={styles.bottomSpacer} />
     </View>
   );
 }
@@ -357,45 +363,74 @@ export default function VoiceChatUI({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "transparent",
+  },
+  topSpacer: {
+    flex: 1,
+  },
+  bottomSpacer: {
+    flex: 1.5, // Slightly larger spacer at bottom to push the mic button up from the bottom nav
+  },
+  contentContainer: {
     alignItems: "center",
-    justifyContent: "space-around",
-    padding: 20,
+    justifyContent: "center",
+    paddingHorizontal: 20,
+    gap: 30,
   },
   statusText: {
     fontSize: 18,
-    fontWeight: "500",
-    marginBottom: 20,
+    fontWeight: "700",
+    letterSpacing: 0.5,
     height: 30,
+    textAlign: "center",
   },
   messageDisplay: {
-    fontSize: 20,
-    padding: 15,
-    borderRadius: 20,
-    marginVertical: 10,
-    maxWidth: "90%",
-    textAlign: "center",
+    minHeight: 120,
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
   },
   message: {
     fontSize: 20,
-    padding: 15,
-    borderRadius: 20,
+    padding: 20,
+    borderRadius: 25,
     marginVertical: 10,
-    maxWidth: "90%",
+    maxWidth: "85%",
     textAlign: "center",
+    fontWeight: "600",
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+      },
+      android: { elevation: 4 },
+    }),
   },
   userMessage: {
     alignSelf: "center",
   },
   aiMessage: {
     alignSelf: "center",
+    borderWidth: 1,
+    borderColor: "rgba(0,0,0,0.05)",
   },
   micButton: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
+    width: 140,
+    height: 140,
+    borderRadius: 70,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 50,
-    borderWidth: 5,
+    borderWidth: 8,
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 10 },
+        shadowOpacity: 0.2,
+        shadowRadius: 15,
+      },
+      android: { elevation: 10 },
+    }),
   },
 });

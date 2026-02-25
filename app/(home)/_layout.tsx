@@ -4,7 +4,8 @@ import { StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '@/components/ThemeContext'; // Calea corectă!
 import { lightTheme, darkTheme } from '@/constants/Colors'; // Asigură-te că ai importat corect temele
-import SwiftUITabBarWrapper from '@/components/SwiftUITabBar'; 
+import SwiftUITabBarWrapper from '@/components/SwiftUITabBar';
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
 
 export default function HomeLayout() {
     const navigation = useNavigation();
@@ -14,13 +15,7 @@ export default function HomeLayout() {
         <Tabs
             screenOptions={{
                 headerShown: false,
-                tabBarStyle: {
-                    backgroundColor: currentTheme.navbar,
-                    borderTopWidth: 0,
-                    height: 75,
-                    paddingBottom: 20,
-                    //display: 'none'
-                },
+                tabBarStyle: { display: 'none' },
                 tabBarActiveTintColor: currentTheme.accent,
                 tabBarInactiveTintColor: currentTheme.text,
                 tabBarLabelStyle: {
@@ -31,7 +26,7 @@ export default function HomeLayout() {
                     marginTop: 5,
                 },
             }}
-            //tabBar={(props) => <SwiftUITabBarWrapper {...props} />}
+            tabBar={(props) => <SwiftUITabBarWrapper {...props} />}
         >
             <Tabs.Screen
                 name="home" // Ruta pentru ecranul Home (app/(home)/index.tsx)
