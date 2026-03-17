@@ -1,13 +1,13 @@
 const lightTheme = {
-  background: '#FAF3E0', // Un bej foarte deschis, similar cu ideea de hârtie
-  primary: '#D32F2F', // Păstrăm roșul pentru coerență, dar poate fi puțin mai deschis
-  secondary: '#FF6F00', // Păstrăm portocaliul, dar poate fi puțin mai deschis
-  text: '#333333', // Un gri foarte închis, aproape negru, pentru contrast bun
-  secondaryText: '#666666', // Un gri mai deschis pentru texte secundare
-  border: '#CCCCCC', // Un gri mai deschis pentru borduri
-  navbar: '#F0F0F0', // O nuanță foarte deschisă de gri pentru bara de navigare
-  accent: '#FF1744', // Păstrăm roșul aprins pentru accente
-  surface: '#FFFFFF', // Alb curat pentru inputuri
+  background: '#FAF3E0', // Warm paper beige
+  primary: '#D32F2F', // Deep red
+  secondary: '#E67E22', // Warm orange
+  text: '#2C2C2C', // Dark gray/black for readability
+  secondaryText: '#7F8C8D', // Muted cool gray
+  border: '#DED5C0', // Warm border matching background
+  navbar: '#F5E6CA', // Slightly darker warm beige for nav
+  accent: '#E74C3C', // Vibrant accent red
+  surface: '#FFFBF2', // Very light warm surface for cards/inputs
 };
 
 const darkTheme = {

@@ -4,8 +4,8 @@ import * as FileSystem from 'expo-file-system/legacy';
 import * as Crypto from 'expo-crypto';
 
 // Server configuration
-const CHAT_URL = "http://192.168.0.111:8000/chat";
-const TTS_URL = "http://192.168.0.111:8000/tts";
+//const TTS_URL = "http://192.168.0.126:8000/tts";
+const TTS_URL = `${process.env.EXPO_PUBLIC_API_URL}/tts`;
 
 // In-memory reference for the current sound
 let currentSound: Audio.Sound | null = null;
@@ -47,9 +47,12 @@ const downloadToCache = async (text: string, path: string) => {
 
   const fetchPromise = (async () => {
     try {
-      const response = await fetch(TTS_URL, {
+      const response = await fetch(TTS_URL!, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": "true"
+        },
         body: JSON.stringify({ text }),
       });
 

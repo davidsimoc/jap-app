@@ -136,11 +136,11 @@ export default function DiaryScreen() {
     setStarredWords(newStarred);
 
     try {
-      const { arrayUnion, arrayRemove, updateDoc } = await import('firebase/firestore');
+      const { arrayUnion, arrayRemove, setDoc } = await import('firebase/firestore');
       const docRef = doc(db, 'userProgress', user.uid);
-      await updateDoc(docRef, {
+      await setDoc(docRef, {
         starredWords: starredWords.includes(word) ? arrayRemove(word) : arrayUnion(word)
-      });
+      }, { merge: true });
     } catch (error) {
       console.error('Error toggling star:', error);
     }

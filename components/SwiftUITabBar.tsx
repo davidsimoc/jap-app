@@ -22,7 +22,7 @@ const TAB_BAR_WIDTH = SCREEN_WIDTH - (BAR_MARGIN * 2);
 
 const TAB_ITEMS = [
     { id: 0, name: 'Home', route: 'home', icon: 'home-outline', iconActive: 'home' },
-    { id: 1, name: 'Kana', route: 'kanji/kana', icon: 'book-outline', iconActive: 'book' },
+    { id: 1, name: 'Library', route: 'kanji/kana', icon: 'book-outline', iconActive: 'book' },
     { id: 2, name: 'Chat', route: 'chatbot', icon: 'chatbox-outline', iconActive: 'chatbox' },
     { id: 3, name: 'Profile', route: 'profile', icon: 'person-outline', iconActive: 'person' },
 ];
@@ -44,8 +44,10 @@ export default function SwiftUITabBarWrapper({ state, navigation }: any) {
 
     const activeIndex = useMemo(() => {
         const idx = TAB_ITEMS.findIndex(item => currentRoute.includes(item.route));
-        return idx === -1 ? state.index : idx;
-    }, [currentRoute, state.index]);
+        // Return index 0 as fallback, and clamp between 0 and TAB_ITEMS length
+        const finalIdx = idx === -1 ? 0 : idx;
+        return Math.min(Math.max(0, finalIdx), TAB_ITEMS.length - 1);
+    }, [currentRoute]);
 
     const translateX = useSharedValue(activeIndex * TAB_WIDTH);
     const contextX = useSharedValue(0);
@@ -103,8 +105,12 @@ export default function SwiftUITabBarWrapper({ state, navigation }: any) {
                             style={[
                                 styles.selector,
                                 {
-                                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.18)' : 'rgba(0, 0, 0, 0.08)',
-                                    borderColor: isDark ? 'rgba(255, 255, 255, 0.25)' : 'rgba(0, 0, 0, 0.1)',
+                                    backgroundColor: isDark
+                                        ? 'rgba(255, 255, 255, 0.18)'
+                                        : 'rgba(0, 0, 0, 0.04)',
+                                    borderColor: isDark
+                                        ? 'rgba(255, 255, 255, 0.25)'
+                                        : 'rgba(0, 0, 0, 0.08)',
                                 },
                                 animatedBubbleStyle
                             ]}

@@ -191,11 +191,11 @@ export default function HomeScreen() {
     setStarredWords(newStarred);
 
     try {
-      const { arrayUnion, arrayRemove, updateDoc } = await import('firebase/firestore');
+      const { arrayUnion, arrayRemove, setDoc } = await import('firebase/firestore');
       const docRef = doc(db, 'userProgress', user.uid);
-      await updateDoc(docRef, {
+      await setDoc(docRef, {
         starredWords: isStarred ? arrayRemove(word) : arrayUnion(word)
-      });
+      }, { merge: true });
     } catch (error) {
       console.error('Error toggling star:', error);
     }
@@ -260,7 +260,7 @@ export default function HomeScreen() {
         {/* Layer 1: Solid faint gray/beige base (The "road" base) */}
         <Path
           d={pathData}
-          stroke={theme === 'dark' ? '#222' : '#F0EAD6'}
+          stroke={theme === 'dark' ? '#222' : '#E8DFCC'}
           strokeWidth="10"
           fill="none"
           strokeLinecap="round"

@@ -1,12 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  TouchableOpacity, 
-  ScrollView, 
-  Image, 
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  Image,
   Dimensions,
   Platform,
   ActivityIndicator,
@@ -20,7 +20,7 @@ import { useTheme } from '@/components/ThemeContext';
 import { lightTheme, darkTheme } from '@/constants/Colors';
 // @ts-ignore
 import { db, auth } from '@/firebaseConfig';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { COUNTRIES, Country } from '@/constants/countries';
 
 const { width } = Dimensions.get('window');
@@ -46,7 +46,7 @@ export default function ProfileScreen() {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let result = '';
     for (let i = 0; i < 8; i++) {
-        result += chars.charAt(Math.floor(Math.random() * chars.length));
+      result += chars.charAt(Math.floor(Math.random() * chars.length));
     }
     return 'ID-' + result;
   };
@@ -61,7 +61,7 @@ export default function ProfileScreen() {
         // 1. Fetch Basic Profile
         const userRef = doc(db, 'users', user.uid);
         const userSnap = await getDoc(userRef);
-        
+
         // 2. Fetch Progress Stats
         const progRef = doc(db, 'userProgress', user.uid);
         const progSnap = await getDoc(progRef);
@@ -69,11 +69,11 @@ export default function ProfileScreen() {
         if (userSnap.exists()) {
           const data = userSnap.data();
           let updatedData = { ...data };
-          
+
           // Generate Passport No if missing
           if (!data.passportNo) {
             const newNo = generatePassportNo();
-            await updateDoc(userRef, { passportNo: newNo });
+            await setDoc(userRef, { passportNo: newNo }, { merge: true });
             updatedData.passportNo = newNo;
           }
 
@@ -120,9 +120,9 @@ export default function ProfileScreen() {
 
     try {
       const userRef = doc(db, 'users', user.uid);
-      await updateDoc(userRef, {
+      await setDoc(userRef, {
         aboutMe: tempAboutMe
-      });
+      }, { merge: true });
       setUserData({ ...userData, aboutMe: tempAboutMe });
       setIsEditModalVisible(false);
     } catch (error) {
@@ -137,10 +137,10 @@ export default function ProfileScreen() {
 
     try {
       const userRef = doc(db, 'users', user.uid);
-      await updateDoc(userRef, {
+      await setDoc(userRef, {
         citizenship: country.en,
         citizenshipJp: country.jp
-      });
+      }, { merge: true });
       setUserData({ ...userData, citizenship: country.en, citizenshipJp: country.jp });
       setIsCountryModalVisible(false);
     } catch (error) {
@@ -161,18 +161,18 @@ export default function ProfileScreen() {
       <ScrollView contentContainerStyle={{ paddingBottom: 100 }} showsVerticalScrollIndicator={false}>
         {/* Header Background Pattern */}
         <View style={[styles.headerPattern, { backgroundColor: currentTheme.primary + '05' }]}>
-           <Ionicons name="airplane" size={300} color={currentTheme.primary + '03'} style={styles.bgIcon} />
+          <Ionicons name="airplane" size={300} color={currentTheme.primary + '03'} style={styles.bgIcon} />
         </View>
 
         {/* Top Tools */}
         <View style={[styles.topRow, { paddingTop: insets.top + 10 }]}>
-           <Text style={[styles.headerHeading, { color: currentTheme.text }]}>Profile</Text>
-           <TouchableOpacity 
-             style={[styles.settingsBtn, { backgroundColor: currentTheme.surface }]}
-             onPress={() => router.push('/settings')}
-           >
-             <Ionicons name="settings-outline" size={22} color={currentTheme.text} />
-           </TouchableOpacity>
+          <Text style={[styles.headerHeading, { color: currentTheme.text }]}>Profile</Text>
+          <TouchableOpacity
+            style={[styles.settingsBtn, { backgroundColor: currentTheme.surface }]}
+            onPress={() => router.push('/settings')}
+          >
+            <Ionicons name="settings-outline" size={22} color={currentTheme.text} />
+          </TouchableOpacity>
         </View>
 
         {/* Passport Identity Card */}
@@ -180,12 +180,12 @@ export default function ProfileScreen() {
           <View style={[styles.passportCard, { backgroundColor: currentTheme.surface, borderColor: currentTheme.text + '08' }]}>
             <View style={styles.passportTop}>
               <View style={styles.photoContainer}>
-                <Image 
-                  source={userData?.profilePicture ? { uri: userData.profilePicture } : require('../../assets/images/profileImg.avif')} 
+                <Image
+                  source={userData?.profilePicture ? { uri: userData.profilePicture } : require('../../assets/images/profileImg.avif')}
                   style={styles.avatar}
                 />
                 <View style={[styles.verifiedBadge, { backgroundColor: currentTheme.primary }]}>
-                   <Ionicons name="checkmark" size={12} color="#fff" />
+                  <Ionicons name="checkmark" size={12} color="#fff" />
                 </View>
               </View>
               <View style={styles.idInfo}>
@@ -197,15 +197,15 @@ export default function ProfileScreen() {
                   <Text style={[styles.idLabel, { color: currentTheme.text + '70' }]}>CITIZENSHIP</Text>
                   <TouchableOpacity onPress={() => setIsCountryModalVisible(true)}>
                     <Text style={[styles.idValue, { color: currentTheme.text }]}>
-                        {userData?.citizenship || 'EARTH'} / {userData?.citizenshipJp || 'アース'}
+                      {userData?.citizenship || 'EARTH'} / {userData?.citizenshipJp || 'アース'}
                     </Text>
                   </TouchableOpacity>
                 </View>
               </View>
             </View>
-            
+
             <View style={[styles.dottedDivider, { borderBottomColor: currentTheme.text + '10' }]} />
-            
+
             <View style={styles.passportBottom}>
               <View style={styles.idSubDetail}>
                 <Text style={[styles.idLabel, { color: currentTheme.text + '70' }]}>PASSPORT NO.</Text>
@@ -214,8 +214,8 @@ export default function ProfileScreen() {
                 </Text>
               </View>
               <View style={styles.stampLogo}>
-                 <Text style={[styles.logoText, { color: currentTheme.primary + '50' }]}>JAPAPP</Text>
-                 <Ionicons name="qr-code-outline" size={32} color={currentTheme.text + '10'} />
+                <Text style={[styles.logoText, { color: currentTheme.primary + '50' }]}>JAPAPP</Text>
+                <Ionicons name="qr-code-outline" size={32} color={currentTheme.text + '10'} />
               </View>
             </View>
           </View>
@@ -227,24 +227,24 @@ export default function ProfileScreen() {
         </View>
 
         <View style={styles.statsGrid}>
-          <StatCard 
-            icon="trail-sign" 
-            label="Journey" 
-            value={userStats.completedNodes} 
+          <StatCard
+            icon="trail-sign"
+            label="Journey"
+            value={userStats.completedNodes}
             sublabel="Nodes Explored"
             color="#4CAF50"
           />
-          <StatCard 
-            icon="briefcase" 
-            label="Gallery" 
-            value={userStats.souvenirs} 
+          <StatCard
+            icon="briefcase"
+            label="Gallery"
+            value={userStats.souvenirs}
             sublabel="Stamps Earned"
             color="#FF9500"
           />
-          <StatCard 
-            icon="star" 
-            label="Knowledge" 
-            value={userStats.starred} 
+          <StatCard
+            icon="star"
+            label="Knowledge"
+            value={userStats.starred}
             sublabel="SRS Cards"
             color="#007AFF"
           />
@@ -254,16 +254,16 @@ export default function ProfileScreen() {
         <View style={styles.sectionHeader}>
           <Text style={[styles.sectionTitle, { color: currentTheme.text, marginBottom: 10 }]}>Traveler’s Log</Text>
           <TouchableOpacity onPress={() => setIsEditModalVisible(true)}>
-             <Text style={[styles.editLink, { color: currentTheme.primary }]}>Edit</Text>
+            <Text style={[styles.editLink, { color: currentTheme.primary }]}>Edit</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.aboutContainer}>
-           <View style={[styles.aboutCard, { backgroundColor: currentTheme.surface, borderColor: currentTheme.text + '05' }]}>
-              <Ionicons name="chatbox-ellipses-outline" size={24} color={currentTheme.primary} style={styles.quoteIcon} />
-              <Text style={[styles.aboutText, { color: currentTheme.text + '90' }]}>
-                {userData?.aboutMe || "Every master was once a beginner. Start your journey today!"}
-              </Text>
-           </View>
+          <View style={[styles.aboutCard, { backgroundColor: currentTheme.surface, borderColor: currentTheme.text + '05' }]}>
+            <Ionicons name="chatbox-ellipses-outline" size={24} color={currentTheme.primary} style={styles.quoteIcon} />
+            <Text style={[styles.aboutText, { color: currentTheme.text + '90' }]}>
+              {userData?.aboutMe || "Every master was once a beginner. Start your journey today!"}
+            </Text>
+          </View>
         </View>
 
       </ScrollView>
@@ -283,7 +283,7 @@ export default function ProfileScreen() {
                 <Ionicons name="close" size={24} color={currentTheme.text} />
               </TouchableOpacity>
             </View>
-            
+
             <TextInput
               style={[styles.input, { backgroundColor: currentTheme.background, color: currentTheme.text }]}
               multiline
@@ -294,7 +294,7 @@ export default function ProfileScreen() {
               maxLength={200}
             />
 
-            <TouchableOpacity 
+            <TouchableOpacity
               style={[styles.saveBtn, { backgroundColor: currentTheme.primary }]}
               onPress={handleSaveAboutMe}
             >
@@ -313,9 +313,9 @@ export default function ProfileScreen() {
       >
         <View style={styles.modalOverlay}>
           <View style={[
-            styles.modalContent, 
-            { 
-              backgroundColor: currentTheme.surface, 
+            styles.modalContent,
+            {
+              backgroundColor: currentTheme.surface,
               maxHeight: '90%',
               paddingTop: Math.max(insets.top, 20)
             }
@@ -326,21 +326,21 @@ export default function ProfileScreen() {
                 <Ionicons name="close" size={24} color={currentTheme.text} />
               </TouchableOpacity>
             </View>
-            
-            <ScrollView 
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={{ paddingTop: 10, paddingBottom: 40 }}
+
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{ paddingTop: 10, paddingBottom: 40 }}
             >
-                {COUNTRIES.map((country) => (
-                    <TouchableOpacity 
-                        key={country.code}
-                        style={[styles.countryItem, { borderBottomColor: currentTheme.text + '05' }]}
-                        onPress={() => handleSelectCountry(country)}
-                    >
-                        <Text style={[styles.countryText, { color: currentTheme.text }]}>{country.en}</Text>
-                        <Text style={[styles.countryTextJp, { color: currentTheme.text + '40' }]}>{country.jp}</Text>
-                    </TouchableOpacity>
-                ))}
+              {COUNTRIES.map((country) => (
+                <TouchableOpacity
+                  key={country.code}
+                  style={[styles.countryItem, { borderBottomColor: currentTheme.text + '05' }]}
+                  onPress={() => handleSelectCountry(country)}
+                >
+                  <Text style={[styles.countryText, { color: currentTheme.text }]}>{country.en}</Text>
+                  <Text style={[styles.countryTextJp, { color: currentTheme.text + '40' }]}>{country.jp}</Text>
+                </TouchableOpacity>
+              ))}
             </ScrollView>
           </View>
         </View>

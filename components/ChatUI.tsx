@@ -23,7 +23,9 @@ import { arrayUnion, getFirestore, doc, updateDoc } from "firebase/firestore";
 import { Ionicons } from "@expo/vector-icons";
 import Animated, { FadeInUp, Layout, FadeIn } from "react-native-reanimated";
 
-const CHAT_LOCAL_ENDPOINT = "http://192.168.0.111:8000/chat";
+//const CHAT_LOCAL_ENDPOINT = "http://192.168.0.126:8000/chat";
+const CHAT_LOCAL_ENDPOINT = `${process.env.EXPO_PUBLIC_API_URL}/chat`;
+
 
 const initialMessages: MessageType[] = [
   {
@@ -99,9 +101,12 @@ export default function ChatUI({
         }))
         .slice(-10);
 
-      const response = await fetch(CHAT_LOCAL_ENDPOINT, {
+      const response = await fetch(CHAT_LOCAL_ENDPOINT!, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": "true"
+        },
         body: JSON.stringify({
           user_prompt: userMessageText,
           system_instruction: systemInstruction,

@@ -21,9 +21,31 @@ import { arrayUnion, getFirestore, doc, updateDoc } from "firebase/firestore";
 const GEMINI_API_KEY = process.env.EXPO_PUBLIC_GEMINI_API_KEY;
 //const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${GEMINI_API_KEY}`;
 
-const WHISPER_LOCAL_ENDPOINT = "http://192.168.0.108:8000/transcribe";
+//const WHISPER_LOCAL_ENDPOINT = "http://192.168.0.126:8000/transcribe";
+const WHISPER_LOCAL_ENDPOINT = `${process.env.EXPO_PUBLIC_API_URL}/transcribe`;
 
-const CHAT_LOCAL_ENDPOINT = "http://192.168.0.108:8000/chat";
+
+//const CHAT_LOCAL_ENDPOINT = "http://192.168.0.126:8000/chat";
+const CHAT_LOCAL_ENDPOINT = `${process.env.EXPO_PUBLIC_API_URL}/chat`;
+
+const WHISPER_AUDIO_SETTINGS: any = {
+  android: {
+    extension: '.m4a',
+    outputFormat: Audio.AndroidOutputFormat.MPEG_4,
+    audioEncoder: Audio.AndroidAudioEncoder.AAC,
+    sampleRate: 44100,
+    numberOfChannels: 1,
+    bitRate: 128000,
+  },
+  ios: {
+    extension: '.m4a',
+    outputFormat: Audio.IOSOutputFormat.MPEG4AAC,
+    audioQuality: Audio.IOSAudioQuality.HIGH,
+    sampleRate: 44100,
+    numberOfChannels: 1,
+    bitRate: 128000,
+  },
+};
 
 const sttApiCall = async (audioUri: string): Promise<string> => {
   const audioFileBase64 = await FileSystem.readAsStringAsync(audioUri, {
@@ -36,10 +58,11 @@ const sttApiCall = async (audioUri: string): Promise<string> => {
   };
 
   try {
-    const response = await fetch(WHISPER_LOCAL_ENDPOINT, {
+    const response = await fetch(WHISPER_LOCAL_ENDPOINT!, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true"
       },
       body: JSON.stringify(requestBody),
     });
@@ -95,6 +118,8 @@ export default function VoiceChatUI({
   const [aiResponseText, setAiResponseText] = useState("");
   const recordingRef = useRef<Audio.Recording | null>(null);
   const soundObjectRef = useRef<Audio.Sound | null>(null);
+
+  const isPreparingRef = useRef(false);
 
   const stopPollyAudio = async () => {
     if (soundObjectRef.current) {
@@ -154,49 +179,79 @@ export default function VoiceChatUI({
   );
 
   const startRecording = async () => {
-    if (!conversationId || isThinking || isRecording) return;
+    // Verificări de siguranță extinse
+    if (!conversationId || isThinking || isRecording || isPreparingRef.current) return;
 
-    setLastUserText("");
-    setAiResponseText("");
-
-    await stopPollyAudio();
+    isPreparingRef.current = true; // Blocăm alte încercări până la finalizare
+    setStatusText("Preparing...");
 
     try {
-      await Audio.requestPermissionsAsync();
-      const newRecording = new Audio.Recording();
-      await newRecording.prepareToRecordAsync(
-        Audio.RecordingOptionsPresets.HIGH_QUALITY
-      );
-      await newRecording.startAsync();
+      // Curățăm orice sesiune anterioară
+      if (recordingRef.current) {
+        await recordingRef.current.stopAndUnloadAsync().catch(() => { });
+        recordingRef.current = null;
+      }
 
-      recordingRef.current = newRecording;
+      await stopPollyAudio();
+      setLastUserText("");
+      setAiResponseText("");
+
+      const { status } = await Audio.requestPermissionsAsync();
+      if (status !== 'granted') {
+        isPreparingRef.current = false;
+        return;
+      }
+
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: true,
+        playsInSilentModeIOS: true,
+      });
+
+      // Pornirea propriu-zisă
+      const { recording } = await Audio.Recording.createAsync(WHISPER_AUDIO_SETTINGS);
+
+      recordingRef.current = recording;
       setIsRecording(true);
-      setStatusText("Listening in Japanese...");
+      setStatusText("Listening...");
     } catch (error) {
       console.error("STT Start Error:", error);
-      setStatusText("Error starting mic.");
+      setStatusText("Mic error. Try again.");
       setIsRecording(false);
+    } finally {
+      isPreparingRef.current = false; // Deblocăm garda
     }
   };
 
   const stopRecording = async () => {
-    if (!recordingRef.current) return;
+    // Dacă încă se prepară, așteptăm un pic ca să nu dea eroare de "not prepared"
+    if (isPreparingRef.current) {
+      setTimeout(stopRecording, 100);
+      return;
+    }
+
+    if (!recordingRef.current || !isRecording) return;
 
     setIsRecording(false);
-    setStatusText("Processing audio...");
+    setStatusText("Processing...");
 
     try {
       await recordingRef.current.stopAndUnloadAsync();
+
       const uri = recordingRef.current.getURI();
+
+      // Setăm modul audio înapoi pe redare IMEDIAT după stop
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: false,
+        playsInSilentModeIOS: true,
+      });
 
       if (uri) {
         const finalTranscript = await sttApiCall(uri);
-
         await handleAiInteraction(finalTranscript);
       }
     } catch (error) {
-      console.error("Failed to stop recording or process audio", error);
-      setStatusText("Error processing audio.");
+      console.error("Failed to stop recording", error);
+      setStatusText("Tap to Speak");
     } finally {
       recordingRef.current = null;
     }
@@ -230,9 +285,12 @@ export default function VoiceChatUI({
         user_context: userContext
       };
 
-      const response = await fetch(CHAT_LOCAL_ENDPOINT, {
+      const response = await fetch(CHAT_LOCAL_ENDPOINT!, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": "true"
+        },
         body: JSON.stringify(requestBody),
       });
 

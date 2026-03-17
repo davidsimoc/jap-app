@@ -5,6 +5,7 @@ export type LessonStep =
     | { type: 'quiz'; question: string; options: string[]; correctAnswer: string }
     | { type: 'match'; pairs: { left: string; right: string }[] }
     | { type: 'listening'; audioText: string; question: string; options: string[]; correctAnswer: string }
+    | { type: 'handwriting'; kanji: string }
     | { type: 'arrange'; sentence: string; translation: string; jumbledWords: string[] };
 
 export type RoadNode = {
@@ -81,6 +82,10 @@ export const INITIAL_ROAD_DATA: RoadNode[] = [
                     { word: "私", reading: "わたし", romaji: "watashi", meaning: "I / Me" },
                     { word: "です", reading: "です", romaji: "desu", meaning: "am / is / are" }
                 ]
+            },
+            {
+                type: 'handwriting',
+                kanji: '私'
             }
         ],
         souvenir: { id: "suica1", name: "Suica Card", icon: "card-outline" }

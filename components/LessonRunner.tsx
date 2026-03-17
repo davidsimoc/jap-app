@@ -14,6 +14,7 @@ import ArrangeStep from './lessons/ArrangeStep';
 import ListeningStep from './lessons/ListeningStep';
 import GrammarStep from './lessons/GrammarStep';
 import QuizStep from './lessons/QuizStep';
+import KanjiHandwriting from './KanjiHandwriting';
 
 type Props = {
   visible: boolean;
@@ -28,7 +29,7 @@ export default function LessonRunner({ visible, node, onClose, onComplete, starr
   const insets = useSafeAreaInsets();
   const { theme } = useTheme();
   const currentTheme = theme === 'light' ? lightTheme : darkTheme;
-  
+
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [internalIndex, setInternalIndex] = useState(0);
 
@@ -36,7 +37,7 @@ export default function LessonRunner({ visible, node, onClose, onComplete, starr
   React.useEffect(() => {
     if (visible && node) {
       const textsToPrefetch: string[] = [];
-      
+
       node.steps.forEach(step => {
         if (step.type === 'story') {
           textsToPrefetch.push(step.text);
@@ -85,52 +86,67 @@ export default function LessonRunner({ visible, node, onClose, onComplete, starr
   const renderStepContent = () => {
     switch (currentStep.type) {
       case 'story':
-        return <StoryStep key={currentStep.text} text={currentStep.text} onComplete={handleNextAction} />;
+        return <StoryStep key={`story-${currentStepIndex}`} text={currentStep.text} onComplete={handleNextAction} />;
       case 'vocabulary':
         return (
-          <VocabularyStep 
-            item={currentStep.items[internalIndex]} 
+          <VocabularyStep
+            key={`vocab-${currentStepIndex}-${internalIndex}`}
+            item={currentStep.items[internalIndex]}
             isStarred={starredWords.includes(currentStep.items[internalIndex].word)}
             onToggleStar={() => onToggleStar(currentStep.items[internalIndex].word)}
           />
         );
       case 'grammar':
         return (
-          <GrammarStep 
+          <GrammarStep
+            key={`grammar-${currentStepIndex}`}
             title={currentStep.title}
             explanation={currentStep.explanation}
             examples={currentStep.examples}
           />
         );
       case 'match':
-        return <MatchStep pairs={currentStep.pairs} onComplete={handleNextAction} />;
+        return <MatchStep key={`match-${currentStepIndex}`} pairs={currentStep.pairs} onComplete={handleNextAction} />;
       case 'arrange':
         return (
-            <ArrangeStep 
-                sentence={currentStep.sentence}
-                translation={currentStep.translation}
-                jumbledWords={currentStep.jumbledWords}
-                onComplete={handleNextAction}
-            />
+          <ArrangeStep
+            key={`arrange-${currentStepIndex}`}
+            sentence={currentStep.sentence}
+            translation={currentStep.translation}
+            jumbledWords={currentStep.jumbledWords}
+            onComplete={handleNextAction}
+          />
         );
       case 'listening':
         return (
-            <ListeningStep 
-                audioText={currentStep.audioText}
-                question={currentStep.question}
-                options={currentStep.options}
-                correctAnswer={currentStep.correctAnswer}
-                onComplete={handleNextAction}
-            />
+          <ListeningStep
+            key={`listening-${currentStepIndex}`}
+            audioText={currentStep.audioText}
+            question={currentStep.question}
+            options={currentStep.options}
+            correctAnswer={currentStep.correctAnswer}
+            onComplete={handleNextAction}
+          />
         );
-      case 'quiz': 
+      case 'quiz':
         return (
-            <QuizStep 
-                question={currentStep.question}
-                options={currentStep.options}
-                correctAnswer={currentStep.correctAnswer}
-                onComplete={handleNextAction}
+          <QuizStep
+            key={`quiz-${currentStepIndex}`}
+            question={currentStep.question}
+            options={currentStep.options}
+            correctAnswer={currentStep.correctAnswer}
+            onComplete={handleNextAction}
+          />
+        );
+      case 'handwriting':
+        return (
+          <View style={{ flex: 1, justifyContent: 'center' }}>
+            <KanjiHandwriting
+              key={`handwriting-${currentStepIndex}`}
+              kanji={(currentStep as any).kanji}
+              onComplete={handleNextAction}
             />
+          </View>
         );
       default:
         return (
@@ -139,19 +155,19 @@ export default function LessonRunner({ visible, node, onClose, onComplete, starr
               Activity coming soon!
             </Text>
             <TouchableOpacity onPress={handleNextAction}>
-                <Text style={{ color: currentTheme.primary }}>Next</Text>
+              <Text style={{ color: currentTheme.primary }}>Next</Text>
             </TouchableOpacity>
           </View>
         );
     }
   };
 
-  const showMainNextButton = currentStep.type === 'vocabulary' || currentStep.type === 'quiz' || currentStep.type === 'grammar';
+  const showMainNextButton = currentStep.type === 'vocabulary' || currentStep.type === 'grammar';
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="fullScreen" transparent={false}>
       <View style={[styles.container, { backgroundColor: currentTheme.background, paddingTop: insets.top }]}>
-        
+
         <View style={styles.header}>
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
             <Ionicons name="close" size={28} color={currentTheme.text} />
@@ -168,20 +184,20 @@ export default function LessonRunner({ visible, node, onClose, onComplete, starr
         <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 20) }]}>
           <View style={styles.counterContainer}>
             <Text style={[styles.stepCounter, { color: currentTheme.text + '80' }]}>
-              {currentStep.type === 'vocabulary' 
+              {currentStep.type === 'vocabulary'
                 ? `WORD ${internalIndex + 1} OF ${currentStep.items.length}`
                 : `STEP ${currentStepIndex + 1} OF ${totalSteps}`}
             </Text>
           </View>
-          
+
           {showMainNextButton && (
-            <TouchableOpacity 
+            <TouchableOpacity
               style={[styles.nextButton, { backgroundColor: currentTheme.primary }]}
               onPress={handleNextAction}
             >
               <Text style={styles.nextText}>
                 {currentStepIndex === totalSteps - 1 && (currentStep.type !== 'vocabulary' || internalIndex === currentStep.items.length - 1)
-                  ? "Finish Journey" 
+                  ? "Finish Journey"
                   : "Continue"}
               </Text>
               <Ionicons name="chevron-forward" size={24} color="#fff" />
