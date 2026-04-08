@@ -7,29 +7,29 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0793A4AEF306272B81B1E6A9 /* libPods-NihongoMaster.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DA7143ECEBAF2B6826C25144 /* libPods-NihongoMaster.a */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
-		4710507C4AC2D832469290E2 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 17F768B672E4A35234501DFB /* PrivacyInfo.xcprivacy */; };
-		598C39102E66D5ECF0A803F1 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 618F056135BB23007EF88EBF /* ExpoModulesProvider.swift */; };
+		59209BCE498A89EE30B3627C /* libPods-NihongoMaster.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 105346FBA5D3A14E7D99F024 /* libPods-NihongoMaster.a */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
+		C23C48D257AD9A380880FE32 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5161A3CB55B2C351CAC19D38 /* ExpoModulesProvider.swift */; };
 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
+		F893142BCCB81F8E90934439 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = F9A408A9E2F49D473ED482DD /* PrivacyInfo.xcprivacy */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		105346FBA5D3A14E7D99F024 /* libPods-NihongoMaster.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-NihongoMaster.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07F961A680F5B00A75B9A /* NihongoMaster.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NihongoMaster.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = NihongoMaster/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = NihongoMaster/Info.plist; sourceTree = "<group>"; };
-		17F768B672E4A35234501DFB /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = NihongoMaster/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		618F056135BB23007EF88EBF /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-NihongoMaster/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
-		89983B01527A8D6C09F091AE /* Pods-NihongoMaster.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NihongoMaster.debug.xcconfig"; path = "Target Support Files/Pods-NihongoMaster/Pods-NihongoMaster.debug.xcconfig"; sourceTree = "<group>"; };
+		142B0E11D2413901F24EF9E9 /* Pods-NihongoMaster.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NihongoMaster.debug.xcconfig"; path = "Target Support Files/Pods-NihongoMaster/Pods-NihongoMaster.debug.xcconfig"; sourceTree = "<group>"; };
+		5161A3CB55B2C351CAC19D38 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-NihongoMaster/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = NihongoMaster/SplashScreen.storyboard; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
-		DA7143ECEBAF2B6826C25144 /* libPods-NihongoMaster.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-NihongoMaster.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		E15AC7C44E5C7CD6EE1B79DD /* Pods-NihongoMaster.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NihongoMaster.release.xcconfig"; path = "Target Support Files/Pods-NihongoMaster/Pods-NihongoMaster.release.xcconfig"; sourceTree = "<group>"; };
+		C2DC04CF46E508E69A013515 /* Pods-NihongoMaster.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NihongoMaster.release.xcconfig"; path = "Target Support Files/Pods-NihongoMaster/Pods-NihongoMaster.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = NihongoMaster/AppDelegate.swift; sourceTree = "<group>"; };
 		F11748442D0722820044C1D9 /* NihongoMaster-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "NihongoMaster-Bridging-Header.h"; path = "NihongoMaster/NihongoMaster-Bridging-Header.h"; sourceTree = "<group>"; };
+		F9A408A9E2F49D473ED482DD /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = NihongoMaster/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -37,21 +37,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0793A4AEF306272B81B1E6A9 /* libPods-NihongoMaster.a in Frameworks */,
+				59209BCE498A89EE30B3627C /* libPods-NihongoMaster.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		1128EA9775536F4CEFA03F9F /* ExpoModulesProviders */ = {
-			isa = PBXGroup;
-			children = (
-				59D44DA5C33811B7B4725F40 /* NihongoMaster */,
-			);
-			name = ExpoModulesProviders;
-			sourceTree = "<group>";
-		};
 		13B07FAE1A68108700A75B9A /* NihongoMaster */ = {
 			isa = PBXGroup;
 			children = (
@@ -61,7 +53,7 @@
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
-				17F768B672E4A35234501DFB /* PrivacyInfo.xcprivacy */,
+				F9A408A9E2F49D473ED482DD /* PrivacyInfo.xcprivacy */,
 			);
 			name = NihongoMaster;
 			sourceTree = "<group>";
@@ -70,15 +62,23 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				DA7143ECEBAF2B6826C25144 /* libPods-NihongoMaster.a */,
+				105346FBA5D3A14E7D99F024 /* libPods-NihongoMaster.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		59D44DA5C33811B7B4725F40 /* NihongoMaster */ = {
+		7DCE9A9DC3CD7FAD9B6C5913 /* ExpoModulesProviders */ = {
 			isa = PBXGroup;
 			children = (
-				618F056135BB23007EF88EBF /* ExpoModulesProvider.swift */,
+				7EC8D1ED500A4ED48A220C5E /* NihongoMaster */,
+			);
+			name = ExpoModulesProviders;
+			sourceTree = "<group>";
+		};
+		7EC8D1ED500A4ED48A220C5E /* NihongoMaster */ = {
+			isa = PBXGroup;
+			children = (
+				5161A3CB55B2C351CAC19D38 /* ExpoModulesProvider.swift */,
 			);
 			name = NihongoMaster;
 			sourceTree = "<group>";
@@ -97,8 +97,8 @@
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
-				D61C63A8DAF1CB5711D2DFD3 /* Pods */,
-				1128EA9775536F4CEFA03F9F /* ExpoModulesProviders */,
+				F62D410C1B8FFFD01FE98F45 /* Pods */,
+				7DCE9A9DC3CD7FAD9B6C5913 /* ExpoModulesProviders */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -122,13 +122,12 @@
 			path = NihongoMaster/Supporting;
 			sourceTree = "<group>";
 		};
-		D61C63A8DAF1CB5711D2DFD3 /* Pods */ = {
+		F62D410C1B8FFFD01FE98F45 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				89983B01527A8D6C09F091AE /* Pods-NihongoMaster.debug.xcconfig */,
-				E15AC7C44E5C7CD6EE1B79DD /* Pods-NihongoMaster.release.xcconfig */,
+				142B0E11D2413901F24EF9E9 /* Pods-NihongoMaster.debug.xcconfig */,
+				C2DC04CF46E508E69A013515 /* Pods-NihongoMaster.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -140,13 +139,13 @@
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "NihongoMaster" */;
 			buildPhases = (
 				08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */,
-				92E81B64808D7D3133F48FFA /* [Expo] Configure project */,
+				C01020B37F1345576546308C /* [Expo] Configure project */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */,
-				A0D12A3909C98252125FD6A3 /* [CP] Embed Pods Frameworks */,
+				DDFDAF248DCCC7B378FA202B /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -166,9 +165,7 @@
 				LastUpgradeCheck = 1130;
 				TargetAttributes = {
 					13B07F861A680F5B00A75B9A = {
-						DevelopmentTeam = 3334SK95VW;
 						LastSwiftMigration = 1250;
-						ProvisioningStyle = Automatic;
 					};
 				};
 			};
@@ -198,7 +195,7 @@
 				BB2F792D24A3F905000567C9 /* Expo.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
-				4710507C4AC2D832469290E2 /* PrivacyInfo.xcprivacy in Resources */,
+				F893142BCCB81F8E90934439 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -254,27 +251,49 @@
 				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/EXConstants.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/ExpoConstants_privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoFileSystem/ExpoFileSystem_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/GTMSessionFetcher/GTMSessionFetcher_Core_Privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/GoogleDataTransport/GoogleDataTransport_Privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/GoogleUtilities/GoogleUtilities_Privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/MLKitTextRecognition/LatinOCRResources.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/MLKitTextRecognitionChinese/ChineseOCRResources.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/MLKitTextRecognitionDevanagari/DevanagariOCRResources.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/MLKitTextRecognitionJapanese/JapaneseOCRResources.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/MLKitTextRecognitionKorean/KoreanOCRResources.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/MLKitTranslate/MLKitTranslate_resource.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/PromisesObjC/FBLPromises_Privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/RNCAsyncStorage/RNCAsyncStorage_resources.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/RNSVG/RNSVGFilters.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/React-Core_privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/React-cxxreact/React-cxxreact_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/nanopb/nanopb_Privacy.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXConstants.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoConstants_privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoFileSystem_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GTMSessionFetcher_Core_Privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleDataTransport_Privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleUtilities_Privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/LatinOCRResources.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ChineseOCRResources.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/DevanagariOCRResources.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/JapaneseOCRResources.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/KoreanOCRResources.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/MLKitTranslate_resource.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FBLPromises_Privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RNCAsyncStorage_resources.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RNSVGFilters.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/React-Core_privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/React-cxxreact_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/nanopb_Privacy.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-NihongoMaster/Pods-NihongoMaster-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		92E81B64808D7D3133F48FFA /* [Expo] Configure project */ = {
+		C01020B37F1345576546308C /* [Expo] Configure project */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
@@ -298,7 +317,7 @@
 			shellPath = /bin/sh;
 			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-NihongoMaster/expo-configure-project.sh\"\n";
 		};
-		A0D12A3909C98252125FD6A3 /* [CP] Embed Pods Frameworks */ = {
+		DDFDAF248DCCC7B378FA202B /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -328,7 +347,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */,
-				598C39102E66D5ECF0A803F1 /* ExpoModulesProvider.swift in Sources */,
+				C23C48D257AD9A380880FE32 /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -337,13 +356,11 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 89983B01527A8D6C09F091AE /* Pods-NihongoMaster.debug.xcconfig */;
+			baseConfigurationReference = 142B0E11D2413901F24EF9E9 /* Pods-NihongoMaster.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = NihongoMaster/NihongoMaster.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 3334SK95VW;
 				ENABLE_BITCODE = NO;
@@ -376,13 +393,11 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E15AC7C44E5C7CD6EE1B79DD /* Pods-NihongoMaster.release.xcconfig */;
+			baseConfigurationReference = C2DC04CF46E508E69A013515 /* Pods-NihongoMaster.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = NihongoMaster/NihongoMaster.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 3334SK95VW;
 				INFOPLIST_FILE = NihongoMaster/Info.plist;

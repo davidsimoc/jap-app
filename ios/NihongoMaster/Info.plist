@@ -46,7 +46,7 @@
       <true/>
     </dict>
     <key>NSCameraUsageDescription</key>
-    <string>Allow $(PRODUCT_NAME) to access your camera</string>
+    <string>Allow Nihongo Master to access your camera for Live AR translation of Japanese text.</string>
     <key>NSMicrophoneUsageDescription</key>
     <string>Allow $(PRODUCT_NAME) to access your microphone</string>
     <key>NSPhotoLibraryUsageDescription</key>
@@ -83,7 +83,5 @@
     <string>Dark</string>
     <key>UIViewControllerBasedStatusBarAppearance</key>
     <false/>
-    <key>NSSpeechRecognitionUsageDescription</key>
-    <string>We need access to speech recognition services to convert your spoken Japanese into text.</string>
   </dict>
 </plist>

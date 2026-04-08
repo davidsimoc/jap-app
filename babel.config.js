@@ -5,6 +5,7 @@ module.exports = function(api) {
       plugins: [
         '@babel/plugin-proposal-optional-chaining',
         '@babel/plugin-proposal-nullish-coalescing-operator',
+        ['react-native-worklets-core/plugin'],
         'react-native-reanimated/plugin',
       ],
     };

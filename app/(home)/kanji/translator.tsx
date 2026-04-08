@@ -23,6 +23,7 @@ import Animated, { FadeIn, FadeOut, SlideInRight, Layout } from 'react-native-re
 import { lightTheme, darkTheme } from '@/constants/Colors';
 import { useTheme } from '@/components/ThemeContext';
 import { speakJapanese, stopSpeech } from '@/services/ttsService';
+import ARTranslator from '@/components/ARTranslator';
 
 const { width } = Dimensions.get('window');
 //const TRANSLATE_ENDPOINT = "http://192.168.0.126:8000/chat";
@@ -43,6 +44,7 @@ export default function TranslatorScreen() {
 
     const [sourceLang, setSourceLang] = useState('English');
     const [targetLang, setTargetLang] = useState('Japanese');
+    const [isARMode, setIsARMode] = useState(false);
 
     const inputRef = useRef<TextInput>(null);
 
@@ -53,6 +55,7 @@ export default function TranslatorScreen() {
                 setTranslatedText('');
                 stopSpeech();
                 setIsSpeaking(false);
+                setIsARMode(false);
             };
         }, [])
     );
@@ -67,13 +70,11 @@ export default function TranslatorScreen() {
                 text: lang,
                 onPress: () => {
                     if (type === 'source') {
-                        // Dacă alegem aceeași limbă, facem swap automat
                         if (lang === targetLang) {
                             setTargetLang(sourceLang);
                         }
                         setSourceLang(lang);
                     } else {
-                        // Dacă alegem aceeași limbă, facem swap automat
                         if (lang === sourceLang) {
                             setSourceLang(targetLang);
                         }
@@ -100,7 +101,7 @@ export default function TranslatorScreen() {
                 },
                 body: JSON.stringify({
                     text: sourceText,
-                    source_lang: sourceLang, // Trimite "English", "Romanian" sau "Japanese"
+                    source_lang: sourceLang, 
                     target_lang: targetLang
                 }),
             });
@@ -148,6 +149,10 @@ export default function TranslatorScreen() {
         setTranslatedText('');
     };
 
+    if (isARMode) {
+        return <ARTranslator onClose={() => setIsARMode(false)} />;
+    }
+
     return (
         <View style={[styles.container, { backgroundColor: currentTheme.background }]}>
             {/* Background Blur similar to other premium pages */}
@@ -165,6 +170,13 @@ export default function TranslatorScreen() {
                     <Text style={[styles.headerSubtitle, { color: currentTheme.text + '50' }]}>TRANSLATE NOW</Text>
                     <Text style={[styles.headerTitle, { color: currentTheme.text }]}>Translator</Text>
                 </View>
+                <View style={{ flex: 1 }} />
+                <TouchableOpacity 
+                    style={[styles.arToggleButton, { backgroundColor: currentTheme.primary + '15' }]} 
+                    onPress={() => setIsARMode(true)}
+                >
+                    <Ionicons name="scan-outline" size={24} color={currentTheme.primary} />
+                </TouchableOpacity>
             </View>
 
             <KeyboardAvoidingView
@@ -394,4 +406,5 @@ const styles = StyleSheet.create({
     },
     copyText: { fontSize: 13, fontWeight: '800' },
     glow: { position: 'absolute', width: 400, height: 400, borderRadius: 200, opacity: 0.5 },
+    arToggleButton: { width: 44, height: 44, borderRadius: 22, justifyContent: 'center', alignItems: 'center' },
 });

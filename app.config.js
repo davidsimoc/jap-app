@@ -31,6 +31,13 @@ export default {
       "expo-router",
       "expo-av",
       [
+        "react-native-vision-camera",
+        {
+          "cameraPermissionText": "Allow Nihongo Master to access your camera for Live AR translation of Japanese text.",
+          "enableMicrophonePermission": false
+        }
+      ],
+      [
         "expo-splash-screen",
         {
           image: "./assets/images/splash-icon.png",

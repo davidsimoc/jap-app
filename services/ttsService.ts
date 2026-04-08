@@ -112,6 +112,12 @@ export const speakJapanese = async (text: string, options: SpeakOptions = {}) =>
     // Ensure file is downloaded before proceed to onStart/playback
     await downloadToCache(text, path);
 
+    // Override iOS silent switch
+    await Audio.setAudioModeAsync({
+      playsInSilentModeIOS: true,
+      staysActiveInBackground: false,
+    });
+
     // NOW call onStart - we are ready to play
     onStart?.();
 
