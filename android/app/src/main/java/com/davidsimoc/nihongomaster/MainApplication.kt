@@ -1,4 +1,4 @@
-package com.nihongo.master
+package com.davidsimoc.nihongomaster
 
 import android.app.Application
 import android.content.res.Configuration

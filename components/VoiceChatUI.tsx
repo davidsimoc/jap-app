@@ -13,19 +13,11 @@ import { useTheme } from "@/components/ThemeContext";
 import { speakJapanese, stopSpeech } from "@/services/ttsService"; // NOU: Importăm serviciul tău TTS
 import { addMessage, getMessages } from "@/services/firestoreChat";
 import { lightTheme, darkTheme } from "@/constants/Colors";
-//import Voice, { SpeechResultsEvent } from "@react-native-voice/voice";
 import { Audio } from "expo-av";
 import * as FileSystem from "expo-file-system/legacy";
 import { arrayUnion, getFirestore, doc, updateDoc } from "firebase/firestore";
 
-const GEMINI_API_KEY = process.env.EXPO_PUBLIC_GEMINI_API_KEY;
-//const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${GEMINI_API_KEY}`;
-
-//const WHISPER_LOCAL_ENDPOINT = "http://192.168.0.126:8000/transcribe";
 const WHISPER_LOCAL_ENDPOINT = `${process.env.EXPO_PUBLIC_API_URL}/transcribe`;
-
-
-//const CHAT_LOCAL_ENDPOINT = "http://192.168.0.126:8000/chat";
 const CHAT_LOCAL_ENDPOINT = `${process.env.EXPO_PUBLIC_API_URL}/chat`;
 
 const WHISPER_AUDIO_SETTINGS: any = {

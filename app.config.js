@@ -5,16 +5,28 @@ export default {
     version: "1.0.0",
     owner: "davidsimoc",
     orientation: "portrait",
-    icon: "./assets/images/icon.png",
+    icon: "./assets/images/icon_light.png",
     scheme: "myapp",
     userInterfaceStyle: "automatic",
     ios: {
-      bundleIdentifier: "com.nihongo.master",
+      bundleIdentifier: "com.davidsimoc.nihongomaster",
+      googleServicesFile: "./GoogleService-Info.plist",
       supportsTablet: true,
       userInterfaceStyle: "dark",
+      icon: "./assets/images/icon_light.png",
+      darkIcon: "./assets/images/icon_dark.png",
+      infoPlist: {
+        CFBundleURLTypes: [
+          {
+            CFBundleURLSchemes: [
+              "com.googleusercontent.apps.1006721640718-on3hqtjo85i403ddeuk7g2fvdd7vpl5v"
+            ]
+          }
+        ]
+      }
     },
     android: {
-      "package": "com.nihongo.master",
+      "package": "com.davidsimoc.nihongomaster",
       adaptiveIcon: {
         foregroundImage: "./assets/images/adaptive-icon.png",
         backgroundColor: "#ffffff",
@@ -44,6 +56,12 @@ export default {
           resizeMode: "contain",
           backgroundColor: "#ffffff",
         },
+      ],
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.1006721640718-on3hqtjo85i403ddeuk7g2fvdd7vpl5v"
+        }
       ],
     ],
     experiments: {

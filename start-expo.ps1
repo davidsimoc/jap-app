@@ -1,9 +1,10 @@
-# Setează variabilele de mediu pentru a forța IP-ul corect
-# $env:EXPO_DEV_SERVER_HOST="192.168.0.126"
-# $env:REACT_NATIVE_PACKAGER_HOSTNAME="192.168.0.126"
+$localIp = (ipconfig getifaddr en0)
 
-$env:EXPO_DEV_SERVER_HOST = "192.168.0.103"
-$env:REACT_NATIVE_PACKAGER_HOSTNAME = "192.168.0.103"
+if (-not $localIp) { $localIp = (ipconfig getifaddr en1) }
 
-# Curăță cache-ul Expo
+$env:EXPO_DEV_SERVER_HOST = $localIp
+$env:REACT_NATIVE_PACKAGER_HOSTNAME = $localIp
+
+Write-Host "Pornire Expo pe IP WELL: $localIp" -ForegroundColor Cyan
+
 npx expo start --clear

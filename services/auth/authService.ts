@@ -24,6 +24,10 @@ export class AuthService implements AuthProvider {
     return this.provider.logIn(email, password);
   }
 
+  logInWithGoogle() {
+    return this.provider.logInWithGoogle();
+  }
+
   createUser(email: string, password: string, username: string) {
     return this.provider.createUser(email, password, username);
   }

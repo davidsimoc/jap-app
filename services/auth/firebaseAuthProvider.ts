@@ -101,7 +101,56 @@ export class FirebaseAuthProvider implements AuthProvider {
                 throw new GenericAuthException();
         }
     }
-}
+  }
+
+  async logInWithGoogle(): Promise<AuthUser> {
+    try {
+      const { GoogleSignin } = require('@react-native-google-signin/google-signin');
+      const { GoogleAuthProvider, signInWithCredential } = require('firebase/auth');
+      
+      // Ensure GoogleSignin is configured (webClientId is needed from Firebase Console)
+      GoogleSignin.configure({
+        webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID || 'ADD_YOUR_WEB_CLIENT_ID_HERE.apps.googleusercontent.com',
+        iosClientId: '1006721640718-on3hqtjo85i403ddeuk7g2fvdd7vpl5v.apps.googleusercontent.com',
+      });
+
+      // Check if your device supports Google Play
+      await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+      
+      // Get the users ID token
+      const signInResult = await GoogleSignin.signIn();
+      const idToken = signInResult.data?.idToken;
+
+      if (!idToken) {
+        throw new Error('No ID token found');
+      }
+
+      // Create a Google credential with the token
+      const googleCredential = GoogleAuthProvider.credential(idToken);
+
+      // Sign-in the user with the credential
+      const userCredential = await signInWithCredential(getAuth(), googleCredential);
+      const user: User = userCredential.user;
+
+      if (user) {
+        // Also save user to firestore
+        const firestore = getFirestore();
+        const usersCollection = collection(firestore, 'users');
+        const userDocRef = doc(usersCollection, user.uid);
+        await setDoc(userDocRef, {
+          username: user.displayName || 'Google User',
+          email: user.email,
+          createdAt: serverTimestamp(),
+        }, { merge: true });
+
+        return AuthUser.fromFirebase(user);
+      }
+      throw new UserNotLoggedInAuthException();
+    } catch (e: any) {
+      console.error('Google Sign-In Error:', e);
+      throw new GenericAuthException();
+    }
+  }
 
   async logOut(): Promise<void> {
     const auth = getAuth();

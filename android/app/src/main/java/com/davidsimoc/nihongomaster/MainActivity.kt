@@ -1,4 +1,4 @@
-package com.nihongo.master
+package com.davidsimoc.nihongomaster
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build
