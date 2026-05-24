@@ -72,7 +72,7 @@ export default function SignupScreen() {
         {/* We can use a slightly different background header or reuse the image style */}
         <View style={styles.topCircle}>
           <Image
-            source={require('../../assets/images/login2.jpg')}
+            source={require('../../assets/images/japanese_login_bg.png')}
             style={styles.circleImage}
             resizeMode="cover"
           />

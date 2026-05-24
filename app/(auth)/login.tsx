@@ -64,7 +64,7 @@ export default function LoginScreen() {
       <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: Math.max(insets.bottom, 40) }} showsVerticalScrollIndicator={false}>
         <View style={styles.topCircle}>
           <Image
-            source={require('../../assets/images/login2.jpg')}
+            source={require('../../assets/images/japanese_login_bg.png')}
             style={styles.circleImage}
             resizeMode="cover"
           />

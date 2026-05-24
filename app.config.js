@@ -15,6 +15,7 @@ export default {
       userInterfaceStyle: "dark",
       icon: "./assets/images/icon_light.png",
       darkIcon: "./assets/images/icon_dark.png",
+      tintedIcon: "./assets/images/icon_tinted.png",
       infoPlist: {
         CFBundleURLTypes: [
           {
