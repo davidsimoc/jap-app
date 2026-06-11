@@ -69,10 +69,9 @@ export default function ARTranslator({ onClose }: ARTranslatorProps) {
       const japChars = text.match(/[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]/g) || [];
       const density = japChars.length / text.length;
 
-      // Require at least 25% Japanese characters in the string
       if (density < 0.25) return false;
 
-      // If it's a single character, it MUST be a Kanji to be meaningful
+      // If it's a single character, it must be a Kanji to be meaningful
       if (text.length === 1 && !/[\u4E00-\u9FAF]/.test(text)) return false;
 
       return true;
@@ -87,19 +86,16 @@ export default function ARTranslator({ onClose }: ARTranslatorProps) {
       return;
     }
 
-    // Sort by length, take unique strings, limit to top 3, format as bullet points
     const allLines = japaneseBlocks.flatMap(b => b.blockText.split('\n')).map(s => s.trim()).filter(Boolean);
     const sortedTexts = allLines.sort((a, b) => b.length - a.length);
     const uniqueTexts = Array.from(new Set(sortedTexts)).slice(0, 3);
     const targetText = uniqueTexts.map(t => `- ${t}`).join('\n');
 
-    // Only update if it's materially different, so we don't starve the timer
     if (targetText && targetText !== currentText) {
       setCurrentText(targetText);
     }
   }, [blocks, currentText]);
 
-  // Debounced Translation executing only on text change
   useEffect(() => {
     if (!currentText) return;
 
@@ -163,7 +159,6 @@ export default function ARTranslator({ onClose }: ARTranslatorProps) {
         pixelFormat="yuv"
       />
 
-      {/* AR HUD OVERLAYS */}
       <View style={StyleSheet.absoluteFill} pointerEvents="none">
         {blocks.map((b, i) => {
           const frame = b?.blockFrame;
@@ -178,13 +173,10 @@ export default function ARTranslator({ onClose }: ARTranslatorProps) {
           if (density < 0.25) return null;
           if (rawText.length === 1 && !/[\u4E00-\u9FAF]/.test(rawText)) return null;
 
-          // Camera feed from iOS is Landscape, so buffer is rotated 90deg CW
-          // This means real width=1080 and real height=1920 (when portrait mapping).
-          // Wait: cameraSize is 1080x1920 on JS side
+
           const bufferW = 1080;
           const bufferH = 1920;
 
-          // CALCULATE 'COVER' RESIZE MODE OFFSETS (based on Portrait scale mapping)
           const scale = Math.max(SCREEN_WIDTH / bufferW, SCREEN_HEIGHT / bufferH);
           const scaledW = bufferW * scale;
           const scaledH = bufferH * scale;
@@ -195,12 +187,7 @@ export default function ARTranslator({ onClose }: ARTranslatorProps) {
           const corners = b?.blockCornerPoints;
           if (!corners || corners.length !== 4) return null;
 
-          // iOS Raw Buffer is Landscape!
-          // We MUST manually rotate it mathematically.
-          // Origin: Top Left Landscape -> Top Right Portrait.
-          // Landscape Y (1080) maps to Portrait X. Landscape X (1920) maps to Portrait Y.
           const screenPoints = corners.map((p: any) => {
-            // p.y is the 1080-axis, p.x is the 1920-axis
             const rotatedX = (1080 - p.y);
             const rotatedY = p.x;
             return {
@@ -236,7 +223,6 @@ export default function ARTranslator({ onClose }: ARTranslatorProps) {
         })}
       </View>
 
-      {/* AR HUD */}
       <View style={{
         position: 'absolute',
         top: 65,

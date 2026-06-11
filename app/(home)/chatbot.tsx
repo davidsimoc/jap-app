@@ -10,7 +10,7 @@ import {
 import { GoogleGenAI } from "@google/genai";
 import { useTheme } from "@/components/ThemeContext";
 import { lightTheme, darkTheme } from "@/constants/Colors";
-import Constants from "expo-constants"; // Pentru a accesa variabila de mediu
+import Constants from "expo-constants";
 import ChatUI from "@/components/ChatUI";
 import { getAuth } from "firebase/auth";
 import {
@@ -45,9 +45,8 @@ const initialMessages: IMessage[] = [
     text: "こんにちは！私はあなたの日本語の先生です。何を練習したいですか？ (Kon'nichiwa! I am your Japanese teacher. What do you want to practice?)",
     createdAt: new Date(),
     user: {
-      _id: 2, // ID-ul AI-ului (Sensei-ului)
+      _id: 2,
       name: "Sensei AI",
-      // Poți adăuga un avatar dacă vrei
     },
   },
 ];
@@ -57,7 +56,6 @@ export default function ChatbotScreen() {
   const insets = useSafeAreaInsets();
   const currentTheme = theme === "light" ? lightTheme : darkTheme;
   const auth = getAuth();
-  //const uid = getAuth().currentUser?.uid;
   const db = getFirestore();
   const [userMemory, setUserMemory] = useState<string>("");
 
@@ -133,7 +131,6 @@ export default function ChatbotScreen() {
     const id = await createConversation(currentUid, "New chat");
     setConversationId(id);
     setShowHistory(false);
-    // Seed with greeting so the chat isn't empty
     try {
       await addMessage(
         id,
@@ -150,7 +147,6 @@ export default function ChatbotScreen() {
         setConversationId(null);
       }
     } catch (e) {
-      // no-op
     }
   };
 
@@ -161,7 +157,6 @@ export default function ChatbotScreen() {
     if (conversations.length > 0) {
       setConversationId(conversations[0].id);
     } else {
-      // create first chat automatically
       (async () => {
         await handleNewChat();
       })();

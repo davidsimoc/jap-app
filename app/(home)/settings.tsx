@@ -64,11 +64,9 @@ export default function SettingsScreen() {
             const userUid = user.uid;
 
             try {
-              // Delete Firestore documents
               await deleteDoc(doc(db, "users", userUid));
               await deleteDoc(doc(db, "userProgress", userUid));
 
-              // Delete Auth profile
               await user.delete();
 
               Alert.alert("Success", "Your account has been deleted.");
@@ -109,7 +107,6 @@ export default function SettingsScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: currentTheme.background }]}>
-      {/* Header */}
       <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
         <TouchableOpacity style={styles.backButton} onPress={() => router.push('/profile')}>
           <Ionicons name="chevron-back" size={28} color={currentTheme.text} />
@@ -118,7 +115,6 @@ export default function SettingsScreen() {
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        {/* Appearance Settings */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: currentTheme.text + '70' }]}>APPEARANCE</Text>
           <View style={[styles.card, { backgroundColor: currentTheme.surface }]}>
@@ -133,7 +129,6 @@ export default function SettingsScreen() {
           </View>
         </View>
 
-        {/* Help & Support */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: currentTheme.text + '70' }]}>SUPPORT</Text>
           <View style={[styles.card, { backgroundColor: currentTheme.surface }]}>
@@ -147,7 +142,6 @@ export default function SettingsScreen() {
           </View>
         </View>
 
-        {/* System Settings */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: currentTheme.text + '70' }]}>SYSTEM</Text>
           <View style={[styles.card, { backgroundColor: currentTheme.surface }]}>

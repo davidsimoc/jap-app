@@ -71,7 +71,6 @@ export default function LessonRunner({ visible, node, onClose, onComplete, starr
   const progress = (currentStepIndex + 1) / totalSteps;
 
   const handleNextAction = () => {
-    // Check if current step has internal steps (like vocabulary list)
     if (currentStep.type === 'vocabulary') {
       if (internalIndex < currentStep.items.length - 1) {
         setInternalIndex(internalIndex + 1);
@@ -182,7 +181,7 @@ export default function LessonRunner({ visible, node, onClose, onComplete, starr
             <Text style={[styles.completedNodeTitle, { color: currentTheme.primary }]}>
               {node.title}
             </Text>
-            
+
             <TouchableOpacity
               style={[styles.completedButton, { backgroundColor: currentTheme.primary }]}
               onPress={() => {
