@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Modal, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -32,9 +32,10 @@ export default function LessonRunner({ visible, node, onClose, onComplete, starr
 
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [internalIndex, setInternalIndex] = useState(0);
+  const [isFinished, setIsFinished] = useState(false);
 
   // Pre-fetch all audio content when the lesson starts
-  React.useEffect(() => {
+  useEffect(() => {
     if (visible && node) {
       const textsToPrefetch: string[] = [];
 
@@ -46,7 +47,6 @@ export default function LessonRunner({ visible, node, onClose, onComplete, starr
         } else if (step.type === 'listening') {
           textsToPrefetch.push(step.audioText);
         }
-        // Quiz steps often use the question as audio if desired, but let's stick to these for now
       });
 
       if (textsToPrefetch.length > 0) {
@@ -54,6 +54,15 @@ export default function LessonRunner({ visible, node, onClose, onComplete, starr
       }
     }
   }, [visible, node?.id]);
+
+  // Reset indices and finished state when modal closes
+  useEffect(() => {
+    if (!visible) {
+      setCurrentStepIndex(0);
+      setInternalIndex(0);
+      setIsFinished(false);
+    }
+  }, [visible]);
 
   if (!node) return null;
 
@@ -69,17 +78,13 @@ export default function LessonRunner({ visible, node, onClose, onComplete, starr
         return;
       }
     }
-
-    // Otherwise move to next main step
-    // Otherwise move to next main step
     if (currentStepIndex < totalSteps - 1) {
       console.log(`[LessonRunner] Moving to step ${currentStepIndex + 2}`);
       setCurrentStepIndex(currentStepIndex + 1);
       setInternalIndex(0);
     } else {
       console.log("[LessonRunner] Lesson complete!");
-      onComplete(node.id);
-      onClose();
+      setIsFinished(true);
     }
   };
 
@@ -161,6 +166,38 @@ export default function LessonRunner({ visible, node, onClose, onComplete, starr
         );
     }
   };
+
+  if (isFinished) {
+    return (
+      <Modal visible={visible} animationType="slide" presentationStyle="fullScreen" transparent={false}>
+        <View style={[styles.container, { backgroundColor: currentTheme.background, paddingTop: insets.top + 20 }]}>
+          <View style={styles.completedContainer}>
+            <View style={[styles.completedIconContainer, { backgroundColor: currentTheme.primary + '15' }]}>
+              <Ionicons name="trophy" size={80} color="#FFD700" />
+            </View>
+            <Text style={[styles.completedTitle, { color: currentTheme.text }]}>Lesson Complete!</Text>
+            <Text style={[styles.completedSubtitle, { color: currentTheme.text + '70' }]}>
+              Congratulations! You've successfully finished learning:
+            </Text>
+            <Text style={[styles.completedNodeTitle, { color: currentTheme.primary }]}>
+              {node.title}
+            </Text>
+            
+            <TouchableOpacity
+              style={[styles.completedButton, { backgroundColor: currentTheme.primary }]}
+              onPress={() => {
+                onComplete(node.id);
+                onClose();
+              }}
+            >
+              <Text style={styles.completedButtonText}>Finish Lesson</Text>
+              <Ionicons name="checkmark-circle-outline" size={24} color="#fff" />
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    );
+  }
 
   const showMainNextButton = currentStep.type === 'vocabulary' || currentStep.type === 'grammar';
 
@@ -284,5 +321,60 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 15,
     backgroundColor: 'rgba(0,0,0,0.05)',
-  }
+  },
+  completedContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 40,
+    gap: 20,
+  },
+  completedIconContainer: {
+    width: 140,
+    height: 140,
+    borderRadius: 70,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+    shadowColor: "#FFD700",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.2,
+    shadowRadius: 15,
+    elevation: 5,
+  },
+  completedTitle: {
+    fontSize: 32,
+    fontWeight: '900',
+    textAlign: 'center',
+  },
+  completedSubtitle: {
+    fontSize: 16,
+    textAlign: 'center',
+    lineHeight: 24,
+  },
+  completedNodeTitle: {
+    fontSize: 22,
+    fontWeight: '800',
+    textAlign: 'center',
+    marginBottom: 40,
+  },
+  completedButton: {
+    height: 64,
+    width: '100%',
+    borderRadius: 32,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    elevation: 8,
+  },
+  completedButtonText: {
+    color: '#fff',
+    fontSize: 20,
+    fontWeight: '800',
+  },
 });

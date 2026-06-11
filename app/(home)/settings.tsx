@@ -1,5 +1,4 @@
-
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -7,40 +6,88 @@ import {
   TouchableOpacity,
   ScrollView,
   Switch,
-  Platform
+  Platform,
+  Alert,
+  Linking
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/components/ThemeContext';
 import { lightTheme, darkTheme } from '@/constants/Colors';
-import { Auth, onAuthStateChanged } from 'firebase/auth'; // Added Auth and onAuthStateChanged
+import { Auth, onAuthStateChanged } from 'firebase/auth';
 // @ts-ignore
-import { auth } from '@/firebaseConfig';
+import { auth, db } from '@/firebaseConfig';
+import { doc, deleteDoc } from 'firebase/firestore';
 
 export default function SettingsScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { theme, toggleTheme } = useTheme();
+  const currentTheme = theme === 'light' ? lightTheme : darkTheme;
+
+  const [uid, setUid] = useState<string | null>(null);
 
   useEffect(() => {
     const firebaseAuth = auth as Auth;
     const unsubscribe = onAuthStateChanged(firebaseAuth, (user) => {
-      // You can add logic here if needed, e.g., redirect if user logs out
-      // For now, we just ensure the type cast is present.
+      if (user) {
+        setUid(user.uid);
+      } else {
+        setUid(null);
+      }
     });
     return () => unsubscribe();
   }, []);
 
-  const { theme, toggleTheme } = useTheme();
-  const currentTheme = theme === 'light' ? lightTheme : darkTheme;
-
   const handleLogout = async () => {
     try {
-      await (auth as Auth).signOut(); // Added Auth type cast here as well
+      await (auth as Auth).signOut();
       router.replace('/(auth)/login');
     } catch (error) {
       console.error('Error signing out:', error);
     }
+  };
+
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      "Permanent Account Deletion",
+      "Are you sure you want to delete your account permanently? All your progress and settings will be deleted forever. This action cannot be undone.",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete Account",
+          style: "destructive",
+          onPress: async () => {
+            const user = (auth as Auth).currentUser;
+            if (!user) return;
+            const userUid = user.uid;
+
+            try {
+              // Delete Firestore documents
+              await deleteDoc(doc(db, "users", userUid));
+              await deleteDoc(doc(db, "userProgress", userUid));
+
+              // Delete Auth profile
+              await user.delete();
+
+              Alert.alert("Success", "Your account has been deleted.");
+              router.replace('/(auth)/login');
+            } catch (error: any) {
+              console.error("Error deleting user:", error);
+              if (error.code === 'auth/requires-recent-login') {
+                Alert.alert(
+                  "Re-authentication Required",
+                  "For security reasons, please log out, log back in, and try again."
+                );
+              } else {
+                Alert.alert("Error", "Could not delete account. Please try again later.");
+              }
+            }
+          }
+        }
+      ]
+    );
   };
 
   const SettingItem = ({ icon, label, children, onPress, color }: any) => (
@@ -70,7 +117,8 @@ export default function SettingsScreen() {
         <Text style={[styles.headerTitle, { color: currentTheme.text }]}>Settings</Text>
       </View>
 
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        {/* Appearance Settings */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: currentTheme.text + '70' }]}>APPEARANCE</Text>
           <View style={[styles.card, { backgroundColor: currentTheme.surface }]}>
@@ -85,19 +133,21 @@ export default function SettingsScreen() {
           </View>
         </View>
 
+        {/* Help & Support */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: currentTheme.text + '70' }]}>ACCOUNT</Text>
+          <Text style={[styles.sectionTitle, { color: currentTheme.text + '70' }]}>SUPPORT</Text>
           <View style={[styles.card, { backgroundColor: currentTheme.surface }]}>
-            {/* <SettingItem 
-              icon="person-outline" 
-              label="Edit Profile" 
-              onPress={() => router.push('/profile')}
-            /> */}
-            <SettingItem icon="notifications-outline" label="Notifications" />
-            <SettingItem icon="lock-closed-outline" label="Privacy & Security" />
+            <SettingItem
+              icon="mail-outline"
+              label="Help & Feedback"
+              onPress={() => {
+                Linking.openURL('mailto:simoc.david@gmail.com?subject=JapApp%20Feedback');
+              }}
+            />
           </View>
         </View>
 
+        {/* System Settings */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: currentTheme.text + '70' }]}>SYSTEM</Text>
           <View style={[styles.card, { backgroundColor: currentTheme.surface }]}>
@@ -106,6 +156,12 @@ export default function SettingsScreen() {
               label="Log Out"
               color="#FF3B30"
               onPress={handleLogout}
+            />
+            <SettingItem
+              icon="trash-outline"
+              label="Delete Account"
+              color="#FF3B30"
+              onPress={handleDeleteAccount}
             />
           </View>
         </View>

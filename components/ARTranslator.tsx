@@ -24,10 +24,10 @@ export default function ARTranslator({ onClose }: ARTranslatorProps) {
   const [translatedText, setTranslatedText] = useState<string>('');
   const [isTranslating, setIsTranslating] = useState(false);
   const [currentText, setCurrentText] = useState<string>('');
-  
+
   const lastUpdateRef = useRef(0);
   const debounceRef = useRef<NodeJS.Timeout | number | null>(null);
-  
+
   const plugin = useTextRecognition({ language: 'japanese' });
 
   useEffect(() => {
@@ -36,15 +36,13 @@ export default function ARTranslator({ onClose }: ARTranslatorProps) {
     }
   }, [hasPermission]);
 
-  // Pass data from Worklet (native thread) to JS thread
   const updateBlocksInJS = useRunOnJS((data: any, errMsg?: string, frameW?: number, frameH?: number) => {
     const now = Date.now();
     if (frameW && frameH) {
-      // Vision Camera returns physical buffer dimensions 
       setCameraSize({ width: frameW, height: frameH });
     }
-    
-    if (now - lastUpdateRef.current > 200) { // Throttle to 5 FPS to reduce jitter
+
+    if (now - lastUpdateRef.current > 200) {
       const blocksArray = data?.blocks || [];
       setBlocks(blocksArray);
       lastUpdateRef.current = now;
@@ -67,13 +65,13 @@ export default function ARTranslator({ onClose }: ARTranslatorProps) {
     const japaneseBlocks = blocks.filter(b => {
       if (!b?.blockText) return false;
       const text = b.blockText.trim();
-      
+
       const japChars = text.match(/[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]/g) || [];
       const density = japChars.length / text.length;
-      
+
       // Require at least 25% Japanese characters in the string
       if (density < 0.25) return false;
-      
+
       // If it's a single character, it MUST be a Kanji to be meaningful
       if (text.length === 1 && !/[\u4E00-\u9FAF]/.test(text)) return false;
 
@@ -91,10 +89,10 @@ export default function ARTranslator({ onClose }: ARTranslatorProps) {
 
     // Sort by length, take unique strings, limit to top 3, format as bullet points
     const allLines = japaneseBlocks.flatMap(b => b.blockText.split('\n')).map(s => s.trim()).filter(Boolean);
-    const sortedTexts = allLines.sort((a,b) => b.length - a.length);
+    const sortedTexts = allLines.sort((a, b) => b.length - a.length);
     const uniqueTexts = Array.from(new Set(sortedTexts)).slice(0, 3);
     const targetText = uniqueTexts.map(t => `- ${t}`).join('\n');
-    
+
     // Only update if it's materially different, so we don't starve the timer
     if (targetText && targetText !== currentText) {
       setCurrentText(targetText);
@@ -111,10 +109,10 @@ export default function ARTranslator({ onClose }: ARTranslatorProps) {
       setIsTranslating(true);
       try {
         const url = `${process.env.EXPO_PUBLIC_API_URL}/translate-only`;
-          
+
         const response = await fetch(url, {
           method: 'POST',
-          headers: { 
+          headers: {
             'Content-Type': 'application/json',
             'ngrok-skip-browser-warning': 'true'
           },
@@ -124,10 +122,10 @@ export default function ARTranslator({ onClose }: ARTranslatorProps) {
             target_lang: 'English'
           }),
         });
-        
+
         if (!response.ok) {
-           setTranslatedText(`API HTTP ${response.status}`);
-           return;
+          setTranslatedText(`API HTTP ${response.status}`);
+          return;
         }
 
         const json = await response.json();
@@ -136,7 +134,7 @@ export default function ARTranslator({ onClose }: ARTranslatorProps) {
         } else if (json.translated_text === currentText) {
           setTranslatedText(`Echo: ${json.translated_text}`);
         } else {
-          setTranslatedText(`Error: ${JSON.stringify(json).substring(0,20)}`);
+          setTranslatedText(`Error: ${JSON.stringify(json).substring(0, 20)}`);
         }
       } catch (err: any) {
         setTranslatedText(`Network Error: ${err.message}`);
@@ -176,19 +174,19 @@ export default function ARTranslator({ onClose }: ARTranslatorProps) {
           const rawText = text.trim();
           const japChars = rawText.match(/[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]/g) || [];
           const density = japChars.length / rawText.length;
-          
+
           if (density < 0.25) return null;
           if (rawText.length === 1 && !/[\u4E00-\u9FAF]/.test(rawText)) return null;
 
           // Camera feed from iOS is Landscape, so buffer is rotated 90deg CW
           // This means real width=1080 and real height=1920 (when portrait mapping).
           // Wait: cameraSize is 1080x1920 on JS side
-          const bufferW = 1080; 
-          const bufferH = 1920; 
+          const bufferW = 1080;
+          const bufferH = 1920;
 
           // CALCULATE 'COVER' RESIZE MODE OFFSETS (based on Portrait scale mapping)
           const scale = Math.max(SCREEN_WIDTH / bufferW, SCREEN_HEIGHT / bufferH);
-          const scaledW = bufferW * scale; 
+          const scaledW = bufferW * scale;
           const scaledH = bufferH * scale;
 
           const offsetX = (scaledW - SCREEN_WIDTH) / 2;

@@ -175,7 +175,7 @@ export default function FlashcardsScreen() {
 
     const nextReview = Date.now() + interval * 24 * 60 * 60 * 1000;
 
-    // Save to Firestore
+
     try {
       const cardRef = doc(db, 'users', user.uid, 'flashcards', currentCard.word);
       await setDoc(cardRef, {

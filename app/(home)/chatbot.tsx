@@ -22,7 +22,6 @@ import {
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import VoiceChatUI from "@/components/VoiceChatUI";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
-import SettingsModal from "@/components/SettingsModal";
 
 const TEXT_INSTRUCTION = `
 ### MANDATORY RULES ###
@@ -71,38 +70,15 @@ export default function ChatbotScreen() {
 
   const [isVoiceMode, setIsVoiceMode] = useState(false);
 
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [aiSettings, setAiSettings] = useState({
-    level: "N5",
-    personality: "Friendly",
-    translations: true,
-  });
-
-  useEffect(() => {
-    const fetchSettings = async () => {
-      if (!currentUid) return;
-      const userRef = doc(db, "users", currentUid);
-      const snap = await getDoc(userRef);
-
-      if (snap.exists()) {
-        const data = snap.data();
-        if (data.aiSettings) {
-          setAiSettings(data.aiSettings);
-        }
-      }
-    };
-    fetchSettings();
-  }, [currentUid, isSettingsOpen]);
-
   const getDynamicInstructions = (mode: "text" | "voice") => {
     const base = `
       ### ROLE ###
-      You are Yuki, a ${aiSettings.personality} Japanese friend. 
+      You are Yuki, a friendly Japanese friend. 
       ### CONSTRAINTS ###
-      1. User level: ${aiSettings.level}. Use vocabulary/Kanji ONLY for ${aiSettings.level}.
-      2. ${aiSettings.translations ? "Provide English translations in ()." : "No English translations."}
+      1. User level: N5. Use vocabulary/Kanji ONLY for N5.
+      2. Provide English translations in ().
       3. Respond ONLY in Japanese/English.
-          `;
+    `;
     const voiceExtra = "\n4. VOICE CALL: Keep response max 15 words.";
     const textExtra = "\n4. CHAT: Be expressive and write as much as you want.";
 
@@ -241,16 +217,6 @@ export default function ChatbotScreen() {
             />
           </TouchableOpacity>
 
-          <TouchableOpacity 
-            onPress={() => setIsSettingsOpen(true)}
-            style={[styles.actionBtn, { backgroundColor: currentTheme.surface }]}
-          >
-            <Ionicons
-              name="options-outline"
-              size={20}
-              color={currentTheme.text}
-            />
-          </TouchableOpacity>
         </View>
       </View>
 
@@ -270,11 +236,6 @@ export default function ChatbotScreen() {
         />
       )}
 
-      <SettingsModal
-        visible={isSettingsOpen}
-        onClose={() => setIsSettingsOpen(false)}
-        userId={currentUid ?? ""}
-      />
 
       <Modal
         visible={showHistory}
